@@ -1,0 +1,16 @@
+// config.js
+const CONFIG = {
+
+    YOUTUBE_API_KEY: "AIzaSyC_iOX3x46Jik-qHnYqKK5na-cJnvEaoh4",
+    MY_DYNAMIC_API: "https://script.google.com/macros/s/AKfycbyvP-odviwqkIy5nj7DTAPRNtIJ47Ys_7ItvterAC6FKAXZJUTP0Xd5Wz1eisylVyY/exec",
+
+    FIREBASE: {
+        apiKey: "AIzaSyAwSc0iMQSXhs8uz8uZuL-XCaeVOrgC2Ic",
+        authDomain: "jt-website-5406f.firebaseapp.com",
+        projectId: "jt-website-5406f",
+        storageBucket: "jt-website-5406f.firebasestorage.app",
+        messagingSenderId: "98415821216",
+        appId: "1:98415821216:web:3d72c7b4661e96b307a4c5",
+        measurementId: "G-8XEDRZKK0D"
+    }
+};
