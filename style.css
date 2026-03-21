@@ -777,3 +777,53 @@ nav {
     margin-top: 0 !important;
     padding-top: 0 !important;
 }
+
+/* =========================================
+   📱 MOBILE RESPONSIVE (TELEFON UYUMU) 
+   ========================================= */
+@media screen and (max-width: 768px) {
+    /* 1. Hero Kısmı: Devasa yazıları telefona sığdır */
+    .hero-title { font-size: 3.5rem !important; line-height: 1.1; }
+    .hero-title span { display: block; }
+    .hero { padding-top: 100px; }
+
+    /* 2. Navigasyon (Menü): Alt alta şık bir şekilde diz */
+    .nav-links { 
+        flex-direction: column; 
+        gap: 15px; 
+        text-align: center; 
+        padding: 0;
+    }
+    nav { padding: 15px; position: relative; }
+
+    /* 3. Albüm Grid'i: Yan yana yerine alt alta (tek sütun) akacak */
+    .album-grid { 
+        grid-template-columns: 1fr !important; 
+        gap: 20px;
+    }
+
+    /* 4. Tablolar (Hayat Kurtaran Kısım): Ekranı bozmak yerine yana kaydırılabilir yap */
+    .analytics-row { 
+        padding: 15px !important; 
+        overflow-x: auto; /* Taşan tabloyu yana kaydırmalı (swipe) yapar */
+        -webkit-overflow-scrolling: touch;
+    }
+    table { 
+        min-width: 600px; /* Tablo ezilmesin, okunabilir kalsın */ 
+    }
+
+    /* 5. Guestbook (Yorum Kısmı): Yan yana duran formu alt alta al */
+    .guestbook { padding: 40px 1.5rem !important; }
+    .guestbook > div > div { 
+        grid-template-columns: 1fr !important; /* 1fr 1fr olan inline stili ezer */
+        gap: 30px !important; 
+    }
+    
+    /* 6. CSPC Dashboard İstatistikleri: Mobilde daha derli toplu dursun */
+    .cspc-dashboard {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .stat-group { border-left: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+}
