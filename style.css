@@ -960,3 +960,41 @@ nav {
 
     canvas#albumShareChart { min-width: 100% !important; height: auto !important; margin: 0 auto; }
 }
+
+/* =========================================
+       🚨 ALBÜM LEADERBOARD TABLOSU HAYAT KURTARMA YAMASI 🚨
+       (Sınıf çakışmasını ezen spesifik ID kodu)
+       ========================================= */
+    
+    #album-leaderboard-table td:nth-of-type(2)::before { content: "Year" !important; color: #888 !important; }
+    #album-leaderboard-table td:nth-of-type(3)::before { content: "Total Streams" !important; color: #888 !important; }
+    #album-leaderboard-table td:nth-of-type(4)::before { content: "Live Daily" !important; color: #4ade80 !important; }
+    
+    /* Yanlışlıkla gizlenen 5. sütunu (% of Daily) geri getir ve etiketini bas */
+    #album-leaderboard-table td:nth-of-type(5) { display: block !important; } 
+    #album-leaderboard-table td:nth-of-type(5)::before { content: "% of Daily" !important; color: #d4a853 !important; }
+
+    /* =========================================
+       🚨 MASAÜSTÜ HAYAT KURTARMA KALKANI 🚨
+       (Yanlışlıkla dışarı sızan mobil etiketleri masaüstünde yok eder)
+       ========================================= */
+    @media screen and (min-width: 769px) {
+        /* Masaüstünde td::before (mobil etiketleri) ASLA gözükemez */
+        .analytics-row td::before,
+        .song-table td::before,
+        #song-table-container td::before,
+        #album-leaderboard-table td::before {
+            display: none !important;
+        }
+        
+        /* Masaüstünde tablo hücreleri (td) normal padding'ine dönsün */
+        .analytics-row td,
+        .song-table td {
+            padding: 18px !important;
+        }
+        
+        /* Yanlışlıkla display:block olan 5. sütunu tablo hücresine çevir */
+        #album-leaderboard-table td:nth-of-type(5) {
+            display: table-cell !important;
+        }
+    }

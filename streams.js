@@ -53,7 +53,7 @@ const albumMetData = {
     "Orphan / Features": { year: "Various" }
 };
 
-// --- 2. YARDIMCI FONKSİYONLAR ---
+// --// --- 2. YARDIMCI FONKSİYONLAR ---
 
 function animateValue(obj, start, end, duration, prefix = "") {
     if (!obj || isNaN(end)) return;
@@ -63,7 +63,6 @@ function animateValue(obj, start, end, duration, prefix = "") {
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = Math.floor(progress * (end - start) + start);
         
-        // Sadece Total Career stat'ı için 'B' (Milyar) formatı
         if (end >= 1000000000 && obj.id === 'jt-total-career') {
             obj.innerHTML = prefix + (current / 1000000000).toFixed(2) + 'B';
         } else {
@@ -74,10 +73,9 @@ function animateValue(obj, start, end, duration, prefix = "") {
     window.requestAnimationFrame(step);
 }
 
-// Luminate ağırlıklarına göre gerçek günlük ortalamayı bulan zeka
 function getTrueDailyAverage(dailyStreams) {
     const today = new Date().getDay();
-    const dataDay = today === 0 ? 6 : today - 1; // Kworb hep düne aittir
+    const dataDay = today === 0 ? 6 : today - 1; 
     const dayWeights = { 0: 0.85, 1: 0.90, 2: 0.95, 3: 1.00, 4: 1.05, 5: 1.15, 6: 1.10 };
     return dailyStreams / dayWeights[dataDay];
 }
@@ -96,7 +94,7 @@ function calculateMilestone(track, trueDailyAverage) {
     return { target: nextMilestone, remaining: remaining, daysLeft: daysLeft };
 }
 
-// --- 3. AKILLI PARSER (Harf Duyarsız & Tam Senkronize) ---
+// --- 3. AKILLI PARSER ---
 
 function analyzeKworbData(htmlInput) {
     const parser = new DOMParser();
@@ -123,12 +121,8 @@ function analyzeKworbData(htmlInput) {
     rows.forEach(row => {
         const cols = row.querySelectorAll('td');
         if (cols.length >= 3) {
-            // HATALI SATIR SİLİNDİ! Artık replace('*', '') yok. Sadece saf metni alıyoruz.
             let title = cols[0].textContent.trim(); 
-            
-            // Büyük/küçük harf koruması
             let lowerTitle = title.toLowerCase(); 
-            
             let valTotal = parseInt(cols[1].textContent.replace(/,/g, ''), 10) || 0;
             let valDaily = parseInt(cols[2].textContent.replace(/,/g, ''), 10) || 0;
             
@@ -136,7 +130,6 @@ function analyzeKworbData(htmlInput) {
 
             let matched = false;
             for (let key in songToAlbumMap) {
-                // Şarkı eşleştirmesi (Harf duyarsız)
                 if (lowerTitle.includes(key.toLowerCase())) {
                     let albName = songToAlbumMap[key];
                     if (stats[albName]) {
@@ -147,7 +140,6 @@ function analyzeKworbData(htmlInput) {
                     break;
                 }
             }
-            // Eşleşmeyenler Yetimhaneye
             if (!matched) {
                 stats["Orphan / Features"].total += valTotal;
                 stats["Orphan / Features"].daily += valDaily;
@@ -166,28 +158,25 @@ async function initStreamsDashboard() {
         const html = await res.text();
         const liveStats = analyzeKworbData(html);
 
-        // Arayüz Elementleri
         const jtTotalCareer = document.getElementById('jt-total-career');
         const jtDailyCareer = document.getElementById('jt-daily-career');
         const albumTableBody = document.getElementById('album-table-body');
         const streamsTableBody = document.getElementById('streams-table-body');
         const radarGrid = document.getElementById('milestone-radar');
 
-        // HallAlbums dizisini artık KULLANMADAN ÖNCE tanımlıyoruz.
         let allAlbums = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "Everything I Thought It Was", "Orphan / Features"];
         
-        albumTableBody.innerHTML = "";
-        streamsTableBody.innerHTML = "";
-        radarGrid.innerHTML = "";
+        if(albumTableBody) albumTableBody.innerHTML = "";
+        if(streamsTableBody) streamsTableBody.innerHTML = "";
+        if(radarGrid) radarGrid.innerHTML = "";
 
         // TOP SECTION
         let jtTotalDaily = 0;
         allAlbums.forEach(id => { jtTotalDaily += liveStats[id].daily; });
         
         animateValue(jtTotalCareer, 0, liveStats.TotalSpotify, 2000);
-        animateValue(jtDailyCareer, 0, jtTotalDaily, 2000, "+"); // Prefix ekledik
+        animateValue(jtDailyCareer, 0, jtTotalDaily, 2000, "+"); 
 
-        // Orta Kısım Öncesi Renk Haritası (Barlar İçin)
         const eraColors = {
             "Justified": "#5dade2", 
             "FutureSex/LoveSounds": "#e74c3c", 
@@ -198,144 +187,140 @@ async function initStreamsDashboard() {
         };
 
         // MIDDLE SECTION: ALBUM LEADERBOARD
-        allAlbums.forEach(id => {
-            let album = liveStats[id];
-            let dailyPerc = jtTotalDaily > 0 ? (album.daily / jtTotalDaily) * 100 : 0; 
-            let barColor = eraColors[id] || "#d4a853"; // Albümün kendi rengini çek
-            
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <div style="font-weight: 700; color: #fff;">${id}</div>
-                    <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.05); margin-top: 8px; border-radius: 2px; overflow: hidden;">
-                        <div style="width: ${dailyPerc}%; height: 100%; background: ${barColor}; box-shadow: 0 0 10px ${barColor}; border-radius: 2px; transition: width 1.5s ease-out;"></div>
-                    </div>
-                </td>
-                <td style="vertical-align: top; padding-top: 18px;">${albumMetData[id].year}</td>
-                <td style="vertical-align: top; padding-top: 18px;">${album.total.toLocaleString()}</td>
-                <td class="positive-trend" style="vertical-align: top; padding-top: 18px;">+${album.daily.toLocaleString()}</td>
-                <td style="vertical-align: top; padding-top: 18px; color: ${barColor}; font-weight: 700;">${dailyPerc.toFixed(1)}%</td>
-            `;
-            albumTableBody.appendChild(tr);
-        });
+        if(albumTableBody) {
+            allAlbums.forEach(id => {
+                let album = liveStats[id];
+                let dailyPerc = jtTotalDaily > 0 ? (album.daily / jtTotalDaily) * 100 : 0; 
+                let barColor = eraColors[id] || "#d4a853"; 
+                
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-weight: 700; color: #fff;">${id}</div>
+                        <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.05); margin-top: 8px; border-radius: 2px; overflow: hidden;">
+                            <div style="width: ${dailyPerc}%; height: 100%; background: ${barColor}; box-shadow: 0 0 10px ${barColor}; border-radius: 2px; transition: width 1.5s ease-out;"></div>
+                        </div>
+                    </td>
+                    <td style="vertical-align: top; padding-top: 18px;">${albumMetData[id].year}</td>
+                    <td style="vertical-align: top; padding-top: 18px;">${album.total.toLocaleString()}</td>
+                    <td class="positive-trend" style="vertical-align: top; padding-top: 18px;">+${album.daily.toLocaleString()}</td>
+                    <td style="vertical-align: top; padding-top: 18px; color: ${barColor}; font-weight: 700;">${dailyPerc.toFixed(1)}%</td>
+                `;
+                albumTableBody.appendChild(tr);
+            });
+        }
 
         // THIRD SECTION: TOP TRACKS
-        liveStats.tracks.slice(0, 15).forEach(track => {
-            let trueDailyAvg = getTrueDailyAverage(track.daily);
-            let weeklyEst = Math.floor(trueDailyAvg * 7); 
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${track.title}</td>
-                <td>${track.total.toLocaleString()}</td>
-                <td class="positive-trend">+${track.daily.toLocaleString()}</td>
-                <td style="color: #d4a853; font-weight: 500;">${weeklyEst.toLocaleString()}</td>
-            `;
-            streamsTableBody.appendChild(tr);
-        });
+        if(streamsTableBody) {
+            liveStats.tracks.slice(0, 15).forEach(track => {
+                let trueDailyAvg = getTrueDailyAverage(track.daily);
+                let weeklyEst = Math.floor(trueDailyAvg * 7); 
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${track.title}</td>
+                    <td>${track.total.toLocaleString()}</td>
+                    <td class="positive-trend">+${track.daily.toLocaleString()}</td>
+                    <td style="color: #d4a853; font-weight: 500;">${weeklyEst.toLocaleString()}</td>
+                `;
+                streamsTableBody.appendChild(tr);
+            });
+        }
 
         // BOTTOM SECTION: MILESTONE RADAR
-        liveStats.tracks.slice(0, 10).forEach(track => {
-            if (track.daily > 10000) {
-                let trueDailyAvg = getTrueDailyAverage(track.daily);
-                let milestone = calculateMilestone(track, trueDailyAvg);
-                
-                let targetText = milestone.target >= 1000000000 
-                                ? (milestone.target / 1000000000) + "B" 
-                                : (milestone.target / 1000000) + "M";
+        if(radarGrid) {
+            liveStats.tracks.slice(0, 10).forEach(track => {
+                if (track.daily > 10000) {
+                    let trueDailyAvg = getTrueDailyAverage(track.daily);
+                    let milestone = calculateMilestone(track, trueDailyAvg);
+                    
+                    let targetText = milestone.target >= 1000000000 
+                                    ? (milestone.target / 1000000000) + "B" 
+                                    : (milestone.target / 1000000) + "M";
 
-                let card = document.createElement('div');
-                card.className = "milestone-card";
-                card.innerHTML = `
-                    <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Countdown to ${targetText}</div>
-                    <div style="font-size: 1.2rem; font-weight: 700; margin: 10px 0;">${track.title}</div>
-                    <div style="font-size: 2rem; color: #d4a853;">${milestone.daysLeft.toLocaleString()} Days</div>
-                    <div style="font-size: 0.9rem; color: #aaa; margin-top: 5px;">Needs ${(milestone.remaining / 1000000).toFixed(1)}M more streams</div>
-                `;
-                radarGrid.appendChild(card);
-            }
-        });
-
-        // ... Milestone radar kodlarının bitimi ...
-
-        // --- YENİ: CHART.JS GRAFİK MOTORU ---
-        const ctx = document.getElementById('albumShareChart').getContext('2d');
-        
-        // Grafiğe gidecek verileri ve renkleri hazırlıyoruz
-        const chartLabels = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "EITIW", "Orphan / Features"];
-        const chartData = [
-            liveStats["Justified"].total,
-            liveStats["FutureSex/LoveSounds"].total,
-            liveStats["The 20/20 Experience"].total,
-            liveStats["Man of the Woods"].total,
-            liveStats["Everything I Thought It Was"].total,
-            liveStats["Orphan / Features"].total
-        ];
-        
-        // Tema renkleriyle eşleşen şık palet
-        const chartColors = [
-            '#5dade2', // Justified (Buz Mavisi)
-            '#e74c3c', // FSLS (Kırmızı)
-            '#fce98a', // 20/20 (Açık Sarı)
-            '#ca6f1e', // MOTW (Toprak Turuncu)
-            '#f39c12', // EITIW (Canlı Turuncu)
-            '#bdc3c7'  // Orphan (Gri)
-        ];
-
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: chartLabels,
-                datasets: [{
-                    data: chartData,
-                    backgroundColor: chartColors,
-                    borderColor: '#050505', // Siyah arkaplanla uyumlu kesim çizgileri
-                    borderWidth: 2,
-                    hoverOffset: 10 // Üzerine gelince dilim dışarı fırlar
-                }]
-            },
-            // Chart.js Options Kısmı - Mobilde legend'ı aşağıya alan responsive çözüm
-options: {
-    responsive: true,
-    maintainAspectRatio: false, // Konteynerin boyunu almasını sağlar, ezilmeyi önler
-    plugins: {
-        legend: {
-            // İŞTE HAYAT KURTARAN NÜKLEER JS KODU:
-            // Tarayıcı genişliği 768px'den küçükse (telefon), legend'ı 'bottom' (aşağı) al;
-            // yoksa 'right' (sağ) olarak bırak.
-            position: window.innerWidth < 768 ? 'bottom' : 'right',
-            
-            labels: {
-                color: '#fff',
-                font: {
-                    family: "'Space Grotesk', sans-serif",
-                    size: 11 // Mobilde yazıları biraz küçültelim ki sığsın
-                },
-                padding: 15 // Legend öğeleri arasına nefes aldırmalık boşluk
-            }
-        },
-        tooltip: {
-            // Şarkı isimlerinin sığması için tooltip'i de responsive yapıyoruz
-            callbacks: {
-                label: function(context) {
-                    let label = context.label || '';
-                    if (label.length > 20 && window.innerWidth < 768) {
-                        label = label.substring(0, 17) + '...'; // Mobilde şarkı ismini kısalt
-                    }
-                    if (label) { label += ': '; }
-                    if (context.parsed.y !== null) {
-                        label += new Intl.NumberFormat('en-US').format(context.parsed.y);
-                    }
-                    return label;
+                    let card = document.createElement('div');
+                    card.className = "milestone-card";
+                    card.innerHTML = `
+                        <div style="font-size: 0.8rem; color: #888; text-transform: uppercase;">Countdown to ${targetText}</div>
+                        <div style="font-size: 1.2rem; font-weight: 700; margin: 10px 0;">${track.title}</div>
+                        <div style="font-size: 2rem; color: #d4a853;">${milestone.daysLeft.toLocaleString()} Days</div>
+                        <div style="font-size: 0.9rem; color: #aaa; margin-top: 5px;">Needs ${(milestone.remaining / 1000000).toFixed(1)}M more streams</div>
+                    `;
+                    radarGrid.appendChild(card);
                 }
-            }
+            });
         }
-    }
-}
-        });
-        // ... (catch bloğu devam ediyor)
+
+        // --- CHART.JS GRAFİK MOTORU ---
+        const canvasElement = document.getElementById('albumShareChart');
+        if(canvasElement) {
+            const ctx = canvasElement.getContext('2d');
+            
+            const chartLabels = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "EITIW", "Orphan / Features"];
+            const chartData = [
+                liveStats["Justified"].total,
+                liveStats["FutureSex/LoveSounds"].total,
+                liveStats["The 20/20 Experience"].total,
+                liveStats["Man of the Woods"].total,
+                liveStats["Everything I Thought It Was"].total,
+                liveStats["Orphan / Features"].total
+            ];
+            
+            const chartColors = ['#5dade2', '#e74c3c', '#fce98a', '#ca6f1e', '#f39c12', '#bdc3c7'];
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        data: chartData,
+                        backgroundColor: chartColors,
+                        borderColor: '#050505',
+                        borderWidth: 2,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, 
+                    plugins: {
+                        legend: {
+                            position: window.innerWidth < 768 ? 'bottom' : 'right',
+                            labels: {
+                                color: '#fff',
+                                font: {
+                                    family: "'Space Grotesk', sans-serif",
+                                    size: 11 
+                                },
+                                padding: 15 
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label.length > 20 && window.innerWidth < 768) {
+                                        label = label.substring(0, 17) + '...'; 
+                                    }
+                                    if (label) { label += ': '; }
+                                    // İŞTE NAN HATASINI ÇÖZEN KISIM (context.raw KULLANILDI)
+                                    if (context.raw !== null && context.raw !== undefined) {
+                                        label += new Intl.NumberFormat('en-US').format(context.raw);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
     } catch (e) {
         console.error("Dashboard yüklenemedi:", e);
-        document.getElementById('milestone-radar').innerHTML = "Failed to load dynamic data. Check console.";
+        const radarGrid = document.getElementById('milestone-radar');
+        if(radarGrid) {
+            radarGrid.innerHTML = "Failed to load dynamic data. Check console.";
+        }
     }
 }
 
