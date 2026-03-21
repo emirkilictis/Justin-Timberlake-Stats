@@ -912,129 +912,58 @@ nav {
 }
 
 /* =========================================
-   📱 TOURS.HTML MOBİL KURTARMA PAKETİ 
+   📱 TOURS & STREAMS GERÇEK MOBİL KODU
    ========================================= */
 @media screen and (max-width: 768px) {
-    /* 1. Tours Sayfası Ana Konteyner */
-    /* Masaüstü için verdiğin devasa padding'leri sıfırla, nefes aldırmalık boşluk bırak */
-    .tours-container, section.box-office { 
-        padding: 60px 20px !important; 
-        width: 100% !important; 
-        box-sizing: border-box; 
+    
+    /* ORTAK: Dev boşlukları telefona göre daralt */
+    .analytics-container { 
+        padding: 100px 15px 30px 15px !important; 
+        width: 100vw !important;
+        box-sizing: border-box !important;
     }
 
-    /* 2. Sayfa Başlığı (Örn: "The Forget Tomorrow World Tour") */
-    .tours-title, .box-office h1 { 
-        font-size: 2.2rem !important; 
-        text-align: center; 
-        margin-bottom: 30px; 
-        line-height: 1.2;
-    }
-
-    /* 3. Konser Listesi / Grid Yapısı (Muhtemelen Flex veya Grid) */
-    /* Yan yana duran konserleri zorla alt alta (tek sütun) al */
-    .tour-list, .shows-grid { 
+    /* 1. KARTLAR: Yan yana duran Total Gross vb. kartları alt alta al */
+    .hero-stats { 
         display: flex !important; 
         flex-direction: column !important; 
         gap: 20px !important; 
-        width: 100% !important;
-        padding: 0;
     }
+    .hero-card { width: 100% !important; box-sizing: border-box !important; }
+    
+    /* Lifetime Gross yazısı telefona sığsın */
+    #lifetime-gross { font-size: 15vw !important; }
 
-    /* 4. Tek Bir Konser Elemanı (Örn: Tarih, Şehir, Mekan, Bilet Butonu) */
-    /* İçindeki her şeyi alt alta diz, ortala ve padding ver */
-    .show-item, .tour-date-card { 
+    /* --- TOURS.HTML ÖZEL --- */
+    /* Konser satırlarını (4 sütunlu ızgara) tek sütuna indir ve alt alta diz */
+    .tour-row { 
+        display: flex !important; 
         flex-direction: column !important; 
         text-align: center; 
-        padding: 20px !important; 
-        width: 100% !important; 
-        box-sizing: border-box !important; 
-        background: rgba(255,255,255,0.03);
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.05);
-    }
-
-    /* Konser Detay Yazıları */
-    .show-date, .show-venue, .show-city { 
-        font-size: 1rem !important; 
-        margin: 5px 0; 
-        display: block;
-    }
-    .show-date { color: #d4a853; font-weight: 700; font-size: 1.2rem !important; }
-
-    /* 5. Bilet Butonları (Ticket Buttons) */
-    /* Küçücük kalmasınlar, parmakla basılabilecek kadar kocaman ve tam genişlikte olsunlar */
-    .ticket-btn, .buy-tickets-link { 
-        width: 100% !important; 
-        display: block; 
-        padding: 15px !important; 
-        margin-top: 15px; 
-        box-sizing: border-box; 
-        font-size: 1rem !important;
-        text-align: center;
-    }
-}
-
-/* =========================================
-   📱 STREAMS.HTML MOBİL KURTARMA PAKETİ 
-   ========================================= */
-@media screen and (max-width: 768px) {
-    /* 1. Ana Kapsayıcı: Sağdan soldan taşmayı engelle ve nefes aldır */
-    .streams-container, .streaming-section, .stats-container {
-        padding: 80px 15px 30px 15px !important; /* Üstten Nav bar boşluğu */
-        width: 100% !important;
-        box-sizing: border-box !important;
-        overflow-x: hidden !important;
-    }
-
-    /* Başlıkları Küçült */
-    .streams-container h1, .streams-title, .section-title {
-        font-size: 2.2rem !important;
-        text-align: center !important;
-        line-height: 1.2 !important;
-        margin-bottom: 20px !important;
-    }
-
-    /* 2. İstatistik Kartları (Grid/Flex Yıkan Kısım) */
-    /* Yan yana duran Spotify/YouTube kartlarını zorla alt alta (tek sütun) al */
-    .stats-grid, .streaming-platforms, .cards-wrapper {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 20px !important;
-        width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-    }
-
-    /* Tekil Kart Ayarı: Ekranı tam kaplasın */
-    .stat-card, .platform-card, .stream-box {
-        width: 100% !important;
-        box-sizing: border-box !important;
-        margin: 0 !important;
+        gap: 15px !important;
         padding: 20px !important;
-        background: rgba(255,255,255,0.03) !important; /* Hafif arka plan */
-        border: 1px solid rgba(255,255,255,0.05) !important;
-        border-radius: 10px !important;
-        text-align: center !important;
+    }
+    .stat-box { align-items: center !important; text-align: center !important; }
+
+    /* --- STREAMS.HTML ÖZEL --- */
+    /* Prediction Grid'i alt alta al */
+    .prediction-grid { 
+        display: flex !important; 
+        flex-direction: column !important; 
     }
 
-    /* Dev Rakamları Küçült (Sayılar kutudan taşmasın) */
-    .stat-card h3, .platform-card .numbers, .stream-number {
-        font-size: 2rem !important;
-        word-wrap: break-word !important; /* Sayı çok uzunsa alt satıra kırılsın */
-        margin: 10px 0 !important;
+    /* Tabloların (Leaderboard ve Tracker) telefondan taşmasını engelle */
+    .song-table { 
+        display: block !important; 
+        width: 100% !important; 
+        overflow-x: auto !important; /* Yana kaydırma açıldı */
+        -webkit-overflow-scrolling: touch; 
+        white-space: nowrap !important; /* Yazılar alt satıra inip ezilmesin */
     }
 
-    /* 3. Eğer Sayfada Grafik (Chart) Varsa */
-    .chart-container, .graph-wrapper {
-        width: 100% !important;
-        overflow-x: auto !important; /* Parmağınla sağa sola kaydırabil */
-        -webkit-overflow-scrolling: touch;
-        padding: 15px 0 !important;
-    }
-    
-    /* Grafiğin kendisi ezilip okunmaz hale gelmesin */
-    canvas, .streams-chart {
-        min-width: 600px !important; 
+    /* Grafik (Canvas) alanını kaydırılabilir yap */
+    canvas#albumShareChart { 
+        min-width: 400px !important; 
+        height: auto !important; 
     }
 }
