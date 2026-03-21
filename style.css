@@ -961,3 +961,25 @@ nav {
     }
     canvas#albumShareChart { min-width: 400px !important; height: auto !important; }
 }
+
+/* =========================================
+       🚨 STREAMS.HTML KÜFÜR YEDİĞİMİZ YERİN DÜZELTMESİ 🚨
+       (Spotify tablolarına kendi etiketlerini geri verme)
+       ========================================= */
+    
+    /* 1. Şarkı (Top Tracks) Tablosu Etiketleri */
+    .song-table td:nth-of-type(1)::before { content: "Track" !important; color: #888 !important; }
+    .song-table td:nth-of-type(2)::before { content: "Total Streams" !important; color: #888 !important; }
+    .song-table td:nth-of-type(3)::before { content: "Live Daily" !important; color: #4ade80 !important; }
+    .song-table td:nth-of-type(4)::before { content: "Est. Weekly" !important; color: #d4a853 !important; }
+    
+    /* Varsa 5. sütunu gizle (Çünkü şarkı tablosu 4 sütunlu) */
+    .song-table td:nth-of-type(5)::before { display: none !important; }
+    .song-table td:nth-of-type(5) { display: none !important; }
+
+    /* 2. Albüm Leaderboard Tablosu Etiketleri */
+    #album-leaderboard-table td:nth-of-type(1)::before { content: "Album" !important; }
+    #album-leaderboard-table td:nth-of-type(2)::before { content: "Year" !important; color: #888 !important; }
+    #album-leaderboard-table td:nth-of-type(3)::before { content: "Total Streams" !important; color: #888 !important; }
+    #album-leaderboard-table td:nth-of-type(4)::before { content: "Daily Streams" !important; color: #4ade80 !important; }
+    #album-leaderboard-table td:nth-of-type(5)::before { content: "% of Daily" !important; color: #d4a853 !important; display: block !important; }
