@@ -75,10 +75,22 @@ const allAlbums = [
     "Man of the Woods", "Everything I Thought It Was", "Orphan / Features"
 ];
 
-// ── HTML Parser (node-html-parser, frontend DOMParser ile birebir aynı mantık) ──
+// ── HTML Parser ─────────────────────────────────────────────────
 function analyzeKworbData(htmlInput) {
-    const root = parse(htmlInput);
-    const rows = root.querySelectorAll('table.addpos tbody tr');
+    const root = parse(htmlInput, { lowerCaseTagName: false, comment: false, blockTextElements: { script: false, style: false } });
+
+    // table.addpos yoksa tüm tablolardaki tr'leri dene (Kworb bazen farklı class kullanır)
+    let rows = root.querySelectorAll('table.addpos tbody tr');
+    if (rows.length === 0) {
+        rows = root.querySelectorAll('table tbody tr');
+        console.log(`⚠️  table.addpos bulunamadı, tüm tbody tr'leri kullanılıyor: ${rows.length} adet`);
+    }
+
+    const allTables = root.querySelectorAll('table');
+    console.log(`   Tablo sayısı: ${allTables.length}, Satır sayısı: ${rows.length}`);
+    if (allTables.length > 0) {
+        console.log(`   İlk tablo ilk satır: ${allTables[0].querySelector('tr') ? allTables[0].querySelector('tr').textContent.substring(0,100).replace(/\s+/g,' ') : 'YOK'}`);
+    }
 
     let stats = {
         TotalSpotify: 0,
@@ -91,10 +103,11 @@ function analyzeKworbData(htmlInput) {
         tracks: []
     };
 
-    const tables = root.querySelectorAll('table');
-    if (tables.length > 0) {
-        const tds = tables[0].querySelectorAll('td');
+    // Career total: ilk tablonun ikinci td'si
+    if (allTables.length > 0) {
+        const tds = allTables[0].querySelectorAll('td');
         if (tds[1]) stats.TotalSpotify = parseInt(tds[1].textContent.replace(/,/g, ''), 10) || 0;
+        console.log(`   İlk tablo td sayısı: ${tds.length}, td[1] text: "${tds[1] ? tds[1].textContent.trim().substring(0,30) : 'YOK'}"`);
     }
 
     rows.forEach(row => {

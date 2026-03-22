@@ -16,10 +16,10 @@ jobs:
       - name: Kodu çek
         uses: actions/checkout@v4
 
-      - name: Node.js 20 kur
+      - name: Node.js 24 kur
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: scripts/package.json
 
