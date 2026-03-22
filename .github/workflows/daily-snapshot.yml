@@ -30,6 +30,6 @@ jobs:
       - name: Firestore snapshot al ve kaydet
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          KWORB_PROXY_URL: ${{ secrets.KWORB_PROXY_URL }}
+          KWORB_DIRECT_URL: ${{ secrets.KWORB_DIRECT_URL }}
         run: node daily-snapshot.js
         working-directory: scripts

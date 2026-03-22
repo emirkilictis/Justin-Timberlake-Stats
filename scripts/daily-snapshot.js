@@ -149,12 +149,15 @@ function getTodayUTC() {
 
 // ── Ana Fonksiyon ───────────────────────────────────────────────
 async function fetchAndSnapshot() {
-    const proxyUrl = process.env.KWORB_PROXY_URL;
-    if (!proxyUrl) throw new Error("KWORB_PROXY_URL env değişkeni eksik!");
+    // Sunucu tarafında CORS yok — direkt Kworb URL kullan.
+    // KWORB_PROXY_URL tarayıcı için (CORS bypass), sunucu için KWORB_DIRECT_URL gerekli.
+    const targetUrl = process.env.KWORB_DIRECT_URL || process.env.KWORB_PROXY_URL;
+    if (!targetUrl) throw new Error("KWORB_DIRECT_URL veya KWORB_PROXY_URL env değişkeni eksik!");
 
     console.log(`[${new Date().toISOString()}] Kworb'dan veri çekiliyor...`);
+    console.log(`URL: ${targetUrl.substring(0, 60)}...`);
 
-    const res = await fetch(proxyUrl, {
+    const res = await fetch(targetUrl, {
         timeout: 30000,
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
