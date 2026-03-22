@@ -66,17 +66,7 @@ const songToAlbumMap = {
     "Memphis": "Everything I Thought It Was", "Flame": "Everything I Thought It Was",
     "Alone": "Everything I Thought It Was", "Drown": "Everything I Thought It Was",
     "Liar": "Everything I Thought It Was", "Play": "Everything I Thought It Was",
-    // ORPHAN / FEATURES
-    "CAN'T STOP THE FEELING!": "Orphan", "Love Never Felt So Good": "Orphan",
-    "Love Sex Magic": "Orphan", "Ayo Technology": "Orphan",
-    "The Other Side": "Orphan", "Dead And Gone": "Orphan",
-    "Keep Going Up": "Orphan", "Give It To Me": "Orphan",
-    "True Colors": "Orphan", "Better Place": "Orphan",
-    "Motherlover": "Orphan", "Holy Grail": "Orphan",
-    "Stay With Me": "Orphan", "4 Minutes": "Orphan",
-    "Carry Out": "Orphan", "I'm Lovin' It": "Orphan",
-    "SoulMate": "Orphan", "Sin Fin": "Orphan",
-    "Bounce": "Orphan", "Signs": "Orphan", "ICU": "Orphan"
+    // Orphan: map'te YOK — residual olarak hesaplanır
 };
 
 const allAlbums = [
