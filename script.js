@@ -288,10 +288,10 @@ async function playAlbum(albumName) {
     // 📱 MOBİL UX: OTOMATİK PANEL KAYDIRMA MOTORU
     // ==========================================
     if (window.innerWidth < 768) {
-        // Hedefimiz verilerin güncellendiği sağ panel
-        const dashboardPanel = document.querySelector('.cspc-dashboard'); 
+        const dashboardPanel = document.querySelector('.cspc-dashboard');
         if (dashboardPanel) {
-            const navHeight = 140; // Sabit navbar'ın yüksekliğini hesaba katıyoruz ki yazının üstüne binmesin
+            const navEl     = document.querySelector('nav');
+            const navHeight = navEl ? navEl.offsetHeight + 10 : 150; // dinamik nav yüksekliği
             const panelPosition = dashboardPanel.getBoundingClientRect().top + window.scrollY - navHeight;
             
             // Jilet gibi yumuşak kaydırma
@@ -410,6 +410,14 @@ function albumThumbHTML(name) {
     return `<div style="width:40px;height:40px;border-radius:4px;background:repeating-radial-gradient(#050505 0,#050505 2px,#111 3px,#111 4px);flex-shrink:0;"></div>`;
 }
 
+function fmtNum(n) {
+    if (window.innerWidth >= 768) return n.toLocaleString('en-US');
+    if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + 'B';
+    if (n >= 1_000_000)     return (n / 1_000_000).toFixed(1) + 'M';
+    if (n >= 1_000)         return Math.round(n / 1_000) + 'K';
+    return String(n);
+}
+
 function renderEasTable() {
     const tbody = document.getElementById('eas-table-body');
     if (!tbody) return;
@@ -431,24 +439,23 @@ function renderEasTable() {
                     <span style="font-weight:700;color:#fff;">${row.album}</span>
                 </div>
             </td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${row.pure.toLocaleString()}</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${row.singles.toLocaleString()}</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #5dade2;">+${row.audio.toLocaleString()}</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #d4a853; font-weight: 700;">${row.total.toLocaleString()}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${fmtNum(row.pure)}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${fmtNum(row.singles)}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #5dade2;">+${fmtNum(row.audio)}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #d4a853; font-weight: 700;">${fmtNum(row.total)}</td>
         `;
         tbody.appendChild(tr);
     });
 
-    // EN ALT TOPLAM SATIRI (Grand Total)
     let footerTr = document.createElement('tr');
     footerTr.style.background = "rgba(212, 168, 83, 0.1)";
     footerTr.style.borderTop = "2px solid #d4a853";
     footerTr.innerHTML = `
         <td style="padding: 20px 0; font-weight: 900; color: #d4a853; text-transform: uppercase;">Grand Total</td>
-        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${grandPure.toLocaleString()}</td>
-        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${grandSingles.toLocaleString()}</td>
-        <td style="padding: 20px 0; font-weight: 700; color: #5dade2;">+${grandAudio.toLocaleString()}</td>
-        <td style="padding: 20px 0; font-weight: 900; color: #d4a853; font-size: 1.2rem;">${grandTotal.toLocaleString()}</td>
+        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandPure)}</td>
+        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandSingles)}</td>
+        <td style="padding: 20px 0; font-weight: 700; color: #5dade2;">+${fmtNum(grandAudio)}</td>
+        <td style="padding: 20px 0; font-weight: 900; color: #d4a853; font-size: 1.2rem;">${fmtNum(grandTotal)}</td>
     `;
     tbody.appendChild(footerTr);
 }
@@ -465,8 +472,10 @@ window.sortEasTable = function(key) {
 
     easTableData.sort((a, b) => {
         if (key === 'album') {
-            // true ise 2002 -> 2024, false ise 2024 -> 2002
-            return currentEasSort.asc ? a.year - b.year : b.year - a.year;
+            // "Various" gibi string year'ları en sona gönder
+            const ya = isNaN(Number(a.year)) ? 9999 : Number(a.year);
+            const yb = isNaN(Number(b.year)) ? 9999 : Number(b.year);
+            return currentEasSort.asc ? ya - yb : yb - ya;
         }
         
         let valA = a[key];

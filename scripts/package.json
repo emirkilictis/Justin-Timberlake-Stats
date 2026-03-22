@@ -1,0 +1,11 @@
+{
+  "name": "jt-daily-snapshot",
+  "version": "1.0.0",
+  "description": "Nightly Kworb → Firestore stream data snapshot",
+  "main": "daily-snapshot.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "node-fetch": "^2.7.0",
+    "node-html-parser": "^6.1.12"
+  }
+}

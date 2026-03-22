@@ -1,0 +1,35 @@
+name: Daily Streams Snapshot
+
+on:
+  # Her gece 00:05 UTC'de çalışır (Türkiye saatiyle 03:05)
+  schedule:
+    - cron: '5 0 * * *'
+  # Manuel tetikleme (test için)
+  workflow_dispatch:
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: Node.js 20 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: scripts/package.json
+
+      - name: Bağımlılıkları yükle
+        run: npm install
+        working-directory: scripts
+
+      - name: Firestore snapshot al ve kaydet
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          KWORB_PROXY_URL: ${{ secrets.KWORB_PROXY_URL }}
+        run: node daily-snapshot.js
+        working-directory: scripts

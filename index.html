@@ -205,7 +205,13 @@
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
   import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
-  // 2. config.js içindeki GİZLİ anahtarımızı kullanarak Firebase'i başlatıyoruz
+  // 2. config.js yüklenmediyse erken çık
+  if (typeof CONFIG === 'undefined' || !CONFIG.FIREBASE) {
+      console.error("config.js yüklenemedi — Firebase başlatılamıyor.");
+      const cf = document.getElementById('comments-flow');
+      if (cf) cf.innerHTML = '<p style="color:#555;">Comments unavailable.</p>';
+      throw new Error("CONFIG missing");
+  }
   const app = initializeApp(CONFIG.FIREBASE);
   const analytics = getAnalytics(app);
   const db = getFirestore(app);
@@ -213,24 +219,40 @@
   // 3. Yorum Gönderme Fonksiyonu
   window.sendComment = async function() {
       const nameEl = document.getElementById('guest-name');
-      const msgEl = document.getElementById('guest-msg');
+      const msgEl  = document.getElementById('guest-msg');
+      const btn    = document.querySelector('.comment-form .era-btn');
 
-      if(!nameEl.value || !msgEl.value) {
-          alert("Lütfen adını ve mesajını yaz! 🙏");
+      const name = nameEl.value.trim();
+      const msg  = msgEl.value.trim();
+
+      if (!name || !msg) {
+          alert("Please enter your name and message.");
+          return;
+      }
+      if (name.length > 60) {
+          alert("Name must be under 60 characters.");
+          return;
+      }
+      if (msg.length > 500) {
+          alert(`Message too long (${msg.length}/500 characters).`);
           return;
       }
 
+      if (btn) { btn.disabled = true; btn.textContent = "Posting..."; }
+
       try {
           await addDoc(collection(db, "comments"), {
-              name: nameEl.value,
-              message: msgEl.value,
+              name: name,
+              message: msg,
               timestamp: serverTimestamp()
           });
-          msgEl.value = ""; 
-          console.log("Mesaj başarıyla uçtu!");
+          nameEl.value = "";
+          msgEl.value  = "";
       } catch (error) {
-          console.error("Veritabanı hatası: ", error);
-          alert("Gönderilemedi. Firebase Rules ayarlarını yaptın mı?");
+          console.error("Firebase error:", error);
+          alert("Could not post comment. Please try again.");
+      } finally {
+          if (btn) { btn.disabled = false; btn.textContent = "Post to Guestbook"; }
       }
   };
 
@@ -243,17 +265,34 @@
           commentsFlow.innerHTML = "";
           snapshot.forEach((docSnap) => {
               const data = docSnap.data();
-              const date = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : "Just now";
+              const date = data.timestamp
+                  ? new Date(data.timestamp.toDate()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                  : "Just now";
 
-              commentsFlow.innerHTML += `
-                  <div style="background: rgba(255,255,255,0.02); padding: 15px; margin-bottom: 15px; border-radius: 4px; border-left: 2px solid #d4a853;">
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                          <span style="color: #d4a853; font-weight: 700; font-size: 0.8rem;">${data.name}</span>
-                          <span style="font-size: 0.7rem; color: #555;">${date}</span>
-                      </div>
-                      <p style="color: #ccc; font-size: 0.9rem; line-height: 1.5;">${data.message}</p>
-                  </div>
-              `;
+              // XSS koruması: innerHTML yerine DOM node'ları kullan
+              const card = document.createElement('div');
+              card.style.cssText = 'background:rgba(255,255,255,0.02);padding:15px;margin-bottom:15px;border-radius:4px;border-left:2px solid #d4a853;';
+
+              const header = document.createElement('div');
+              header.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:5px;';
+
+              const nameSpan = document.createElement('span');
+              nameSpan.style.cssText = 'color:#d4a853;font-weight:700;font-size:0.8rem;';
+              nameSpan.textContent = data.name;   // textContent → XSS-safe
+
+              const dateSpan = document.createElement('span');
+              dateSpan.style.cssText = 'font-size:0.7rem;color:#555;';
+              dateSpan.textContent = date;
+
+              const msgP = document.createElement('p');
+              msgP.style.cssText = 'color:#ccc;font-size:0.9rem;line-height:1.5;margin:0;';
+              msgP.textContent = data.message;    // textContent → XSS-safe
+
+              header.appendChild(nameSpan);
+              header.appendChild(dateSpan);
+              card.appendChild(header);
+              card.appendChild(msgP);
+              commentsFlow.appendChild(card);
           });
       });
   }
