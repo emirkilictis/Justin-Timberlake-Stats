@@ -2,8 +2,8 @@
 const CONFIG = {
 
     YOUTUBE_API_KEY: "AIzaSyC_iOX3x46Jik-qHnYqKK5na-cJnvEaoh4",
-    MY_DYNAMIC_API: "https://script.google.com/macros/s/AKfycbyvP-odviwqkIy5nj7DTAPRNtIJ47Ys_7ItvterAC6FKAXZJUTP0Xd5Wz1eisylVyY/exec",
-
+    MY_DYNAMIC_API: "https://script.google.com/macros/s/AKfycbxPQ6iA4QFzIBFbfylzRNRflDsjVXqQ21kVG2ZkiBhpfX_cYKeVglnUXNX8cIVxAGU/exec",
+    
     FIREBASE: {
         apiKey: "AIzaSyAwSc0iMQSXhs8uz8uZuL-XCaeVOrgC2Ic",
         authDomain: "jt-website-5406f.firebaseapp.com",
