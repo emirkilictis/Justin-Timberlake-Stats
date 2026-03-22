@@ -316,5 +316,124 @@
 </script>
 
     <script src="script.js"></script>
+
+    <!-- ── GALLERY ──────────────────────────────────────────── -->
+    <section id="gallery" style="padding: 80px 5%; background: #050505;">
+        <div class="section-header">
+            <h2 class="section-title">Gallery</h2>
+        </div>
+
+        <div id="gallery-grid" style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 40px;">
+        </div>
+
+        <!-- Lightbox -->
+        <div id="lightbox" style="
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.95); align-items: center; justify-content: center;">
+            <button onclick="lightboxNav(-1)" style="
+                position:absolute;left:20px;top:50%;transform:translateY(-50%);
+                background:rgba(255,255,255,0.08);border:none;color:#fff;
+                font-size:2.5rem;width:52px;height:52px;border-radius:50%;
+                cursor:pointer;line-height:1;">&#8249;</button>
+            <img id="lightbox-img" src="" style="
+                max-width:90vw;max-height:88vh;border-radius:8px;
+                object-fit:contain;box-shadow:0 0 60px rgba(0,0,0,0.8);">
+            <button onclick="lightboxNav(1)" style="
+                position:absolute;right:20px;top:50%;transform:translateY(-50%);
+                background:rgba(255,255,255,0.08);border:none;color:#fff;
+                font-size:2.5rem;width:52px;height:52px;border-radius:50%;
+                cursor:pointer;line-height:1;">&#8250;</button>
+            <button onclick="closeLightbox()" style="
+                position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.08);
+                border:none;color:#fff;font-size:1.2rem;width:40px;height:40px;
+                border-radius:50%;cursor:pointer;">✕</button>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script>
+        const GALLERY_PHOTOS = [
+            'assets/random%20pics/IMG_7431.JPG','assets/random%20pics/IMG_7432.JPG',
+            'assets/random%20pics/IMG_7433.JPG','assets/random%20pics/IMG_7435.JPG',
+            'assets/random%20pics/IMG_7436.JPG','assets/random%20pics/IMG_7437.JPG',
+            'assets/random%20pics/IMG_7438.JPG','assets/random%20pics/IMG_7439.JPG',
+            'assets/random%20pics/IMG_7440.JPG','assets/random%20pics/IMG_7441.JPG',
+            'assets/random%20pics/IMG_7442.JPG','assets/random%20pics/IMG_7443.JPG',
+        ];
+
+        let currentLightboxIndex = 0;
+
+        // Gallery kartlarını oluştur
+        const grid = document.getElementById('gallery-grid');
+        GALLERY_PHOTOS.forEach((src, i) => {
+            const card = document.createElement('div');
+            card.style.cssText = `
+                border-radius: 12px; overflow: hidden; cursor: pointer;
+                border: 1px solid rgba(255,255,255,0.06);
+                transform-style: preserve-3d; will-change: transform;
+                aspect-ratio: 3/4; position: relative;
+            `;
+            card.innerHTML = `
+                <img src="${src}" loading="lazy" style="
+                    width:100%;height:100%;object-fit:cover;
+                    display:block;pointer-events:none;
+                    transition: transform 0.4s ease;">
+                <div style="
+                    position:absolute;inset:0;
+                    background:linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
+                    opacity:0;transition:opacity 0.3s;pointer-events:none;"
+                    class="gallery-overlay">
+                </div>
+            `;
+            card.addEventListener('mouseenter', () => card.querySelector('.gallery-overlay').style.opacity = '1');
+            card.addEventListener('mouseleave', () => card.querySelector('.gallery-overlay').style.opacity = '0');
+            card.addEventListener('click', () => openLightbox(i));
+            grid.appendChild(card);
+        });
+
+        // VanillaTilt 3D efekti
+        VanillaTilt.init(grid.querySelectorAll('div'), {
+            max: 12,
+            speed: 600,
+            glare: true,
+            'max-glare': 0.2,
+            scale: 1.04,
+            gyroscope: true,
+            gyroscopeMinAngleX: -30,
+            gyroscopeMaxAngleX: 30,
+        });
+
+        // Lightbox
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            document.getElementById('lightbox-img').src = GALLERY_PHOTOS[index];
+            const lb = document.getElementById('lightbox');
+            lb.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function lightboxNav(dir) {
+            currentLightboxIndex = (currentLightboxIndex + dir + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length;
+            document.getElementById('lightbox-img').src = GALLERY_PHOTOS[currentLightboxIndex];
+        }
+
+        // Klavye navigasyonu
+        document.addEventListener('keydown', e => {
+            const lb = document.getElementById('lightbox');
+            if (lb.style.display !== 'flex') return;
+            if (e.key === 'ArrowLeft')  lightboxNav(-1);
+            if (e.key === 'ArrowRight') lightboxNav(1);
+            if (e.key === 'Escape')     closeLightbox();
+        });
+    </script>
 </body>
 </html>
