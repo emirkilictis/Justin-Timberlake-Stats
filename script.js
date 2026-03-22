@@ -393,6 +393,23 @@ function updateEraTheme(albumName) {
 
 // --- 6. EAS TABLO MOTORU VE SIRALAMA ALGORİTMASI ---
 
+const albumCovers = {
+    "Justified": "assets/justified.jpg",
+    "FutureSex/LoveSounds": "assets/fsls.jpg",
+    "The 20/20 Experience": "assets/the20.jpg",
+    "Man of the Woods": "assets/motw.jpg",
+    "Everything I Thought It Was": "assets/eitiw.jpg",
+    "Orphan / Features": null
+};
+
+function albumThumbHTML(name) {
+    const src = albumCovers[name];
+    if (src) {
+        return `<img src="${src}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;display:block;">`;
+    }
+    return `<div style="width:40px;height:40px;border-radius:4px;background:repeating-radial-gradient(#050505 0,#050505 2px,#111 3px,#111 4px);flex-shrink:0;"></div>`;
+}
+
 function renderEasTable() {
     const tbody = document.getElementById('eas-table-body');
     if (!tbody) return;
@@ -408,18 +425,23 @@ function renderEasTable() {
 
         let tr = document.createElement('tr');
         tr.innerHTML = `
-            <td style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-weight: 700; color: #fff;">${row.album}</td>
-            <td style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${row.pure.toLocaleString()}</td>
-            <td style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${row.singles.toLocaleString()}</td>
-            <td style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #5dade2;">+${row.audio.toLocaleString()}</td>
-            <td style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #d4a853; font-weight: 700;">${row.total.toLocaleString()}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    ${albumThumbHTML(row.album)}
+                    <span style="font-weight:700;color:#fff;">${row.album}</span>
+                </div>
+            </td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${row.pure.toLocaleString()}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${row.singles.toLocaleString()}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #5dade2;">+${row.audio.toLocaleString()}</td>
+            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #d4a853; font-weight: 700;">${row.total.toLocaleString()}</td>
         `;
         tbody.appendChild(tr);
     });
 
     // EN ALT TOPLAM SATIRI (Grand Total)
     let footerTr = document.createElement('tr');
-    footerTr.style.background = "rgba(212, 168, 83, 0.1)"; // Hafif altın rengi arka plan
+    footerTr.style.background = "rgba(212, 168, 83, 0.1)";
     footerTr.style.borderTop = "2px solid #d4a853";
     footerTr.innerHTML = `
         <td style="padding: 20px 0; font-weight: 900; color: #d4a853; text-transform: uppercase;">Grand Total</td>

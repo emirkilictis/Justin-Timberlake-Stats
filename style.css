@@ -375,7 +375,8 @@ nav {
    CSPC DASHBOARD (RIGHT PANEL)
    ========================================= */
 .cspc-dashboard {
-    position: relative;
+    position: sticky;
+    top: 90px;
     z-index: 10;
     background: rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -629,7 +630,7 @@ nav {
 }
 
 /* =========================================
-   ANALYTICS ROW (DESKTOP TABLE WRAPPER)
+   ANALYTICS ROW (TABLE WRAPPER)
    ========================================= */
 .analytics-row {
     margin-top: 50px;
@@ -637,7 +638,6 @@ nav {
     padding: 30px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    grid-column: 1 / -1;
 }
 
 /* =========================================
@@ -909,7 +909,7 @@ nav {
         display: table !important;
         width: 100% !important;
         border-collapse: collapse !important;
-        table-layout: fixed !important;
+        table-layout: auto !important;
     }
 
     thead {

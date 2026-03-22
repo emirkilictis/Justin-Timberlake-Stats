@@ -187,24 +187,42 @@ async function initStreamsDashboard() {
         };
 
         // MIDDLE SECTION: ALBUM LEADERBOARD
+        const albumCoversSt = {
+            "Justified": "assets/justified.jpg",
+            "FutureSex/LoveSounds": "assets/fsls.jpg",
+            "The 20/20 Experience": "assets/the20.jpg",
+            "Man of the Woods": "assets/motw.jpg",
+            "Everything I Thought It Was": "assets/eitiw.jpg",
+            "Orphan / Features": null
+        };
+
         if(albumTableBody) {
             allAlbums.forEach(id => {
                 let album = liveStats[id];
-                let dailyPerc = jtTotalDaily > 0 ? (album.daily / jtTotalDaily) * 100 : 0; 
-                let barColor = eraColors[id] || "#d4a853"; 
-                
+                let dailyPerc = jtTotalDaily > 0 ? (album.daily / jtTotalDaily) * 100 : 0;
+                let barColor = eraColors[id] || "#d4a853";
+                const imgSrc = albumCoversSt[id];
+                const thumbHTML = imgSrc
+                    ? `<img src="${imgSrc}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;">`
+                    : `<div style="width:40px;height:40px;border-radius:4px;background:repeating-radial-gradient(#050505 0,#050505 2px,#111 3px,#111 4px);flex-shrink:0;"></div>`;
+
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>
-                        <div style="font-weight: 700; color: #fff;">${id}</div>
-                        <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.05); margin-top: 8px; border-radius: 2px; overflow: hidden;">
-                            <div style="width: ${dailyPerc}%; height: 100%; background: ${barColor}; box-shadow: 0 0 10px ${barColor}; border-radius: 2px; transition: width 1.5s ease-out;"></div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            ${thumbHTML}
+                            <div>
+                                <div style="font-weight: 700; color: #fff;">${id}</div>
+                                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.05); margin-top: 8px; border-radius: 2px; overflow: hidden;">
+                                    <div style="width: ${dailyPerc}%; height: 100%; background: ${barColor}; box-shadow: 0 0 10px ${barColor}; border-radius: 2px; transition: width 1.5s ease-out;"></div>
+                                </div>
+                            </div>
                         </div>
                     </td>
-                    <td style="vertical-align: top; padding-top: 18px;">${albumMetData[id].year}</td>
-                    <td style="vertical-align: top; padding-top: 18px;">${album.total.toLocaleString()}</td>
-                    <td class="positive-trend" style="vertical-align: top; padding-top: 18px;">+${album.daily.toLocaleString()}</td>
-                    <td style="vertical-align: top; padding-top: 18px; color: ${barColor}; font-weight: 700;">${dailyPerc.toFixed(1)}%</td>
+                    <td style="vertical-align: middle;">${albumMetData[id].year}</td>
+                    <td style="vertical-align: middle;">${album.total.toLocaleString()}</td>
+                    <td class="positive-trend" style="vertical-align: middle;">+${album.daily.toLocaleString()}</td>
+                    <td style="vertical-align: middle; color: ${barColor}; font-weight: 700;">${dailyPerc.toFixed(1)}%</td>
                 `;
                 albumTableBody.appendChild(tr);
             });
