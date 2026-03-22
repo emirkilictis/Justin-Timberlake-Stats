@@ -145,11 +145,19 @@ async function fetchAndSnapshot() {
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     const html = await res.text();
 
+    console.log(`HTML alındı: ${html.length} karakter. İlk 200 char: ${html.substring(0, 200).replace(/\n/g, ' ')}`);
     console.log("HTML parse ediliyor...");
     const stats = analyzeKworbData(html);
 
+    // Track listesi boşsa gerçek bir parse hatası var
+    if (stats.tracks.length === 0) {
+        throw new Error("Parse başarısız: Track listesi boş. Proxy URL veya HTML yapısı değişmiş olabilir.");
+    }
+
+    // TotalSpotify ilk tablodan alınamazsa track toplamından hesapla (fallback)
     if (stats.TotalSpotify === 0) {
-        throw new Error("Parse başarısız: TotalSpotify = 0. Proxy URL veya HTML yapısı değişmiş olabilir.");
+        stats.TotalSpotify = stats.tracks.reduce((sum, t) => sum + t.total, 0);
+        console.warn(`⚠️  TotalSpotify tablodan okunamadı — ${stats.tracks.length} track'in toplamı kullanıldı: ${stats.TotalSpotify.toLocaleString('en-US')}`);
     }
 
     // Tracks'i map'e çevir (Firestore'da verimli okuma için)
