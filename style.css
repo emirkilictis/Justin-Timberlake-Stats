@@ -1000,107 +1000,26 @@ nav {
     }
 
     /* =========================================
-   📱 KUSURSUZ MOBİL MİMARİ & FLEXBOX MİNİ-TABLES
+   📱 MOBİL RESPONSIVE (CHARTMASTERS VERİ TABLOSU MİMARİSİ)
    ========================================= */
 @media screen and (max-width: 768px) {
     
     /* 1. GENEL DÜZELTME & NAVBAR */
     html, body { overflow-x: hidden !important; width: 100vw; max-width: 100vw; position: relative; margin: 0; padding: 0; }
     section, .discography, .timeline, .analytics-container { padding: 30px 15px !important; box-sizing: border-box !important; }
-    
     nav { padding: 10px; flex-direction: column; align-items: center; background: rgba(10,10,15,0.95); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
     .logo { margin-bottom: 8px; font-size: 1.2rem; }
     .nav-links { flex-direction: column; gap: 8px; align-items: center; padding: 0; margin: 0; display: flex !important; }
     .nav-links li a { font-size: 0.8rem; padding: 5px; color: var(--text-secondary) !important; font-weight: 400 !important; text-transform: uppercase !important; letter-spacing: 0.1em !important; }
     body { padding-top: 140px; }
 
-    /* 2. ANA SAYFA ALBÜM KARTLARI */
+    /* 2. DİĞER KARTLAR VE DÜZENLER */
     .hero-title { font-size: 13vw !important; text-align: center; line-height: 1.1; }
     .hero-title span { display: block; }
     .discography-layout { display: flex !important; flex-direction: column !important; gap: 20px !important; padding: 0 !important; }
-    .cspc-dashboard { margin: 0; border-radius: 8px; position: static !important; }
+    .cspc-dashboard { margin: 0; border-radius: 8px; position: static !important; padding: 15px !important; }
     .stat-group { border-left: none; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
     .album-grid { grid-template-columns: 1fr !important; gap: 15px !important; width: 100% !important; }
-
-    /* =========================================
-       🔥 İŞTE SİHİR: FLEXBOX MİNİ-TABLE MİMARİSİ
-       ========================================= */
-    table, .song-table, .analytics-row table, #index-table, #album-leaderboard-table { 
-        width: 100% !important; display: block !important; margin: 0 !important; padding: 0 !important; 
-    }
-    thead { display: none !important; } /* Başlıkları çöpe attık */
-    tbody { display: block !important; width: 100% !important; }
-    
-    /* Her Satır Bir Konteyner Kart Oluyor */
-    tr { 
-        display: block !important; 
-        background: rgba(255,255,255,0.02) !important; 
-        border: 1px solid rgba(255,255,255,0.06) !important; 
-        border-radius: 12px !important; 
-        margin-bottom: 20px !important; 
-        padding: 15px !important; 
-    }
-
-    /* Sol Etiket - Sağ Rakam (FLEXBOX) */
-    td { 
-        display: flex !important; 
-        justify-content: space-between !important; 
-        align-items: center !important; 
-        padding: 12px 0 !important; 
-        border: none !important;
-        border-bottom: 1px solid rgba(255,255,255,0.04) !important; 
-        text-align: right !important; 
-        font-size: 0.95rem !important;
-        white-space: normal !important; 
-    }
-    td:last-child { border-bottom: none !important; } 
-    
-    /* Etiketlerin Temel Tasarımı */
-    td::before { 
-        display: block !important; text-align: left !important; font-weight: 700 !important; 
-        text-transform: uppercase !important; font-size: 0.75rem !important; color: #888 !important;
-    }
-
-    /* --- INDEX.HTML: CSPC TABLOSU ETİKETLERİ --- */
-    #eas-table-body td:nth-child(1) { 
-        justify-content: center !important; font-family: 'Playfair Display', serif !important; 
-        font-size: 1.5rem !important; color: #fff !important; border-bottom: 2px solid rgba(212,168,83,0.3) !important; 
-        padding-bottom: 15px !important; text-align: center !important;
-    }
-    #eas-table-body td:nth-child(1)::before { display: none !important; } 
-    #eas-table-body td:nth-child(2)::before { content: "Pure Sales"; }
-    #eas-table-body td:nth-child(3)::before { content: "Singles EAS"; }
-    #eas-table-body td:nth-child(4)::before { content: "Audio EAS"; color: #3498db !important; }
-    #eas-table-body td:nth-child(5)::before { content: "Total EAS"; color: #d4a853 !important; }
-    
-    #eas-table-body tr:last-child { border: 2px solid #d4a853 !important; background: rgba(212, 168, 83, 0.1) !important; margin-top: 30px !important;}
-    #eas-table-body tr:last-child td { color: #d4a853 !important; font-weight: 800 !important; border-bottom: 1px solid rgba(212,168,83,0.3) !important;}
-    #eas-table-body tr:last-child td:first-child { color: #d4a853 !important; font-size: 1.2rem !important; text-transform: uppercase;}
-    #eas-table-body tr:last-child td:last-child { border-bottom: none !important; }
-
-    /* --- STREAMS.HTML: ALBÜM LEADERBOARD ETİKETLERİ --- */
-    #album-table-body td:nth-child(1) { 
-        flex-direction: column !important; align-items: flex-start !important; font-size: 1.2rem !important; 
-        border-bottom: 1px solid rgba(255,255,255,0.1) !important; padding-bottom: 15px !important;
-    }
-    #album-table-body td:nth-child(1)::before { display: none !important; }
-    #album-table-body td:nth-child(2)::before { content: "Year"; }
-    #album-table-body td:nth-child(3)::before { content: "Total Streams"; }
-    #album-table-body td:nth-child(4)::before { content: "Live Daily"; color: #4ade80 !important; }
-    #album-table-body td:nth-child(5)::before { content: "% of Daily"; color: #d4a853 !important; display: block !important; }
-
-    /* --- STREAMS.HTML: TOP TRACKS (ŞARKILAR) ETİKETLERİ --- */
-    #streams-table-body td:nth-child(1) { 
-        justify-content: center !important; font-family: 'Playfair Display', serif !important; 
-        font-size: 1.2rem !important; text-align: center !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
-        padding-bottom: 15px !important;
-    }
-    #streams-table-body td:nth-child(1)::before { display: none !important; }
-    #streams-table-body td:nth-child(2)::before { content: "Total Streams"; }
-    #streams-table-body td:nth-child(3)::before { content: "Live Daily"; color: #4ade80 !important; }
-    #streams-table-body td:nth-child(4)::before { content: "Est. Weekly"; color: #d4a853 !important; }
-
-    /* 3. DİĞER KARTLAR VE BOŞLUKLAR */
     .hero-stats { display: flex !important; flex-direction: column !important; gap: 20px !important; }
     .hero-card { width: 100% !important; box-sizing: border-box !important; }
     #lifetime-gross { font-size: 11vw !important; letter-spacing: -1px !important; }
@@ -1108,12 +1027,93 @@ nav {
     .stat-box { align-items: center !important; text-align: center !important; }
     .prediction-grid { display: flex !important; flex-direction: column !important; }
     canvas#albumShareChart { min-width: 100% !important; height: auto !important; margin: 0 auto; }
+
+    /* =========================================
+       🔥 CHARTMASTERS VERİ TABLOSU (SAĞA KAYDIRMALI KOMPAKT)
+       ========================================= */
+    
+    /* Tablo kapsayıcılarını yana kaydırılabilir yap (Scrollbar açılır) */
+    .analytics-row, .song-table, #index-table, #album-leaderboard-table, #song-table-container {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important; /* iOS için akıcı yağ gibi kaydırma */
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+    }
+
+    /* Tablonun orijinal HTML mimarisini KORU (Kart mimarisi iptal!) */
+    table {
+        display: table !important;
+        width: max-content !important; /* İçeriğe göre genişle, dar ekranlarda sıkışma! */
+        min-width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    /* BAŞLIKLAR GERİ GELDİ! (Chartmasters vizyonu) */
+    thead { display: table-header-group !important; }
+    tbody { display: table-row-group !important; }
+    
+    tr {
+        display: table-row !important;
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Sütunlar yan yana, Chartmasters tarzı veri odaklı */
+    th, td {
+        display: table-cell !important;
+        padding: 12px 15px !important;
+        text-align: right !important; /* Rakamlar sağa hizalı */
+        border: none !important;
+        font-size: 0.85rem !important;
+        white-space: nowrap !important; /* Yazılar alt satıra inip tabloyu bozmasın */
+    }
+
+    /* İLK SÜTUNU SOLA SABİTLE (Kaydırırken isimler hep gözüksün, borsa ekranı gibi!) */
+    th:first-child, td:first-child {
+        text-align: left !important;
+        font-family: 'Playfair Display', serif !important;
+        color: #fff !important;
+        font-size: 1rem !important;
+        position: sticky !important; 
+        left: 0 !important;
+        background: #0a0a0f !important; /* Arkasından yazılar kayarken birbirine girmesin */
+        z-index: 10 !important;
+        border-right: 1px solid rgba(255,255,255,0.05) !important;
+    }
+    th:first-child { z-index: 11 !important; }
+
+    /* Başlık tasarımları */
+    th {
+        color: #d4a853 !important;
+        text-transform: uppercase !important;
+        font-size: 0.7rem !important;
+        border-bottom: 2px solid rgba(212, 168, 83, 0.3) !important;
+    }
+
+    /* Benim uydurduğum o saçma sapan mobil etiketlerini TAMAMEN siliyoruz */
+    td::before { display: none !important; }
+
+    /* Grand Total Satırı Parıldasın */
+    tr:last-child td {
+        font-weight: 800 !important;
+        color: #d4a853 !important;
+        border-top: 2px solid #d4a853 !important;
+        background: rgba(212, 168, 83, 0.1) !important;
+    }
+    tr:last-child td:first-child {
+        background: #1a150a !important; /* Sola sabitlenen kısmı da aynı tonda olsun */
+    }
 }
 
 /* =========================================
-   🚨 MASAÜSTÜ KALKANI (MOBİL ETİKETLERİ GİZLER)
+   🚨 MASAÜSTÜ KALKANI
    ========================================= */
 @media screen and (min-width: 769px) {
     td::before { display: none !important; }
-    #album-leaderboard-table td:nth-child(5) { display: table-cell !important; }
 }
