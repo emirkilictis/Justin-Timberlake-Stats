@@ -38,18 +38,14 @@ const albumMetData = {
     "Orphan / Features": { year: "Various" }
 };
 
-// ── 2026 YTD Baseline (Kaynak: Wayback Machine / Kworb 2026-01-01) ────────────
-// Bu veriler değişmez — yılın ilk günkü anlık snapshot.
-// ÖNEMLİ: Çakışma önlemek için daha özgün (uzun) anahtarlar önce gelmeli!
+// ── 2026 YTD Baseline ──────────────────────────────────────────
 const YTD_2026_BASELINE = {
     date: "2026-01-01",
     career_total: 16_687_312_167,
     tracks: {
-        // Film versiyonları ÖNCE — "includes" eşleşmesinde kısa anahtar galip gelmessin
-        "CAN'T STOP THE FEELING! (from":  1_997_165_198, // DreamWorks main version
-        "FEELING! - Film Version":           136_996_989, // CAN'T STOP THE FEELING! - Film Version
-        "True Colors - Film Version":        108_384_944, // "True Colors" key'inden önce gelmeli
-        // Regular tracks
+        "CAN'T STOP THE FEELING! (from":  1_997_165_198,
+        "FEELING! - Film Version":           136_996_989,
+        "True Colors - Film Version":        108_384_944,
         "True Colors":                       209_699_774,
         "Mirrors":                         1_404_622_163,
         "SexyBack":                        1_283_973_094,
@@ -78,7 +74,27 @@ const YTD_2026_BASELINE = {
     }
 };
 
-/** YTD baseline'dan bir şarkının başlangıç değerini döner (partial match). */
+// ── Modül Durumu (Sort + Cached Data) ─────────────────────────
+let _tracksData   = [];   // { title, total, daily, real7d, real7dEst, real30d, real30dEst, ytd }
+let _albumsData   = [];   // { id, year, total, daily, real7d, pctDaily }
+let _jtTotalDaily = 0;
+let trackSort = { col: 'total', asc: false };
+let albumSort = { col: 'total', asc: false };
+
+const eraColors = {
+    "Justified": "#5dade2", "FutureSex/LoveSounds": "#e74c3c",
+    "The 20/20 Experience": "#fce98a", "Man of the Woods": "#ca6f1e",
+    "Everything I Thought It Was": "#f39c12", "Orphan / Features": "#bdc3c7"
+};
+
+const albumCovers = {
+    "Justified": "assets/justified.jpg", "FutureSex/LoveSounds": "assets/fsls.jpg",
+    "The 20/20 Experience": "assets/the20.jpg", "Man of the Woods": "assets/motw.jpg",
+    "Everything I Thought It Was": "assets/eitiw.jpg", "Orphan / Features": null
+};
+
+// --- 2. YARDIMCI FONKSİYONLAR ---
+
 function getTrackYTDBaseline(liveTitle) {
     const lower = liveTitle.toLowerCase();
     for (const key in YTD_2026_BASELINE.tracks) {
@@ -89,10 +105,6 @@ function getTrackYTDBaseline(liveTitle) {
     return null;
 }
 
-/**
- * Büyük sayıları mobilde B/M/K formatında kısa gösterir.
- * Desktop'ta tam sayı (1,283,973,094), mobilde "1.28B" gibi.
- */
 function fmtNum(n) {
     if (window.innerWidth >= 768) return n.toLocaleString('en-US');
     if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + 'B';
@@ -102,14 +114,11 @@ function fmtNum(n) {
 }
 function fmtDelta(n) { return '+' + fmtNum(n); }
 
-/** 2026-01-01'den bugüne kaç gün geçti. */
 function getYTDDaysElapsed() {
     const start = new Date('2026-01-01T00:00:00Z');
     const now   = new Date();
     return Math.max(1, Math.round((now - start) / (1000 * 60 * 60 * 24)));
 }
-
-// --- 2. YARDIMCI FONKSİYONLAR ---
 
 function animateValue(obj, start, end, duration, prefix = "") {
     if (!obj || isNaN(end)) return;
@@ -118,7 +127,6 @@ function animateValue(obj, start, end, duration, prefix = "") {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = Math.floor(progress * (end - start) + start);
-
         if (end >= 1000000000 && obj.id === 'jt-total-career') {
             obj.innerHTML = prefix + (current / 1000000000).toFixed(2) + 'B';
         } else {
@@ -136,24 +144,12 @@ function getTrueDailyAverage(dailyStreams) {
     return dailyStreams / dayWeights[dataDay];
 }
 
-// ── Tarih Yardımcıları ─────────────────────────────────────────────────────────
-
-/**
- * N gün öncenin UTC tarihini YYYY-MM-DD formatında döner.
- */
 function getUTCDateString(daysAgo = 0) {
     const d = new Date();
     d.setUTCDate(d.getUTCDate() - daysAgo);
     return d.toISOString().split('T')[0];
 }
 
-
-// ── Firestore Hazır Olmasını Bekle ─────────────────────────────────────────────
-
-/**
- * Firebase module scriptinin 'firestore-ready' event'ini göndermesini bekler.
- * Zaten hazırsa hemen resolve olur. 6 saniyede timeout → false döner.
- */
 function waitForFirestore(timeoutMs = 6000) {
     return new Promise(resolve => {
         if (typeof window.getHistoricalSnapshot === 'function') { resolve(true); return; }
@@ -165,46 +161,29 @@ function waitForFirestore(timeoutMs = 6000) {
     });
 }
 
-// ── Snapshot'tan Tek Bir Tarih için Veri Çekici ────────────────────────────────
-
-/**
- * Snapshot objesinden bir şarkının geçmiş verisini döner.
- * Snapshot null ise ya da şarkı bulunamıyorsa null döner.
- */
 function getTrackFromSnapshot(trackTitle, snapshot) {
     if (!snapshot || !snapshot.tracks) return null;
     return snapshot.tracks[trackTitle] || null;
 }
 
-/**
- * Snapshot'tan bir albümün geçmiş verisini döner.
- */
 function getAlbumFromSnapshot(albumName, snapshot) {
     if (!snapshot || !snapshot.albums) return null;
     return snapshot.albums[albumName] || null;
 }
 
-// ── Geliştirilmiş Milestone Hesaplayıcı ───────────────────────────────────────
-
-/**
- * 7d + 30d + YTD (statik baseline) üç veri noktasıyla ağırlıklı projeksiyon.
- * confidence: "high" | "medium" | "low"
- */
+// ── Milestone Hesaplayıcı ──────────────────────────────────────
 function calculateImprovedMilestone(track, snap7, snap30) {
     const hist7       = getTrackFromSnapshot(track.title, snap7);
     const hist30      = getTrackFromSnapshot(track.title, snap30);
     const ytdBaseline = getTrackYTDBaseline(track.title);
     const ytdDays     = getYTDDaysElapsed();
 
-    let projectedDaily;
-    let confidence;
+    let projectedDaily, confidence;
 
     if (hist7 && hist30 && track.total > hist7.total && track.total > hist30.total) {
         const realWeeklyAvg  = (track.total - hist7.total)  / 7;
         const realMonthlyAvg = (track.total - hist30.total) / 30;
-
         if (ytdBaseline && track.total > ytdBaseline && ytdDays > 30) {
-            // 3 nokta: son 7g %50 + son 30g %30 + YTD %20
             const ytdAvg = (track.total - ytdBaseline) / ytdDays;
             projectedDaily = realWeeklyAvg * 0.5 + realMonthlyAvg * 0.3 + ytdAvg * 0.2;
         } else {
@@ -215,7 +194,6 @@ function calculateImprovedMilestone(track, snap7, snap30) {
         projectedDaily = (track.total - hist7.total) / 7;
         confidence = "medium";
     } else if (ytdBaseline && track.total > ytdBaseline) {
-        // Sadece YTD verisi var (Firestore henüz boş)
         projectedDaily = (track.total - ytdBaseline) / ytdDays;
         confidence = "medium";
     } else {
@@ -223,7 +201,6 @@ function calculateImprovedMilestone(track, snap7, snap30) {
         confidence = "low";
     }
 
-    // Sonraki milestone hesapla
     let nextMilestone;
     if (track.total >= 1000000000) {
         nextMilestone = Math.ceil(track.total / 1000000000) * 1000000000;
@@ -240,7 +217,6 @@ function calculateImprovedMilestone(track, snap7, snap30) {
 }
 
 // --- 3. AKILLI PARSER ---
-
 function analyzeKworbData(htmlInput) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlInput, 'text/html');
@@ -295,61 +271,349 @@ function analyzeKworbData(htmlInput) {
     return stats;
 }
 
-// --- 4. ANA YÜKLEYİCİ VE UI GÜNCELLEME ---
+// --- 4. TABLE RENDERERS ---
+
+function renderTracksTable() {
+    const tbody = document.getElementById('streams-table-body');
+    if (!tbody) return;
+
+    const sorted = [..._tracksData].sort((a, b) => {
+        const dir = trackSort.asc ? 1 : -1;
+        switch (trackSort.col) {
+            case 'title':  return dir * a.title.localeCompare(b.title);
+            case 'total':  return dir * (a.total - b.total);
+            case 'daily':  return dir * (a.daily - b.daily);
+            case 'real7d': return dir * ((a.real7d  ?? -Infinity) - (b.real7d  ?? -Infinity));
+            case 'real30d':return dir * ((a.real30d ?? -Infinity) - (b.real30d ?? -Infinity));
+            case 'ytd':    return dir * ((a.ytd     ?? -Infinity) - (b.ytd     ?? -Infinity));
+            default: return 0;
+        }
+    });
+
+    tbody.innerHTML = '';
+    sorted.forEach(track => {
+        let real7Cell, real30Cell, ytdCell;
+
+        if (track.real7d !== null && !track.real7dEst) {
+            real7Cell = `<td class="positive-trend">${fmtDelta(track.real7d)}</td>`;
+        } else if (track.real7d !== null && track.real7dEst) {
+            real7Cell = `<td style="color:#d4a853;font-style:italic;" title="Estimated">~${fmtNum(track.real7d)}</td>`;
+        } else {
+            real7Cell = `<td style="color:#555;">—</td>`;
+        }
+
+        if (track.real30d !== null && !track.real30dEst) {
+            real30Cell = `<td class="positive-trend">${fmtDelta(track.real30d)}</td>`;
+        } else if (track.real30d !== null && track.real30dEst) {
+            real30Cell = `<td style="color:#d4a853;font-style:italic;" title="Estimated">~${fmtNum(track.real30d)}</td>`;
+        } else {
+            real30Cell = `<td style="color:#555;">—</td>`;
+        }
+
+        if (track.ytd !== null) {
+            ytdCell = `<td style="color:#a78bfa;font-weight:600;">${fmtDelta(track.ytd)}</td>`;
+        } else {
+            ytdCell = `<td style="color:#555;">—</td>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${track.title}</td>
+            <td>${fmtNum(track.total)}</td>
+            <td class="positive-trend">${fmtDelta(track.daily)}</td>
+            ${real7Cell}${real30Cell}${ytdCell}
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Sort indicator güncelle
+    const table = document.getElementById('tracks-table');
+    if (table) {
+        table.querySelectorAll('thead th[data-sort-col]').forEach(th => {
+            const col = th.dataset.sortCol;
+            const label = th.dataset.label;
+            if (col === trackSort.col) {
+                th.textContent = label + (trackSort.asc ? ' ▲' : ' ▼');
+                th.style.color = '#fff';
+            } else {
+                th.textContent = label;
+                th.style.color = '';
+            }
+        });
+    }
+}
+
+function renderAlbumsTable() {
+    const tbody = document.getElementById('album-table-body');
+    if (!tbody) return;
+
+    const sorted = [..._albumsData].sort((a, b) => {
+        const dir = albumSort.asc ? 1 : -1;
+        switch (albumSort.col) {
+            case 'name': return dir * a.id.localeCompare(b.id);
+            case 'year': {
+                const ya = isNaN(Number(a.year)) ? 9999 : Number(a.year);
+                const yb = isNaN(Number(b.year)) ? 9999 : Number(b.year);
+                return dir * (ya - yb);
+            }
+            case 'total':  return dir * (a.total - b.total);
+            case 'daily':  return dir * (a.daily - b.daily);
+            case 'real7d': return dir * ((a.real7d ?? -Infinity) - (b.real7d ?? -Infinity));
+            case 'pct':    return dir * (a.pctDaily - b.pctDaily);
+            default: return 0;
+        }
+    });
+
+    tbody.innerHTML = '';
+    sorted.forEach(album => {
+        const barColor  = eraColors[album.id] || "#d4a853";
+        const imgSrc    = albumCovers[album.id];
+        const thumbHTML = imgSrc
+            ? `<img src="${imgSrc}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;">`
+            : `<div style="width:40px;height:40px;border-radius:4px;background:repeating-radial-gradient(#050505 0,#050505 2px,#111 3px,#111 4px);flex-shrink:0;"></div>`;
+
+        let weekly7Cell;
+        if (album.real7d !== null) {
+            weekly7Cell = `<td class="positive-trend" style="vertical-align:middle;">${fmtDelta(album.real7d)}</td>`;
+        } else {
+            weekly7Cell = `<td style="vertical-align:middle;color:#555;">—</td>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    ${thumbHTML}
+                    <div>
+                        <div style="font-weight:700;color:#fff;">${album.id}</div>
+                        <div style="width:100%;height:4px;background:rgba(255,255,255,0.05);margin-top:8px;border-radius:2px;overflow:hidden;">
+                            <div style="width:${album.pctDaily}%;height:100%;background:${barColor};box-shadow:0 0 10px ${barColor};border-radius:2px;transition:width 1.5s ease-out;"></div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td style="vertical-align:middle;">${album.year}</td>
+            <td style="vertical-align:middle;">${fmtNum(album.total)}</td>
+            <td class="positive-trend" style="vertical-align:middle;">${fmtDelta(album.daily)}</td>
+            ${weekly7Cell}
+            <td style="vertical-align:middle;color:${barColor};font-weight:700;">${album.pctDaily.toFixed(1)}%</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Sort indicator güncelle
+    const table = document.getElementById('album-leaderboard-table');
+    if (table) {
+        table.querySelectorAll('thead th[data-sort-col]').forEach(th => {
+            const col = th.dataset.sortCol;
+            const label = th.dataset.label;
+            if (col === albumSort.col) {
+                th.textContent = label + (albumSort.asc ? ' ▲' : ' ▼');
+                th.style.color = '#fff';
+            } else {
+                th.textContent = label;
+                th.style.color = '';
+            }
+        });
+    }
+}
+
+// ── Sort Click Handler Bağlayıcı ──────────────────────────────
+function attachSortHandlers() {
+    // Tracks tablosu
+    const tracksTable = document.getElementById('tracks-table');
+    if (tracksTable) {
+        tracksTable.querySelectorAll('thead th[data-sort-col]').forEach(th => {
+            th.style.cursor = 'pointer';
+            th.title = 'Sıralamak için tıkla';
+            th.addEventListener('click', () => {
+                const col = th.dataset.sortCol;
+                if (trackSort.col === col) {
+                    trackSort.asc = !trackSort.asc;
+                } else {
+                    trackSort.col = col;
+                    trackSort.asc = false;
+                }
+                renderTracksTable();
+            });
+        });
+    }
+
+    // Albums tablosu
+    const albumsTable = document.getElementById('album-leaderboard-table');
+    if (albumsTable) {
+        albumsTable.querySelectorAll('thead th[data-sort-col]').forEach(th => {
+            th.style.cursor = 'pointer';
+            th.title = 'Sıralamak için tıkla';
+            th.addEventListener('click', () => {
+                const col = th.dataset.sortCol;
+                if (albumSort.col === col) {
+                    albumSort.asc = !albumSort.asc;
+                } else {
+                    albumSort.col = col;
+                    albumSort.asc = false;
+                }
+                renderAlbumsTable();
+            });
+        });
+    }
+}
+
+// --- 5. TREND CHART ---
+
+function buildTrendChart(snapshots, liveTotal) {
+    const canvas = document.getElementById('trendChart');
+    if (!canvas) return;
+
+    // Veri noktaları: YTD baseline + Firestore snapshots + bugün (canlı)
+    const points = [];
+
+    // Firestore snapshot'ları filtrele ve sırala
+    snapshots.forEach(s => {
+        if (s && s.career_total && s.date) {
+            points.push({ date: s.date, value: s.career_total });
+        }
+    });
+
+    // Kronolojik sırala, bugünü sona ekle
+    points.sort((a, b) => a.date.localeCompare(b.date));
+    points.push({ date: getUTCDateString(0) + ' (live)', value: liveTotal });
+
+    // Eğer Firestore'da hiç veri yoksa sadece YTD baseline + bugünü göster
+    if (points.length < 2) {
+        points.unshift({ date: YTD_2026_BASELINE.date, value: YTD_2026_BASELINE.career_total });
+    }
+
+    const noDataMsg = document.getElementById('trend-no-data');
+
+    if (points.length < 2) {
+        if (noDataMsg) noDataMsg.style.display = 'block';
+        canvas.style.display = 'none';
+        return;
+    }
+    if (noDataMsg) noDataMsg.style.display = 'none';
+    canvas.style.display = 'block';
+
+    const labels = points.map(p => p.date);
+    const values = points.map(p => p.value);
+
+    // Renk gradyanı
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, 0, 280);
+    gradient.addColorStop(0,   'rgba(212,168,83,0.35)');
+    gradient.addColorStop(1,   'rgba(212,168,83,0.00)');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Career Total Streams',
+                data: values,
+                borderColor: '#d4a853',
+                backgroundColor: gradient,
+                borderWidth: 2,
+                pointRadius: points.length <= 5 ? 5 : 3,
+                pointBackgroundColor: '#d4a853',
+                pointBorderColor: '#050505',
+                pointBorderWidth: 2,
+                tension: 0.35,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(5,5,5,0.9)',
+                    borderColor: 'rgba(212,168,83,0.4)',
+                    borderWidth: 1,
+                    titleColor: '#d4a853',
+                    bodyColor: '#fff',
+                    callbacks: {
+                        label: ctx => ' ' + ctx.parsed.y.toLocaleString('en-US') + ' streams'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#666',
+                        font: { family: "'Space Grotesk', sans-serif", size: 10 },
+                        maxRotation: 45,
+                        autoSkip: true,
+                        maxTicksLimit: 10
+                    },
+                    grid: { color: 'rgba(255,255,255,0.04)' }
+                },
+                y: {
+                    ticks: {
+                        color: '#666',
+                        font: { family: "'Space Grotesk', sans-serif", size: 10 },
+                        callback: v => (v / 1_000_000_000).toFixed(2) + 'B'
+                    },
+                    grid: { color: 'rgba(255,255,255,0.04)' }
+                }
+            }
+        }
+    });
+}
+
+// --- 6. ANA YÜKLEYİCİ ---
 
 async function initStreamsDashboard() {
     try {
-        // ── ADIM A: Canlı veriyi çek ────────────────────────────────────────
+        // ── ADIM A: Canlı veriyi çek ─────────────────────────────────
         const res = await fetch(MY_DYNAMIC_API);
         const html = await res.text();
         const liveStats = analyzeKworbData(html);
 
         const jtTotalCareer  = document.getElementById('jt-total-career');
         const jtDailyCareer  = document.getElementById('jt-daily-career');
-        const albumTableBody = document.getElementById('album-table-body');
-        const streamsTableBody = document.getElementById('streams-table-body');
         const radarGrid      = document.getElementById('milestone-radar');
 
-        let allAlbums = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "Everything I Thought It Was", "Orphan / Features"];
-
-        if(albumTableBody)   albumTableBody.innerHTML   = "";
-        if(streamsTableBody) streamsTableBody.innerHTML = "";
-        if(radarGrid)        radarGrid.innerHTML        = "";
+        const allAlbums = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "Everything I Thought It Was", "Orphan / Features"];
 
         // TOP SECTION — canlı rakamlar
-        let jtTotalDaily = 0;
-        allAlbums.forEach(id => { jtTotalDaily += liveStats[id].daily; });
+        _jtTotalDaily = 0;
+        allAlbums.forEach(id => { _jtTotalDaily += liveStats[id].daily; });
 
         animateValue(jtTotalCareer, 0, liveStats.TotalSpotify, 2000);
-        animateValue(jtDailyCareer, 0, jtTotalDaily, 2000, "+");
+        animateValue(jtDailyCareer, 0, _jtTotalDaily, 2000, "+");
 
-        // ── ADIM B: Firestore hazır olmasını bekle, geçmiş snapshot'ları çek ───
+        // ── ADIM B: Firestore — snap7, snap30 ve trend verileri ──────
         const firestoreOk = await waitForFirestore();
         let snap7  = null;
         let snap30 = null;
+        let trendSnapshots = [];
 
         if (firestoreOk) {
-            [snap7, snap30] = await Promise.all([
+            // snap7 + snap30 + son 30 günün snapshot'larını paralel çek
+            const trendDays = Array.from({ length: 30 }, (_, i) => i + 1); // 1..30 gün öncesi
+            const [s7, s30, ...trendResults] = await Promise.all([
                 window.getHistoricalSnapshot(getUTCDateString(7)),
-                window.getHistoricalSnapshot(getUTCDateString(30))
+                window.getHistoricalSnapshot(getUTCDateString(30)),
+                ...trendDays.map(d => window.getHistoricalSnapshot(getUTCDateString(d)))
             ]);
+            snap7  = s7;
+            snap30 = s30;
+            trendSnapshots = trendResults.filter(Boolean);
         }
 
-        // ── ADIM C: Büyüme kartlarını güncelle ──────────────────────────────
+        // ── ADIM C: Büyüme kartları ───────────────────────────────────
         function setGrowthCard(valueId, statusId, snapshot, label) {
             const valueEl  = document.getElementById(valueId);
             const statusEl = document.getElementById(statusId);
             if (!valueEl) return;
-
             if (snapshot && snapshot.career_total) {
                 const delta = liveStats.TotalSpotify - snapshot.career_total;
                 if (delta > 0) {
                     valueEl.textContent = '+' + delta.toLocaleString('en-US');
                     valueEl.classList.remove('loading');
-                    if (statusEl) {
-                        statusEl.textContent = 'Snapshot: ' + snapshot.date;
-                        statusEl.classList.add('ok');
-                    }
+                    if (statusEl) { statusEl.textContent = 'Snapshot: ' + snapshot.date; statusEl.classList.add('ok'); }
                 } else {
                     valueEl.textContent = 'Snapshot older than live';
                     if (statusEl) statusEl.textContent = 'Data sync pending';
@@ -363,143 +627,85 @@ async function initStreamsDashboard() {
         setGrowthCard('jt-weekly-growth',  'snap7-status',  snap7,  '7d');
         setGrowthCard('jt-monthly-growth', 'snap30-status', snap30, '30d');
 
-        // YTD: statik 2026/01/01 baseline kullan — Firestore'a gerek yok
+        // YTD: statik baseline
         const ytdEl     = document.getElementById('jt-ytd-growth');
         const ytdStatus = document.getElementById('snapytd-status');
         const ytdDelta  = liveStats.TotalSpotify - YTD_2026_BASELINE.career_total;
         const ytdDays   = getYTDDaysElapsed();
-        if (ytdEl) {
-            ytdEl.textContent = '+' + ytdDelta.toLocaleString('en-US');
-            ytdEl.classList.remove('loading');
-        }
+        if (ytdEl) { ytdEl.textContent = '+' + ytdDelta.toLocaleString('en-US'); ytdEl.classList.remove('loading'); }
         if (ytdStatus) {
             ytdStatus.textContent = `Since Jan 1 · ${ytdDays} days · ~${Math.round(ytdDelta / ytdDays).toLocaleString()}/day avg`;
             ytdStatus.classList.add('ok');
         }
 
-        // ── ADIM D: Era renkleri ─────────────────────────────────────────────
-        const eraColors = {
-            "Justified": "#5dade2", "FutureSex/LoveSounds": "#e74c3c",
-            "The 20/20 Experience": "#fce98a", "Man of the Woods": "#ca6f1e",
-            "Everything I Thought It Was": "#f39c12", "Orphan / Features": "#bdc3c7"
-        };
+        // ── ADIM D: Album verisi oluştur ──────────────────────────────
+        _albumsData = allAlbums.map(id => {
+            const album = liveStats[id];
+            const pctDaily = _jtTotalDaily > 0 ? (album.daily / _jtTotalDaily) * 100 : 0;
+            const hist7Album = getAlbumFromSnapshot(id, snap7);
+            const real7d = (hist7Album && album.total > hist7Album.total)
+                ? album.total - hist7Album.total
+                : null;
+            return {
+                id,
+                year: albumMetData[id].year,
+                total: album.total,
+                daily: album.daily,
+                real7d,
+                pctDaily
+            };
+        });
+        renderAlbumsTable();
 
-        // ── ADIM E: Album Leaderboard (+ 7-Day ▲ kolonu) ────────────────────
-        const albumCoversSt = {
-            "Justified": "assets/justified.jpg", "FutureSex/LoveSounds": "assets/fsls.jpg",
-            "The 20/20 Experience": "assets/the20.jpg", "Man of the Woods": "assets/motw.jpg",
-            "Everything I Thought It Was": "assets/eitiw.jpg", "Orphan / Features": null
-        };
+        // ── ADIM E: Track verisi oluştur ──────────────────────────────
+        _tracksData = liveStats.tracks.slice(0, 15).map(track => {
+            const hist7Track  = getTrackFromSnapshot(track.title, snap7);
+            const hist30Track = getTrackFromSnapshot(track.title, snap30);
+            const ytdBaseline = getTrackYTDBaseline(track.title);
 
-        if(albumTableBody) {
-            allAlbums.forEach(id => {
-                const album = liveStats[id];
-                const dailyPerc = jtTotalDaily > 0 ? (album.daily / jtTotalDaily) * 100 : 0;
-                const barColor  = eraColors[id] || "#d4a853";
-                const imgSrc    = albumCoversSt[id];
-                const thumbHTML = imgSrc
-                    ? `<img src="${imgSrc}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;flex-shrink:0;">`
-                    : `<div style="width:40px;height:40px;border-radius:4px;background:repeating-radial-gradient(#050505 0,#050505 2px,#111 3px,#111 4px);flex-shrink:0;"></div>`;
+            let real7d = null, real7dEst = false;
+            if (hist7Track && track.total > hist7Track.total) {
+                real7d = track.total - hist7Track.total;
+            } else {
+                real7d = Math.floor(getTrueDailyAverage(track.daily) * 7);
+                real7dEst = true;
+            }
 
-                // Albüm için 7 günlük gerçek büyüme
-                const hist7Album = getAlbumFromSnapshot(id, snap7);
-                let weekly7Cell;
-                if (hist7Album && album.total > hist7Album.total) {
-                    const delta7 = album.total - hist7Album.total;
-                    weekly7Cell = `<td class="positive-trend" style="vertical-align:middle;">${fmtDelta(delta7)}</td>`;
-                } else {
-                    weekly7Cell = `<td style="vertical-align:middle;color:#555;">—</td>`;
-                }
+            let real30d = null, real30dEst = false;
+            if (hist30Track && track.total > hist30Track.total) {
+                real30d = track.total - hist30Track.total;
+            } else {
+                real30d = Math.floor(getTrueDailyAverage(track.daily) * 30);
+                real30dEst = true;
+            }
 
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>
-                        <div style="display:flex;align-items:center;gap:12px;">
-                            ${thumbHTML}
-                            <div>
-                                <div style="font-weight: 700; color: #fff;">${id}</div>
-                                <div style="width: 100%; height: 4px; background: rgba(255,255,255,0.05); margin-top: 8px; border-radius: 2px; overflow: hidden;">
-                                    <div style="width: ${dailyPerc}%; height: 100%; background: ${barColor}; box-shadow: 0 0 10px ${barColor}; border-radius: 2px; transition: width 1.5s ease-out;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td style="vertical-align: middle;">${albumMetData[id].year}</td>
-                    <td style="vertical-align: middle;">${fmtNum(album.total)}</td>
-                    <td class="positive-trend" style="vertical-align: middle;">${fmtDelta(album.daily)}</td>
-                    ${weekly7Cell}
-                    <td style="vertical-align: middle; color: ${barColor}; font-weight: 700;">${dailyPerc.toFixed(1)}%</td>
-                `;
-                albumTableBody.appendChild(tr);
-            });
-        }
+            const ytd = (ytdBaseline && track.total > ytdBaseline)
+                ? track.total - ytdBaseline
+                : null;
 
-        // ── ADIM F: Top Tracks (gerçek 7d ve 30d delta) ──────────────────────
-        if(streamsTableBody) {
-            liveStats.tracks.slice(0, 15).forEach(track => {
-                const hist7Track  = getTrackFromSnapshot(track.title, snap7);
-                const hist30Track = getTrackFromSnapshot(track.title, snap30);
-                const ytdBaseline = getTrackYTDBaseline(track.title);
+            return { title: track.title, total: track.total, daily: track.daily, real7d, real7dEst, real30d, real30dEst, ytd };
+        });
+        renderTracksTable();
 
-                let real7Cell, real30Cell, ytdCell;
+        // ── ADIM F: Sort handler'larını bağla ─────────────────────────
+        attachSortHandlers();
 
-                if (hist7Track && track.total > hist7Track.total) {
-                    const d7 = track.total - hist7Track.total;
-                    real7Cell = `<td class="positive-trend">${fmtDelta(d7)}</td>`;
-                } else {
-                    const est7 = Math.floor(getTrueDailyAverage(track.daily) * 7);
-                    real7Cell = `<td style="color:#d4a853;font-style:italic;" title="Estimated">~${fmtNum(est7)}</td>`;
-                }
-
-                if (hist30Track && track.total > hist30Track.total) {
-                    const d30 = track.total - hist30Track.total;
-                    real30Cell = `<td class="positive-trend">${fmtDelta(d30)}</td>`;
-                } else {
-                    const est30 = Math.floor(getTrueDailyAverage(track.daily) * 30);
-                    real30Cell = `<td style="color:#d4a853;font-style:italic;" title="Estimated">~${fmtNum(est30)}</td>`;
-                }
-
-                if (ytdBaseline && track.total > ytdBaseline) {
-                    const dYTD = track.total - ytdBaseline;
-                    ytdCell = `<td style="color:#a78bfa;font-weight:600;">${fmtDelta(dYTD)}</td>`;
-                } else {
-                    ytdCell = `<td style="color:#555;">—</td>`;
-                }
-
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${track.title}</td>
-                    <td>${fmtNum(track.total)}</td>
-                    <td class="positive-trend">${fmtDelta(track.daily)}</td>
-                    ${real7Cell}
-                    ${real30Cell}
-                    ${ytdCell}
-                `;
-                streamsTableBody.appendChild(tr);
-            });
-        }
-
-        // ── ADIM G: Milestone Radar (geliştirilmiş predictor) ────────────────
-        if(radarGrid) {
-            // Kaç tane "high confidence" tahmin var, göster
+        // ── ADIM G: Milestone Radar ───────────────────────────────────
+        if (radarGrid) {
+            radarGrid.innerHTML = '';
             const confidenceNote = document.getElementById('milestone-confidence-note');
             let highCount = 0;
 
             liveStats.tracks.slice(0, 10).forEach(track => {
                 if (track.daily <= 10000) return;
-
                 const milestone = calculateImprovedMilestone(track, snap7, snap30);
                 if (milestone.confidence === 'high') highCount++;
 
                 const targetText = milestone.target >= 1000000000
                     ? (milestone.target / 1000000000) + "B"
                     : (milestone.target / 1000000) + "M";
+                const daysDisplay = milestone.daysLeft !== null ? milestone.daysLeft.toLocaleString() + ' Days' : 'N/A';
 
-                const daysDisplay = milestone.daysLeft !== null
-                    ? milestone.daysLeft.toLocaleString() + ' Days'
-                    : 'N/A';
-
-                // Beklenen tarih hesapla
                 let etaText = '';
                 if (milestone.daysLeft !== null) {
                     const etaDate = new Date();
@@ -508,22 +714,17 @@ async function initStreamsDashboard() {
                 }
 
                 const confidenceBadge = `<span class="confidence-badge confidence-${milestone.confidence}">${milestone.confidence}</span>`;
-
-                let card = document.createElement('div');
+                const card = document.createElement('div');
                 card.className = "milestone-card";
                 card.innerHTML = `
-                    <div style="font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 6px;">
-                        Countdown to ${targetText} ${confidenceBadge}
-                    </div>
-                    <div style="font-size: 1.2rem; font-weight: 700; margin: 10px 0;">${track.title}</div>
-                    <div style="font-size: 2rem; color: #d4a853;">${daysDisplay}</div>
-                    <div style="font-size: 0.85rem; color: #aaa; margin-top: 5px;">
+                    <div style="font-size:0.8rem;color:#888;text-transform:uppercase;margin-bottom:6px;">Countdown to ${targetText} ${confidenceBadge}</div>
+                    <div style="font-size:1.2rem;font-weight:700;margin:10px 0;">${track.title}</div>
+                    <div style="font-size:2rem;color:#d4a853;">${daysDisplay}</div>
+                    <div style="font-size:0.85rem;color:#aaa;margin-top:5px;">
                         Needs ${(milestone.remaining / 1000000).toFixed(1)}M more
                         ${etaText ? `· ETA: <span style="color:#fff;">${etaText}</span>` : ''}
                     </div>
-                    <div style="font-size: 0.75rem; color: #555; margin-top: 4px;">
-                        ~${Math.round(milestone.projectedDaily).toLocaleString()} streams/day projected
-                    </div>
+                    <div style="font-size:0.75rem;color:#555;margin-top:4px;">~${Math.round(milestone.projectedDaily).toLocaleString()} streams/day projected</div>
                 `;
                 radarGrid.appendChild(card);
             });
@@ -538,30 +739,17 @@ async function initStreamsDashboard() {
             }
         }
 
-        // ── ADIM H: Chart.js Grafik ───────────────────────────────────────────
-        const canvasElement = document.getElementById('albumShareChart');
-        if(canvasElement) {
-            const ctx = canvasElement.getContext('2d');
-
-            const chartLabels = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "EITIW", "Orphan / Features"];
-            const chartData = [
-                liveStats["Justified"].total,
-                liveStats["FutureSex/LoveSounds"].total,
-                liveStats["The 20/20 Experience"].total,
-                liveStats["Man of the Woods"].total,
-                liveStats["Everything I Thought It Was"].total,
-                liveStats["Orphan / Features"].total
-            ];
-
-            const chartColors = ['#5dade2', '#e74c3c', '#fce98a', '#ca6f1e', '#f39c12', '#bdc3c7'];
-
+        // ── ADIM H: Doughnut Chart ────────────────────────────────────
+        const doughnutCanvas = document.getElementById('albumShareChart');
+        if (doughnutCanvas) {
+            const ctx = doughnutCanvas.getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: chartLabels,
+                    labels: ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "Man of the Woods", "EITIW", "Orphan / Features"],
                     datasets: [{
-                        data: chartData,
-                        backgroundColor: chartColors,
+                        data: allAlbums.map(id => liveStats[id].total),
+                        backgroundColor: allAlbums.map(id => eraColors[id]),
                         borderColor: '#050505',
                         borderWidth: 2,
                         hoverOffset: 10
@@ -585,9 +773,7 @@ async function initStreamsDashboard() {
                                     let label = context.label || '';
                                     if (label.length > 20 && window.innerWidth < 768) label = label.substring(0, 17) + '...';
                                     if (label) label += ': ';
-                                    if (context.raw !== null && context.raw !== undefined) {
-                                        label += new Intl.NumberFormat('en-US').format(context.raw);
-                                    }
+                                    if (context.raw !== null) label += new Intl.NumberFormat('en-US').format(context.raw);
                                     return label;
                                 }
                             }
@@ -597,10 +783,13 @@ async function initStreamsDashboard() {
             });
         }
 
+        // ── ADIM I: Trend Line Chart ──────────────────────────────────
+        buildTrendChart(trendSnapshots, liveStats.TotalSpotify);
+
     } catch (e) {
         console.error("Dashboard yüklenemedi:", e);
         const radarGrid = document.getElementById('milestone-radar');
-        if(radarGrid) radarGrid.innerHTML = "Failed to load dynamic data. Check console.";
+        if (radarGrid) radarGrid.innerHTML = "Failed to load dynamic data. Check console.";
     }
 }
 

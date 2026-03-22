@@ -129,9 +129,23 @@
             </div>
         </div>
 
+        <!-- Trend Line Chart -->
+        <div class="analytics-row" style="margin-top: 40px; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+            <h2 style="font-family: 'Playfair Display'; text-align: center; margin-bottom: 5px;">Career Stream Trend</h2>
+            <p style="text-align:center; color:#555; font-size:0.8rem; margin-bottom:20px;">Last 30 days · Updated nightly via GitHub Actions</p>
+            <div style="height: 280px; position: relative;">
+                <canvas id="trendChart"></canvas>
+                <div id="trend-no-data" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; color:#444;">
+                    <div style="font-size:2rem;">📈</div>
+                    <div style="font-size:0.85rem; margin-top:8px;">Historical data accumulates after<br>the first nightly snapshot runs.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doughnut Chart -->
         <div class="analytics-row" style="margin-top: 40px; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
             <h2 style="font-family: 'Playfair Display'; text-align: center; margin-bottom: 20px;">Career Stream Distribution</h2>
-            <div style="max-width: 500px; margin: 0 auto;">
+            <div style="max-width: 500px; margin: 0 auto; height: 320px;">
                 <canvas id="albumShareChart"></canvas>
             </div>
         </div>
@@ -145,12 +159,12 @@
             <table class="song-table" id="album-leaderboard-table">
                 <thead>
                     <tr>
-                        <th>Album</th>
-                        <th>Year</th>
-                        <th>Total Streams</th>
-                        <th>Daily Streams</th>
-                        <th>Real 7-Day ▲</th>
-                        <th>% of Daily</th>
+                        <th data-sort-col="name"   data-label="Album">Album</th>
+                        <th data-sort-col="year"   data-label="Year">Year</th>
+                        <th data-sort-col="total"  data-label="Total Streams">Total Streams ▼</th>
+                        <th data-sort-col="daily"  data-label="Daily Streams">Daily Streams</th>
+                        <th data-sort-col="real7d" data-label="Real 7-Day ▲">Real 7-Day ▲</th>
+                        <th data-sort-col="pct"    data-label="% of Daily">% of Daily</th>
                     </tr>
                 </thead>
                 <tbody id="album-table-body">
@@ -161,15 +175,15 @@
 
         <div class="analytics-row" style="margin-top: 40px;">
             <h2 style="font-family: 'Playfair Display'; margin-bottom: 20px;">Top Tracks Tracker (Top 15)</h2>
-            <table class="song-table">
+            <table class="song-table" id="tracks-table">
                 <thead>
                     <tr>
-                        <th>Track Title</th>
-                        <th>Total Streams</th>
-                        <th>Live Daily</th>
-                        <th>Real 7-Day ▲</th>
-                        <th>Real 30-Day ▲</th>
-                        <th>YTD 2026 ▲</th>
+                        <th data-sort-col="title"  data-label="Track Title">Track Title</th>
+                        <th data-sort-col="total"  data-label="Total Streams">Total Streams ▼</th>
+                        <th data-sort-col="daily"  data-label="Live Daily">Live Daily</th>
+                        <th data-sort-col="real7d" data-label="Real 7-Day ▲">Real 7-Day ▲</th>
+                        <th data-sort-col="real30d" data-label="Real 30-Day ▲">Real 30-Day ▲</th>
+                        <th data-sort-col="ytd"    data-label="YTD 2026 ▲">YTD 2026 ▲</th>
                     </tr>
                 </thead>
                 <tbody id="streams-table-body">
