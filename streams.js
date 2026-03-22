@@ -798,12 +798,12 @@ async function initStreamsDashboard() {
 // --- 7. SHARE CARD ---
 
 const RANDOM_PICS = [
-    'assets/random pics/IMG_7431.JPG', 'assets/random pics/IMG_7432.JPG',
-    'assets/random pics/IMG_7433.JPG', 'assets/random pics/IMG_7435.JPG',
-    'assets/random pics/IMG_7436.JPG', 'assets/random pics/IMG_7437.JPG',
-    'assets/random pics/IMG_7438.JPG', 'assets/random pics/IMG_7439.JPG',
-    'assets/random pics/IMG_7440.JPG', 'assets/random pics/IMG_7441.JPG',
-    'assets/random pics/IMG_7442.JPG', 'assets/random pics/IMG_7443.JPG',
+    'assets/random%20pics/IMG_7431.JPG', 'assets/random%20pics/IMG_7432.JPG',
+    'assets/random%20pics/IMG_7433.JPG', 'assets/random%20pics/IMG_7435.JPG',
+    'assets/random%20pics/IMG_7436.JPG', 'assets/random%20pics/IMG_7437.JPG',
+    'assets/random%20pics/IMG_7438.JPG', 'assets/random%20pics/IMG_7439.JPG',
+    'assets/random%20pics/IMG_7440.JPG', 'assets/random%20pics/IMG_7441.JPG',
+    'assets/random%20pics/IMG_7442.JPG', 'assets/random%20pics/IMG_7443.JPG',
 ];
 
 // Canlı veriden share card'ı doldur ve göster
