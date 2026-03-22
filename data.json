@@ -8,7 +8,7 @@
       "year": 2002,
       "pureSales": 10572000,
       "physicalSinglesEAS": 450000,
-      "digitalSinglesEAS": 750000,
+      "digitalSinglesEAS": 1290000,
       "streams": { 
           "spotify": 0, 
           "youtubeVideoIds": ["DksSPZTZES0", "NSyVVVf6u2Y", "3nUovJpY0Yc", "H64QG_YSn_U"] 
@@ -17,7 +17,7 @@
     "FutureSex/LoveSounds": {
       "year": 2006,
       "pureSales": 10840000,
-      "physicalSinglesEAS": 600000,
+      "physicalSinglesEAS": 360000,
       "digitalSinglesEAS": 5250000,
       "streams": { 
           "spotify": 0, 
@@ -27,8 +27,8 @@
     "The 20/20 Experience": {
       "year": 2013,
       "pureSales": 8370000,
-      "physicalSinglesEAS": 60000,
-      "digitalSinglesEAS": 3750000,
+      "physicalSinglesEAS": 4500,
+      "digitalSinglesEAS": 2700000,
       "streams": { 
           "spotify": 0, 
           "youtubeVideoIds": ["uLS_qe-W88E", "IsUsVbTj2AY", "07FYdnEawAQ", "6S0In7_fIgs"] 
@@ -36,9 +36,9 @@
     },
     "Man of the Woods": {
       "year": 2018,
-      "pureSales": 1000000,
-      "physicalSinglesEAS": 15000,
-      "digitalSinglesEAS": 750000,
+      "pureSales": 1100000,
+      "physicalSinglesEAS": 150,
+      "digitalSinglesEAS": 150000,
       "streams": { 
           "spotify": 0, 
           "youtubeVideoIds": ["8mp7G17aj6A", "gA-NDZb29I4", "vXf6M-TuvX0", "M66fWjZ0fEY"] 

@@ -213,6 +213,16 @@ async function fetchAllData() {
             jtData.albums["Orphan / Features"].streams.spotify = liveStats.Orphan;
         }
 
+        // Tüm albümlerin YouTube verilerini paralel çek
+        if (YOUTUBE_API_KEY) {
+            await Promise.all(Object.keys(jtData.albums).map(async id => {
+                const ids = jtData.albums[id].streams.youtubeVideoIds;
+                if (ids && ids.length > 0) {
+                    jtData.albums[id].streams.youtube = await fetchRealYouTubeViews(ids);
+                }
+            }));
+        }
+
         updateCareerOverview(liveStats);
         console.log("DİNAMİK GÜNCELLEME TAMAMLANDI! EITIW aktif.");
 
@@ -239,17 +249,22 @@ function updateCareerOverview(liveStats) {
 
         // TABLO İÇİN GERÇEK VERİLERİ (data.json'dan) HAZIRLA
         const pure = albumData.pureSales || 0;
-        const singles = (albumData.physicalSinglesEAS || 0) + (albumData.digitalSinglesEAS || 0);
+        const physEAS = albumData.physicalSinglesEAS || 0;
+        const dlEAS   = albumData.digitalSinglesEAS  || 0;
+        const physSingles = Math.round(physEAS * (10 / 3));   // EAS → orjinal adet
+        const dlSingles   = Math.round(dlEAS   * (20 / 3));   // EAS → orjinal adet
+        const singlesEAS  = physEAS + dlEAS;
         const audio = Math.floor(((albumData.streams.spotify || 0) * ARTIST_RATIO) / 1166);
 
-        // --- updateCareerOverview içindeki döngüye ekle ---
         easTableData.push({
             album: id,
             pure: pure,
-            singles: singles,
+            physSingles: physSingles,
+            dlSingles: dlSingles,
+            singles: singlesEAS,
             audio: audio,
             total: stats.totalEAS,
-            year: albumData.year // data.json'dan yılı alıyoruz
+            year: albumData.year
         });
     });
 
@@ -428,26 +443,36 @@ function renderEasTable() {
     if (!tbody) return;
     tbody.innerHTML = "";
 
-    let grandPure = 0, grandSingles = 0, grandAudio = 0, grandTotal = 0;
+    let grandPure = 0, grandPhys = 0, grandDl = 0, grandSingles = 0, grandAudio = 0, grandTotal = 0;
 
     easTableData.forEach(row => {
-        grandPure += row.pure;
+        grandPure    += row.pure;
+        grandPhys    += row.physSingles;
+        grandDl      += row.dlSingles;
         grandSingles += row.singles;
-        grandAudio += row.audio;
-        grandTotal += row.total;
+        grandAudio   += row.audio;
+        grandTotal   += row.total;
 
+        const TD = `padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);`;
         let tr = document.createElement('tr');
         tr.innerHTML = `
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">
+            <td style="${TD}">
                 <div style="display:flex;align-items:center;gap:12px;">
                     ${albumThumbHTML(row.album)}
                     <span style="font-weight:700;color:#fff;">${row.album}</span>
                 </div>
             </td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${fmtNum(row.pure)}</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02);">${fmtNum(row.singles)}</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #5dade2;">+${fmtNum(row.audio)}</td>
-            <td style="padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.02); color: #d4a853; font-weight: 700;">${fmtNum(row.total)}</td>
+            <td style="${TD}">${fmtNum(row.pure)}</td>
+            <td style="${TD}">
+                ${fmtNum(row.physSingles)}
+                <div style="font-size:0.7rem;color:#aaa;margin-top:2px;">≈ ${fmtNum(row.physSingles > 0 ? Math.round(row.physSingles * 3/10) : 0)} EAS</div>
+            </td>
+            <td style="${TD}">
+                ${fmtNum(row.dlSingles)}
+                <div style="font-size:0.7rem;color:#aaa;margin-top:2px;">≈ ${fmtNum(row.dlSingles > 0 ? Math.round(row.dlSingles * 1.5/10) : 0)} EAS</div>
+            </td>
+            <td style="${TD}; color: #5dade2;">+${fmtNum(row.audio)}</td>
+            <td style="${TD}; color: #d4a853; font-weight: 700;">${fmtNum(row.total)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -458,7 +483,8 @@ function renderEasTable() {
     footerTr.innerHTML = `
         <td style="padding: 20px 0; font-weight: 900; color: #d4a853; text-transform: uppercase;">Grand Total</td>
         <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandPure)}</td>
-        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandSingles)}</td>
+        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandPhys)}</td>
+        <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandDl)}</td>
         <td style="padding: 20px 0; font-weight: 700; color: #5dade2;">+${fmtNum(grandAudio)}</td>
         <td style="padding: 20px 0; font-weight: 900; color: #d4a853; font-size: 1.2rem;">${fmtNum(grandTotal)}</td>
     `;
