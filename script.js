@@ -1,5 +1,5 @@
 // --- 1. AYARLAR VE MAPPING ---
-let jtData = null; 
+let jtData = null;
 const ARTIST_RATIO = 1.65; 
 // script.js en üst kısım
 let YOUTUBE_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.YOUTUBE_API_KEY : "";
@@ -154,8 +154,8 @@ function updateCareerOverview(liveStats) {
         });
     });
 
-    animateValue(document.getElementById('eas-total'), 0, careerTotalEAS, 2000);
-    animateValue(document.getElementById('spotify-total'), 0, liveStats.TotalSpotify, 2000);
+    animateValue(document.getElementById('eas-total'), 0, careerTotalEAS, 600);
+    animateValue(document.getElementById('spotify-total'), 0, liveStats.TotalSpotify, 600);
 
     const bestEraNameEl = document.getElementById('best-era-name');
     const bestEraValEl  = document.getElementById('best-era-val');
@@ -241,30 +241,65 @@ function animateValue(obj, start, end, duration) {
     window.requestAnimationFrame(step);
 }
 
-document.addEventListener('DOMContentLoaded', fetchAllData);
+const ALBUM_COLORS = {
+    "Justified":                   "#5dade2",
+    "FutureSex/LoveSounds":        "#e74c3c",
+    "The 20/20 Experience":        "#d4a853",
+    "Man of the Woods":            "#e67e22",
+    "Everything I Thought It Was": "#ca510f",
+    "Orphan":                      "#bdc3c7"
+};
+
+function initCardThemes() {
+    document.querySelectorAll('.album-card[data-album]').forEach(card => {
+        const color = ALBUM_COLORS[card.dataset.album];
+        if (!color) return;
+        card.style.setProperty('--card-color', color);
+        card.querySelectorAll('.album-year, .album-name').forEach(el => {
+            el.style.color = color;
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initCardThemes();
+    fetchAllData();
+});
 
 // --- 5. DİNAMİK ERA TEMASI (FULL TAKEOVER MOTORU) ---
 function updateEraTheme(albumName) {
-    // Albümlerin ruhuna uygun renk paletleri ve arka plan parlamaları (Glow)
     const themes = {
-        "Justified": { color: "#5dade2", bg: "rgba(93, 173, 226, 1)" }, 
-        "FutureSex/LoveSounds": { color: "#e74c3c", bg: "rgba(231, 76, 60, 1)" }, 
-        "The 20/20 Experience": { color: "#d4a853", bg: "rgba(212, 168, 83, 1)" }, 
-        "Man of the Woods": { color: "#e67e22", bg: "rgba(230, 126, 34, 1)" }, 
-        "Everything I Thought It Was": { color: "#ca510f", bg: "rgb(225, 86, 22)" }, 
-        "Orphan": { color: "#bdc3c7", bg: "rgba(189, 195, 199, 1)" } 
+        "Justified":                  { color: "#5dade2", glow: "rgba(93,173,226,0.15)",  cover: "assets/justified.jpg" },
+        "FutureSex/LoveSounds":       { color: "#e74c3c", glow: "rgba(231,76,60,0.15)",   cover: "assets/fsls.jpg" },
+        "The 20/20 Experience":       { color: "#d4a853", glow: "rgba(212,168,83,0.15)",  cover: "assets/the20.jpg" },
+        "Man of the Woods":           { color: "#e67e22", glow: "rgba(230,126,34,0.15)",  cover: "assets/motw.jpg" },
+        "Everything I Thought It Was":{ color: "#ca510f", glow: "rgba(225,86,22,0.15)",   cover: "assets/eitiw.jpg" },
+        "Orphan":                     { color: "#bdc3c7", glow: "rgba(189,195,199,0.15)", cover: null }
     };
-    
-    let t = themes[albumName] || themes["The 20/20 Experience"];
-    
-    // 1. TÜM SİTENİN VURGU RENGİNİ DEĞİŞTİR (Menüler, Linkler, İkonlar)
-    document.documentElement.style.setProperty('--accent-bronze', t.color);
-    
-    // 2. ARKA PLANI O DÖNEMİN RENGİYLE YIKA (Radial Glow Efekti)
-    document.body.style.background = `radial-gradient(circle at 50% 50%, ${t.bg} 0%, #0a0a0f 80%)`;
-    document.body.style.backgroundAttachment = "fixed"; // Scroll yaparken renk sabit kalsın
 
-    // 3. SPESİFİK ELEMENTLERİ PATLAT
+    const t = themes[albumName] || themes["The 20/20 Experience"];
+    const c = t.color;
+
+    // 1. CSS değişkeni
+    document.documentElement.style.setProperty('--accent-bronze', c);
+    document.documentElement.style.setProperty('--accent-gold', c);
+
+    // 2. Body arka plan glow
+    const glowColor = t.color + '55';
+    document.body.style.background = `radial-gradient(ellipse 120% 60% at 50% 0%, ${glowColor} 0%, #0a0a0f 65%)`;
+    document.body.style.backgroundAttachment = "fixed";
+
+    // 3. Hero arkaplan → albüm kapağı
+    const heroBg = document.querySelector('.hero-bg');
+    if (heroBg) {
+        const imgUrl = t.cover ? `url('${t.cover}')` : "url('assets/jt-hero.jpg')";
+        heroBg.style.transition = 'opacity 0.6s ease';
+        heroBg.style.backgroundImage = `linear-gradient(to right, rgba(10,10,15,0.88) 30%, rgba(10,10,15,0.45) 100%), linear-gradient(to bottom, transparent 60%, #0a0a0f 100%), ${imgUrl}`;
+        heroBg.style.backgroundSize = 'cover';
+        heroBg.style.backgroundPosition = 'center 20%';
+    }
+
+    // 4. Dynamic style tag — tüm sayfa
     let styleTag = document.getElementById('era-dynamic-style');
     if (!styleTag) {
         styleTag = document.createElement('style');
@@ -273,31 +308,62 @@ function updateEraTheme(albumName) {
     }
 
     styleTag.innerHTML = `
-        /* Rakamlar ve Başlıklar */
-        #eas-total, .stat-value, .cspc-title { color: ${t.color} !important; transition: color 0.5s ease; }
-        .cspc-header { border-left: 4px solid ${t.color}; padding-left: 15px; transition: border-color 0.5s ease; }
-        
-        /* Albüm Kartlarına Glow Efekti (Üzerine gelince dönemin renginde parlar) */
-        .album-card:hover { border-color: ${t.color}; box-shadow: 0 10px 40px ${t.bg}; }
-        
-        /* Dinamik Buton Tasarımı */
-        /* Dinamik Buton Tasarımı - YAZI GÖRÜNÜRLÜĞÜ ÇÖZÜLDÜ */
+        * { transition: color 0.4s ease, border-color 0.4s ease, background-color 0.4s ease; }
+
+        /* Nav */
+        .logo { color: ${c} !important; text-shadow: 0 0 20px ${c}40; }
+        .nav-links a:hover, .nav-links a.active { color: ${c} !important; }
+
+        /* Hero */
+        .hero-subtitle { color: ${c} !important; }
+        .hero-title span:nth-child(2) { -webkit-text-stroke: 2px ${c} !important; color: transparent !important; }
+        .hero-year { color: ${c} !important; opacity: 0.6; }
+        .scroll-line { background: ${c} !important; }
+
+        /* Section başlıkları */
+        .section-title { color: #fff !important; }
+        .section-title::before { color: ${c} !important; }
+
+        /* CSPC dashboard */
+        #eas-total, .stat-value, .cspc-title { color: ${c} !important; }
+        .cspc-header { border-left: 4px solid ${c} !important; padding-left: 15px; }
+        .stat-label { color: rgba(255,255,255,0.4) !important; }
+
+        /* CSPC tablo */
+        .analytics-row h2 { color: ${c} !important; }
+        th[onclick]:hover { color: #fff !important; }
+
+        /* Albüm kartları — kendi renkleriyle hover */
+        .album-card:hover { border-color: var(--card-color) !important; box-shadow: 0 10px 40px var(--card-color) !important; }
+
+        /* Butonlar */
         .era-btn {
             display: inline-block; padding: 12px 24px; text-decoration: none; border-radius: 8px;
             font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+            background: rgba(10,10,15,0.95); color: ${c} !important; border: 1px solid ${c};
             transition: all 0.3s ease; cursor: pointer;
-            /* Arka planı koyu siyah yapıyoruz ki arkadaki sis yazıyı yutmasın */
-            background: rgba(10, 10, 15, 0.95); 
-            color: ${t.color} !important; /* Yazı rengi dönemin rengi (Örn: Mavi) */
-            border: 1px solid ${t.color};
         }
-        .era-btn:hover { 
-            background: ${t.color}; /* Üzerine gelince dönemin rengiyle dolar */
-            color: #111 !important; /* Üzerine gelince yazı simsiyah olur, net okunur */
-            box-shadow: 0 0 25px ${t.color}; 
-        }
-        /* Scroll Çizgisi */
-        .scroll-line { background: ${t.color}; }
+        .era-btn:hover { background: ${c} !important; color: #111 !important; box-shadow: 0 0 25px ${c}; }
+
+        /* Official Label figures */
+        .label-figure { color: ${c} !important; }
+
+        /* CSPC Total EAS kolonu + Grand Total */
+        .cell-era-total { color: ${c} !important; }
+        .grand-total-row { background: ${c}18 !important; border-top-color: ${c} !important; }
+
+        /* Guestbook bölümü */
+        .guestbook { border-top-color: ${c}33 !important; }
+        .guestbook h2 { color: ${c} !important; }
+        #guest-name, #guest-msg { border-color: ${c}55 !important; }
+        #guest-name:focus, #guest-msg:focus { border-color: ${c} !important; box-shadow: 0 0 10px ${c}33; }
+        #visitor-count { color: ${c} !important; }
+        .comment-card { border-left-color: ${c} !important; }
+        .comment-author { color: ${c} !important; }
+
+        /* Timeline & diğer bölümler */
+        .timeline-dot, .timeline-year { color: ${c} !important; }
+        .timeline-line { background: ${c}44 !important; }
     `;
 }
 
@@ -361,22 +427,23 @@ function renderEasTable() {
                 ${fmtNum(row.dlSingles)}
                 <div style="font-size:0.7rem;color:#aaa;margin-top:2px;">≈ ${fmtNum(row.dlSingles > 0 ? Math.round(row.dlSingles * 1.5/10) : 0)} EAS</div>
             </td>
-            <td style="${TD}; color: #5dade2;">+${fmtNum(row.audio)}</td>
-            <td style="${TD}; color: #d4a853; font-weight: 700;">${fmtNum(row.total)}</td>
+            <td style="${TD}; color: #4ade80;">+${fmtNum(row.audio)}</td>
+            <td class="cell-era-total" style="${TD}; color: #d4a853; font-weight: 700;">${fmtNum(row.total)}</td>
         `;
         tbody.appendChild(tr);
     });
 
     let footerTr = document.createElement('tr');
+    footerTr.className = 'grand-total-row';
     footerTr.style.background = "rgba(212, 168, 83, 0.1)";
     footerTr.style.borderTop = "2px solid #d4a853";
     footerTr.innerHTML = `
-        <td style="padding: 20px 0; font-weight: 900; color: #d4a853; text-transform: uppercase; white-space:nowrap;">Grand Total</td>
+        <td class="cell-era-total" style="padding: 20px 0; font-weight: 900; color: #d4a853; text-transform: uppercase; white-space:nowrap;">Grand Total</td>
         <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandPure)}</td>
         <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandPhys)}</td>
         <td style="padding: 20px 0; font-weight: 700; color: #fff;">${fmtNum(grandDl)}</td>
-        <td style="padding: 20px 0; font-weight: 700; color: #5dade2;">+${fmtNum(grandAudio)}</td>
-        <td style="padding: 20px 0; font-weight: 900; color: #d4a853; font-size: 1.2rem;">${fmtNum(grandTotal)}</td>
+        <td style="padding: 20px 0; font-weight: 700; color: #4ade80;">+${fmtNum(grandAudio)}</td>
+        <td class="cell-era-total" style="padding: 20px 0; font-weight: 900; color: #d4a853; font-size: 1.2rem;">${fmtNum(grandTotal)}</td>
     `;
     tbody.appendChild(footerTr);
 }
