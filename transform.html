@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timbertrix | Transform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #050a05;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        nav { background: rgba(5,10,5,0.97); border-bottom: 1px solid rgba(0,200,0,0.2); }
+        .logo { color: #00e500 !important; }
+
+        /* ── PAGE ── */
+        .trix-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 64px);
+            padding: 80px 20px 40px;
+            gap: 32px;
+        }
+
+        .trix-header {
+            text-align: center;
+        }
+        .trix-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            color: #00e500;
+            text-shadow: 0 0 30px rgba(0,229,0,0.5);
+            letter-spacing: 0.05em;
+        }
+        .trix-subtitle {
+            color: rgba(0,229,0,0.5);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        /* ── OMNITRIX ── */
+        .omnitrix-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .omnitrix {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 38% 35%, #1e4a1e 0%, #0a1a0a 55%, #020802 100%);
+            border: 10px solid #1a6a1a;
+            box-shadow:
+                0 0 0 3px #0d3d0d,
+                0 0 0 5px #1a6a1a,
+                0 0 60px rgba(0,200,0,0.35),
+                0 0 120px rgba(0,200,0,0.12),
+                inset 0 0 40px rgba(0,0,0,0.7);
+            position: relative;
+            cursor: default;
+            transition: box-shadow 0.3s ease;
+        }
+        .omnitrix.spinning {
+            box-shadow:
+                0 0 0 3px #0d3d0d,
+                0 0 0 5px #1a6a1a,
+                0 0 80px rgba(0,255,0,0.6),
+                0 0 160px rgba(0,255,0,0.25),
+                inset 0 0 40px rgba(0,0,0,0.7);
+        }
+
+        /* Outer ring tick marks */
+        .omnitrix::before {
+            content: '';
+            position: absolute;
+            inset: -18px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background:
+                repeating-conic-gradient(
+                    rgba(0,200,0,0.4) 0deg 2deg,
+                    transparent 2deg 60deg
+                ) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* Tech detail ring */
+        .omnitrix::after {
+            content: '';
+            position: absolute;
+            inset: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,180,0,0.25);
+            pointer-events: none;
+        }
+
+        /* Album display window */
+        .trix-window {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            border: 4px solid #00c800;
+            box-shadow: 0 0 20px rgba(0,200,0,0.5), inset 0 0 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .trix-window:hover {
+            box-shadow: 0 0 35px rgba(0,255,0,0.7), inset 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        .trix-album-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s;
+            filter: saturate(1.1) brightness(0.9);
+        }
+        .trix-window:hover .trix-album-img {
+            transform: scale(1.06);
+            filter: saturate(1.3) brightness(1.05);
+        }
+
+        /* Green scan-line overlay */
+        .trix-scanline {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0,200,0,0.03) 3px,
+                rgba(0,200,0,0.03) 4px
+            );
+            pointer-events: none;
+        }
+
+        /* Transform button (center press) */
+        .trix-btn {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 48px;
+            height: 22px;
+            border-radius: 11px;
+            background: linear-gradient(180deg, #00c800, #006400);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 12px rgba(0,255,0,0.6), 0 3px 8px rgba(0,0,0,0.6);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55rem;
+            color: rgba(0,0,0,0.8);
+            font-weight: 900;
+            letter-spacing: 0.05em;
+        }
+        .trix-btn:hover {
+            box-shadow: 0 0 22px rgba(0,255,0,0.9), 0 3px 8px rgba(0,0,0,0.6);
+        }
+        .trix-btn:active {
+            transform: translateX(-50%) scaleY(0.85);
+            box-shadow: 0 0 8px rgba(0,255,0,0.4);
+        }
+
+        /* Side brackets */
+        .trix-bracket {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 60px;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #1a5a1a, #0d3d0d);
+            border: 1px solid #1a6a1a;
+        }
+        .trix-bracket.left  { left:  -28px; }
+        .trix-bracket.right { right: -28px; }
+
+        /* ── CONTROLS ── */
+        .trix-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .trix-nav {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,150,0,0.15);
+            border: 1px solid rgba(0,200,0,0.35);
+            color: #00e500;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .trix-nav:hover {
+            background: rgba(0,200,0,0.25);
+            box-shadow: 0 0 14px rgba(0,255,0,0.3);
+        }
+        .trix-era-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00e500;
+            text-shadow: 0 0 12px rgba(0,229,0,0.5);
+            min-width: 220px;
+            text-align: center;
+            letter-spacing: 0.04em;
+        }
+        .trix-era-year {
+            font-size: 0.7rem;
+            color: rgba(0,200,0,0.5);
+            display: block;
+            letter-spacing: 0.15em;
+            margin-top: 2px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Era dots */
+        .trix-dots {
+            display: flex;
+            gap: 8px;
+        }
+        .trix-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,200,0,0.4);
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .trix-dot.active {
+            background: #00e500;
+            box-shadow: 0 0 8px rgba(0,229,0,0.7);
+        }
+
+        /* Transform CTA */
+        .trix-cta {
+            font-size: 0.72rem;
+            color: rgba(0,200,0,0.45);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            animation: ctaBlink 2s ease-in-out infinite;
+        }
+        @keyframes ctaBlink {
+            0%, 100% { opacity: 0.45; }
+            50% { opacity: 1; }
+        }
+
+        /* ── TRANSFORMATION OVERLAY ── */
+        .transform-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .transform-overlay.active { display: flex; }
+
+        .overlay-bg {
+            position: absolute;
+            inset: 0;
+            background: #000;
+        }
+        .overlay-ripple {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--era-color) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0);
+            transition: transform 0.6s cubic-bezier(0.16,1,0.3,1), opacity 0.6s ease;
+        }
+        .transform-overlay.blast .overlay-ripple {
+            opacity: 0.9;
+            transform: scale(3);
+        }
+
+        .overlay-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s ease 0.35s, transform 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.35s;
+        }
+        .transform-overlay.reveal .overlay-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .overlay-album {
+            width: 180px;
+            height: 180px;
+            border-radius: 16px;
+            object-fit: cover;
+            box-shadow: 0 0 60px var(--era-color), 0 20px 60px rgba(0,0,0,0.8);
+            border: 3px solid var(--era-color);
+        }
+        .overlay-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--era-color);
+            opacity: 0.8;
+        }
+        .overlay-era {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 6vw, 3rem);
+            font-weight: 900;
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 0 40px var(--era-color);
+            line-height: 1.1;
+        }
+        .overlay-transform-text {
+            font-size: 0.75rem;
+            letter-spacing: 0.4em;
+            color: var(--era-color);
+            text-transform: uppercase;
+            font-weight: 700;
+            animation: pulseText 0.8s ease-in-out infinite alternate;
+        }
+        @keyframes pulseText {
+            from { opacity: 0.6; text-shadow: none; }
+            to   { opacity: 1; text-shadow: 0 0 16px var(--era-color); }
+        }
+
+        .overlay-revert {
+            margin-top: 8px;
+            padding: 10px 28px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid var(--era-color);
+            color: var(--era-color);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .overlay-revert:hover {
+            background: var(--era-color);
+            color: #000;
+        }
+
+        /* Flash effect */
+        .flash {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #fff;
+            pointer-events: none;
+            opacity: 0;
+        }
+        .flash.go {
+            animation: flashAnim 0.5s ease forwards;
+        }
+        .flash.red {
+            background: #ff2200;
+        }
+        @keyframes flashAnim {
+            0%   { opacity: 0; }
+            20%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ── DETRANSFORMATION ── */
+
+        /* Omnitrix kırmızıya döner */
+        .omnitrix.reverting {
+            border-color: #cc0000 !important;
+            box-shadow:
+                0 0 0 3px #3d0000,
+                0 0 0 5px #cc0000,
+                0 0 80px rgba(255,0,0,0.7),
+                0 0 160px rgba(255,0,0,0.3),
+                inset 0 0 40px rgba(0,0,0,0.7) !important;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        /* İçerik glitch/shake */
+        .transform-overlay.detransforming .overlay-content {
+            animation: deglitch 0.55s ease forwards;
+        }
+        @keyframes deglitch {
+            0%   { transform: scale(1)    translateX(0);   opacity: 1; filter: none; }
+            15%  { transform: scale(1.04) translateX(-8px); filter: hue-rotate(180deg) saturate(3); }
+            30%  { transform: scale(0.97) translateX(6px);  filter: hue-rotate(0deg)  saturate(1); }
+            45%  { transform: scale(1.02) translateX(-5px); filter: hue-rotate(90deg) saturate(2); }
+            60%  { transform: scale(0.95) translateX(3px);  opacity: 0.7; filter: none; }
+            80%  { transform: scale(0.6)  translateX(0);   opacity: 0.3; }
+            100% { transform: scale(0)    translateX(0);   opacity: 0; }
+        }
+
+        /* Ripple geri çekilir */
+        .transform-overlay.detransforming .overlay-ripple {
+            transition: transform 0.55s cubic-bezier(0.55,0,1,0.45), opacity 0.55s ease !important;
+            transform: scale(0) !important;
+            opacity: 0 !important;
+        }
+
+        /* Kırmızı overlay tint */
+        .transform-overlay.detransforming::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(200,0,0,0.18);
+            animation: redPulse 0.5s ease forwards;
+            pointer-events: none;
+            z-index: 1;
+        }
+        @keyframes redPulse {
+            0%   { opacity: 0; }
+            30%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 400px) {
+            .omnitrix { width: 260px; height: 260px; }
+            .trix-window { width: 128px; height: 128px; }
+            .trix-bracket { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">Timberlake</div>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="tours.html">Box Office</a></li>
+        <li><a href="streams.html">Live Streaming</a></li>
+        <li><a href="game.html">Album Crush</a></li>
+        <li><a href="transform.html" class="active">Timbertrix</a></li>
+    </ul>
+</nav>
+
+<div class="trix-page">
+
+    <div class="trix-header">
+        <h1 class="trix-title">TIMBERTRIX</h1>
+        <p class="trix-subtitle">Select your era · Transform</p>
+    </div>
+
+    <!-- Omnitrix -->
+    <div class="omnitrix-wrap">
+        <div class="omnitrix" id="omnitrix">
+            <!-- Side brackets -->
+            <div class="trix-bracket left"></div>
+            <div class="trix-bracket right"></div>
+
+            <!-- Album window -->
+            <div class="trix-window" id="trix-window" onclick="pressTransform()">
+                <img class="trix-album-img" id="trix-img" src="" alt="">
+                <div class="trix-scanline"></div>
+            </div>
+
+            <!-- Press button -->
+            <button class="trix-btn" id="trix-btn" onclick="pressTransform()">PRESS</button>
+        </div>
+    </div>
+
+    <!-- Era name -->
+    <div class="trix-controls">
+        <button class="trix-nav" id="btn-prev" onclick="cycle(-1)">◀</button>
+        <div class="trix-era-name" id="trix-era-name">
+            Justified
+            <span class="trix-era-year" id="trix-era-year">2002</span>
+        </div>
+        <button class="trix-nav" id="btn-next" onclick="cycle(1)">▶</button>
+    </div>
+
+    <!-- Dots -->
+    <div class="trix-dots" id="trix-dots"></div>
+
+    <p class="trix-cta">Click the watch to transform</p>
+
+</div>
+
+<!-- Transformation overlay -->
+<div class="transform-overlay" id="overlay">
+    <div class="overlay-bg"></div>
+    <div class="overlay-ripple" id="overlay-ripple"></div>
+    <div class="overlay-content" id="overlay-content">
+        <span class="overlay-label">You are now</span>
+        <img class="overlay-album" id="overlay-img" src="" alt="">
+        <div class="overlay-era" id="overlay-era">Justified</div>
+        <span class="overlay-transform-text">TRANSFORMATION COMPLETE</span>
+        <button class="overlay-revert" onclick="revert()">✕ Revert</button>
+    </div>
+</div>
+
+<!-- Flash layer -->
+<div class="flash" id="flash"></div>
+
+<script>
+// ── ERAS ──────────────────────────────────────────────────
+const ERAS = [
+    {
+        name: 'Justified',
+        year: '2002',
+        img: 'assets/ben10-justified.png',
+        albumImg: 'assets/justified.jpg',
+        cutout: true,
+        color: '#d4a853',
+        alias: 'THE JUSTIFIED ONE',
+        desc: 'Like I Love You · Cry Me a River · Rock Your Body',
+    },
+    {
+        name: 'FutureSex/LoveSounds',
+        year: '2006',
+        img: 'assets/ben10-fsls.png',
+        albumImg: 'assets/fsls.jpg',
+        cutout: true,
+        color: '#e74c3c',
+        alias: 'FUTURESEX',
+        desc: 'SexyBack · What Goes Around · My Love',
+    },
+    {
+        name: 'The 20/20 Experience',
+        year: '2013',
+        img: 'assets/random pics/IMG_7432.JPG',
+        albumImg: 'assets/the20.jpg',
+        color: '#d4a853',
+        alias: 'TWENTY TWENTY',
+        desc: 'Suit & Tie · Mirrors · Tunnel Vision',
+    },
+    {
+        name: '20/20 Experience 2',
+        year: '2013',
+        img: 'assets/random pics/IMG_7435.JPG',
+        albumImg: 'assets/the20pt2.jpg',
+        color: '#8e44ad',
+        alias: 'TWENTY TWENTY-2',
+        desc: 'Not a Bad Thing · TKO · True Blood',
+    },
+    {
+        name: 'Man of the Woods',
+        year: '2018',
+        img: 'assets/random pics/IMG_7440.JPG',
+        albumImg: 'assets/motw.jpg',
+        color: '#e67e22',
+        alias: 'WOODS MAN',
+        desc: 'Filthy · Say Something · Supplies',
+    },
+    {
+        name: 'Everything I Thought It Was',
+        year: '2024',
+        img: 'assets/random pics/IMG_7442.JPG',
+        albumImg: 'assets/eitiw.jpg',
+        color: '#ca510f',
+        alias: 'THE EVERYTHING',
+        desc: 'Selfish · No Angels · Sanctified',
+    },
+];
+
+// ── STATE ──────────────────────────────────────────────────
+let current = 0;
+let transforming = false;
+
+// ── REFS ──────────────────────────────────────────────────
+const omnitrix   = document.getElementById('omnitrix');
+const trixImg    = document.getElementById('trix-img');
+const eraNameEl  = document.getElementById('trix-era-name');
+const eraYearEl  = document.getElementById('trix-era-year');
+const dotsEl     = document.getElementById('trix-dots');
+const overlay    = document.getElementById('overlay');
+const ripple     = document.getElementById('overlay-ripple');
+const content    = document.getElementById('overlay-content');
+const overlayImg = document.getElementById('overlay-img');
+const overlayEra = document.getElementById('overlay-era');
+const flashEl    = document.getElementById('flash');
+
+// ── AUDIO (Real Omnitrix SFX) ─────────────────────────────
+const BASE = 'https://raw.githubusercontent.com/gibsonmurray/omnitrix/main/public/sounds/';
+
+const SFX = {
+    transform:  new Audio(BASE + 'transformation.mp3'),
+    activation: new Audio(BASE + 'activation.mp3'),
+    timeout:    new Audio(BASE + 'timeout.mp3'),
+    hover:      new Audio(BASE + 'hover-alien.mp3'),
+    twist: [1,2,3,4,5,6].map(n => new Audio(BASE + `twist-${n}.mp3`)),
+};
+
+// Preload all
+Object.values(SFX).flat().forEach(a => { a.preload = 'auto'; a.load(); });
+
+let twistIdx = 0;
+
+function playTransformSound() {
+    SFX.activation.currentTime = 0;
+    SFX.activation.play().catch(() => {});
+    setTimeout(() => {
+        SFX.transform.currentTime = 0;
+        SFX.transform.play().catch(() => {});
+    }, 300);
+}
+
+function playClickSound() {
+    const snd = SFX.twist[twistIdx % SFX.twist.length];
+    twistIdx++;
+    snd.currentTime = 0;
+    snd.play().catch(() => {});
+}
+
+function playRevertSound() {
+    SFX.timeout.currentTime = 0;
+    SFX.timeout.play().catch(() => {});
+}
+
+// ── BUILD DOTS ─────────────────────────────────────────────
+function buildDots() {
+    dotsEl.innerHTML = '';
+    ERAS.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'trix-dot' + (i === current ? ' active' : '');
+        d.onclick = () => goTo(i);
+        dotsEl.appendChild(d);
+    });
+}
+
+function updateDisplay() {
+    const era = ERAS[current];
+    trixImg.src = era.img;
+    // Cutout PNG'ler için contain, normal fotoğraflar için cover
+    trixImg.style.objectFit      = era.cutout ? 'contain' : 'cover';
+    trixImg.style.objectPosition = era.cutout ? 'bottom center' : 'top center';
+    trixImg.style.padding        = era.cutout ? '6px 0 0' : '0';
+    eraNameEl.childNodes[0].textContent = era.name;
+    eraYearEl.textContent = era.year;
+    // Update dots
+    [...dotsEl.children].forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+        d.style.background = i === current ? era.color : '';
+        d.style.borderColor = i === current ? era.color : '';
+        d.style.boxShadow  = i === current ? `0 0 8px ${era.color}` : '';
+    });
+    // Trix window border color
+    document.querySelector('.trix-window').style.borderColor = era.color;
+    document.querySelector('.trix-window').style.boxShadow = `0 0 20px ${era.color}55, inset 0 0 20px rgba(0,0,0,0.4)`;
+}
+
+function goTo(index) {
+    current = ((index % ERAS.length) + ERAS.length) % ERAS.length;
+    playClickSound();
+    updateDisplay();
+}
+
+function cycle(dir) {
+    goTo(current + dir);
+    // Spin omnitrix briefly
+    omnitrix.classList.add('spinning');
+    setTimeout(() => omnitrix.classList.remove('spinning'), 400);
+}
+
+// ── TRANSFORM ─────────────────────────────────────────────
+function pressTransform() {
+    if (transforming) return;
+    transforming = true;
+
+    const era = ERAS[current];
+
+    // Set CSS variable for overlay colors
+    overlay.style.setProperty('--era-color', era.color);
+
+    // Shake omnitrix
+    omnitrix.style.animation = 'none';
+    omnitrix.style.transform = 'scale(1.05)';
+    setTimeout(() => { omnitrix.style.transform = ''; }, 150);
+
+    playTransformSound();
+
+    // Flash
+    flashEl.classList.remove('go');
+    void flashEl.offsetWidth;
+    flashEl.classList.add('go');
+
+    // Show overlay after flash peak
+    setTimeout(() => {
+        overlayImg.src = era.albumImg;
+        overlayEra.textContent = era.alias;
+
+        overlay.classList.add('active');
+        void overlay.offsetWidth;
+        overlay.classList.add('blast');
+
+        setTimeout(() => overlay.classList.add('reveal'), 50);
+
+        // Apply site era theme (if fab.js is loaded)
+        if (window.applyEraTheme) window.applyEraTheme(era.name);
+    }, 200);
+}
+
+function revert() {
+    if (!transforming) return;
+
+    // 1. Omnitrix kırmızıya döner + ses
+    omnitrix.classList.add('reverting');
+    playRevertSound();
+
+    // 2. Kırmızı flash
+    setTimeout(() => {
+        flashEl.classList.remove('go', 'red');
+        void flashEl.offsetWidth;
+        flashEl.classList.add('go', 'red');
+    }, 80);
+
+    // 3. Detransformation animasyonu başlar
+    setTimeout(() => {
+        overlay.classList.add('detransforming');
+    }, 160);
+
+    // 4. Overlay kapanır, her şey sıfırlanır
+    setTimeout(() => {
+        overlay.classList.remove('active', 'blast', 'reveal', 'detransforming');
+        omnitrix.classList.remove('reverting');
+        transforming = false;
+        if (window.resetToCareer) window.resetToCareer();
+        else if (window.applyEraTheme) window.applyEraTheme('default');
+    }, 750);
+}
+
+// ── KEYBOARD ──────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  cycle(-1);
+    if (e.key === 'ArrowRight') cycle(1);
+    if (e.key === 'Enter' || e.key === ' ') pressTransform();
+    if (e.key === 'Escape') revert();
+});
+
+// ── SWIPE (mobile) ────────────────────────────────────────
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) cycle(dx < 0 ? 1 : -1);
+});
+
+// ── BOOT ──────────────────────────────────────────────────
+buildDots();
+updateDisplay();
+</script>
+
+<script src="fab.js"></script>
+</body>
+</html>

@@ -20,78 +20,92 @@
             min-height: 100vh;
         }
 
-        /* ── NAV ── */
+        /* ── NAV mobile fix ── */
         nav { background: rgba(10,10,15,0.95); border-bottom: 1px solid rgba(212,168,83,0.15); }
+        @media (max-width: 600px) {
+            nav .nav-links { gap: 12px !important; }
+            nav .nav-links a { font-size: 0.7rem !important; }
+        }
 
         /* ── GAME PAGE ── */
         .game-page {
-            padding: 100px 20px 60px;
-            max-width: 900px;
-            margin: 0 auto;
+            padding: 90px 16px 80px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 24px;
+            gap: 20px;
         }
 
         .game-title {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-size: clamp(1.6rem, 5vw, 2.8rem);
             font-weight: 900;
             text-align: center;
         }
         .game-title span { color: var(--accent-bronze, #d4a853); }
         .game-subtitle {
             color: rgba(255,255,255,0.45);
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             letter-spacing: 0.12em;
             text-transform: uppercase;
             text-align: center;
-            margin-top: -16px;
+            margin-top: -14px;
         }
 
-        /* ── HUD ── */
+        /* ── BOARD (responsive core) ──
+           Board width = 8 gems + 7 gaps + 2×padding
+           --gs = gem size (fluid via clamp)
+           --gap = gap between gems
+           --bp = board padding                        */
+        :root {
+            --gs:  clamp(34px, 10.5vw, 62px);
+            --gap: clamp(2px,  0.6vw,  5px);
+            --bp:  clamp(6px,  1.5vw,  12px);
+        }
+        .board-size-ref {
+            /* invisible reference: same width calc as the board */
+            width: calc(8 * var(--gs) + 7 * var(--gap) + 2 * var(--bp));
+        }
+
+        /* ── HUD — same width as board ── */
         .game-hud {
             display: flex;
-            gap: 16px;
-            width: 100%;
-            max-width: 560px;
-            justify-content: center;
+            gap: clamp(6px, 1.5vw, 14px);
+            width: calc(8 * var(--gs) + 7 * var(--gap) + 2 * var(--bp));
         }
         .hud-card {
             flex: 1;
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(212,168,83,0.18);
-            border-radius: 12px;
-            padding: 14px 16px;
+            border-radius: 10px;
+            padding: clamp(8px,2vw,14px) 8px;
             text-align: center;
+            min-width: 0;
         }
         .hud-label {
-            font-size: 0.65rem;
+            font-size: clamp(0.55rem, 1.4vw, 0.65rem);
             text-transform: uppercase;
-            letter-spacing: 0.14em;
+            letter-spacing: 0.1em;
             color: rgba(255,255,255,0.4);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
+            white-space: nowrap;
         }
         .hud-value {
-            font-size: 1.7rem;
+            font-size: clamp(1rem, 3.5vw, 1.7rem);
             font-weight: 700;
             color: var(--accent-bronze, #d4a853);
             line-height: 1;
         }
-        .hud-value.combo-flash {
-            animation: comboFlash 0.4s ease;
-        }
+        .hud-value.combo-flash { animation: comboFlash 0.4s ease; }
         @keyframes comboFlash {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.35); color: #fff; }
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.35); color: #fff; }
             100% { transform: scale(1); }
         }
 
-        /* ── MOVES BAR ── */
+        /* ── MOVES BAR — same width as board ── */
         .moves-bar-wrap {
-            width: 100%;
-            max-width: 560px;
+            width: calc(8 * var(--gs) + 7 * var(--gap) + 2 * var(--bp));
         }
         .moves-bar-track {
             height: 4px;
@@ -109,21 +123,24 @@
         /* ── BOARD ── */
         .board-wrap {
             position: relative;
+            overflow: hidden; /* contain score popups */
         }
         .game-board {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
-            gap: 4px;
+            grid-template-columns: repeat(8, var(--gs));
+            grid-template-rows:    repeat(8, var(--gs));
+            gap: var(--gap);
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(212,168,83,0.15);
-            border-radius: 16px;
-            padding: 10px;
+            border-radius: 14px;
+            padding: var(--bp);
         }
 
+        /* ── GEM — fills its grid cell exactly ── */
         .gem {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+            width:  var(--gs);
+            height: var(--gs);
+            border-radius: clamp(6px, 1.8vw, 10px);
             background-size: cover;
             background-position: center;
             cursor: pointer;
@@ -131,172 +148,120 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.25s ease;
             user-select: none;
             -webkit-user-select: none;
-        }
-        .gem::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            transition: border-color 0.15s ease;
+            touch-action: manipulation;
         }
         .gem:hover { transform: scale(1.06); }
         .gem.selected {
             transform: scale(1.1);
-            box-shadow: 0 0 0 3px #fff, 0 0 16px rgba(255,255,255,0.6);
+            box-shadow: 0 0 0 2px #fff, 0 0 14px rgba(255,255,255,0.55);
             z-index: 5;
         }
-        .gem.matched {
-            animation: matchPop 0.35s ease forwards;
-        }
+        .gem.matched  { animation: matchPop 0.35s ease forwards; }
         @keyframes matchPop {
-            0% { transform: scale(1); opacity: 1; }
-            40% { transform: scale(1.25); opacity: 1; }
-            100% { transform: scale(0); opacity: 0; }
+            0%   { transform: scale(1);    opacity: 1; }
+            40%  { transform: scale(1.25); opacity: 1; }
+            100% { transform: scale(0);    opacity: 0; }
         }
-        .gem.falling {
-            transition: none;
-        }
-        .gem.empty {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .gem.drop-in {
-            animation: dropIn 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards;
-        }
+        .gem.empty { opacity: 0; pointer-events: none; }
+        .gem.drop-in { animation: dropIn 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards; }
         @keyframes dropIn {
-            0% { transform: translateY(-40px) scale(0.7); opacity: 0; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
+            0%   { transform: translateY(-40px) scale(0.7); opacity: 0; }
+            100% { transform: translateY(0)     scale(1);   opacity: 1; }
         }
-        .gem.swap-anim {
-            transition: transform 0.18s ease;
-        }
-        .gem.no-match-shake {
-            animation: shake 0.35s ease;
-        }
+        .gem.swap-anim { transition: transform 0.18s ease; }
+        .gem.no-match-shake { animation: shake 0.35s ease; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-6px); }
-            40% { transform: translateX(6px); }
-            60% { transform: translateX(-4px); }
-            80% { transform: translateX(4px); }
+            20%  { transform: translateX(-5px); }
+            40%  { transform: translateX(5px);  }
+            60%  { transform: translateX(-3px); }
+            80%  { transform: translateX(3px);  }
         }
 
-        /* score popup */
+        /* ── SCORE POPUP ── */
         .score-popup {
             position: absolute;
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
             color: #fff;
             pointer-events: none;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
             animation: floatUp 0.7s ease forwards;
             z-index: 20;
+            white-space: nowrap;
         }
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+            0%   { opacity: 1; transform: translateY(0)     scale(1);   }
+            100% { opacity: 0; transform: translateY(-48px) scale(1.25); }
         }
 
         /* ── CONTROLS ── */
-        .game-controls {
-            display: flex;
-            gap: 12px;
-        }
+        .game-controls { display: flex; gap: 10px; }
         .btn-game {
-            padding: 11px 28px;
+            padding: 10px 24px;
             border-radius: 8px;
             border: 1px solid var(--accent-bronze, #d4a853);
             background: transparent;
             color: var(--accent-bronze, #d4a853);
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
+            touch-action: manipulation;
         }
-        .btn-game:hover, .btn-game.primary {
-            background: var(--accent-bronze, #d4a853);
-            color: #0a0a0f;
-        }
-        .btn-game.primary { padding: 11px 36px; }
+        .btn-game:hover { background: var(--accent-bronze, #d4a853); color: #0a0a0f; }
+        .btn-game.primary { background: var(--accent-bronze, #d4a853); color: #0a0a0f; padding: 10px 32px; }
 
         /* ── LEGEND ── */
         .legend {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 560px;
+            max-width: calc(8 * var(--gs) + 7 * var(--gap) + 2 * var(--bp));
         }
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.72rem;
+            gap: 5px;
+            font-size: clamp(0.62rem, 1.6vw, 0.72rem);
             color: rgba(255,255,255,0.5);
         }
         .legend-gem {
-            width: 22px;
-            height: 22px;
-            border-radius: 5px;
+            width: 20px; height: 20px;
+            border-radius: 4px;
             background-size: cover;
             background-position: center;
             flex-shrink: 0;
         }
 
-        /* ── OVERLAY (Game Over / Level Up) ── */
+        /* ── OVERLAY ── */
         .game-overlay {
             display: none;
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: rgba(0,0,0,0.82);
-            z-index: 100;
+            z-index: 200;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
         .game-overlay.show { display: flex; }
         .overlay-card {
             background: #111118;
             border: 1px solid rgba(212,168,83,0.3);
             border-radius: 20px;
-            padding: 48px 40px;
+            padding: clamp(28px,6vw,48px) clamp(20px,5vw,40px);
             text-align: center;
-            max-width: 380px;
-            width: 90%;
+            max-width: 360px;
+            width: 100%;
         }
-        .overlay-emoji { font-size: 3.5rem; margin-bottom: 12px; }
-        .overlay-title {
-            font-family: 'Playfair Display', serif;
-            font-size: 2rem;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-        .overlay-sub {
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9rem;
-            margin-bottom: 6px;
-        }
-        .overlay-score {
-            font-size: 2.4rem;
-            font-weight: 700;
-            color: var(--accent-bronze, #d4a853);
-            margin: 12px 0 24px;
-        }
-
-        /* ── MOBILE ── */
-        @media (max-width: 560px) {
-            .gem { width: 38px; height: 38px; border-radius: 7px; }
-            .game-board { gap: 3px; padding: 7px; }
-            .game-hud { gap: 10px; }
-            .hud-value { font-size: 1.3rem; }
-        }
-        @media (max-width: 380px) {
-            .gem { width: 32px; height: 32px; border-radius: 6px; }
-            .game-board { gap: 2px; padding: 5px; }
-        }
+        .overlay-emoji  { font-size: 3rem; margin-bottom: 10px; }
+        .overlay-title  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 6px; }
+        .overlay-sub    { color: rgba(255,255,255,0.5); font-size: 0.88rem; margin-bottom: 4px; }
+        .overlay-score  { font-size: 2.2rem; font-weight: 700; color: var(--accent-bronze, #d4a853); margin: 10px 0 22px; }
     </style>
 </head>
 <body>
@@ -308,6 +273,7 @@
         <li><a href="tours.html">Box Office</a></li>
         <li><a href="streams.html">Live Streaming</a></li>
         <li><a href="game.html" class="active">Album Crush</a></li>
+            <li><a href="transform.html">Timbertrix</a></li>
     </ul>
 </nav>
 
@@ -346,7 +312,7 @@
     </div>
 
     <!-- Board -->
-    <div class="board-wrap">
+    <div class="board-wrap" style="overflow:visible;">
         <div class="game-board" id="game-board"></div>
     </div>
 
@@ -373,6 +339,83 @@
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════════
+//  AUDIO ENGINE  (Web Audio API — no files needed)
+// ═══════════════════════════════════════════════════════════
+const SFX = (() => {
+    let ctx = null;
+    function getCtx() {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+    }
+
+    function play(freq, type, duration, gain = 0.25, startFreq = null) {
+        const ac = getCtx();
+        const osc = ac.createOscillator();
+        const env = ac.createGain();
+        osc.connect(env);
+        env.connect(ac.destination);
+        osc.type = type;
+        osc.frequency.setValueAtTime(startFreq || freq, ac.currentTime);
+        if (startFreq) osc.frequency.exponentialRampToValueAtTime(freq, ac.currentTime + duration * 0.6);
+        env.gain.setValueAtTime(gain, ac.currentTime);
+        env.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + duration);
+        osc.start(ac.currentTime);
+        osc.stop(ac.currentTime + duration);
+    }
+
+    function chord(freqs, type, duration, gain = 0.18) {
+        freqs.forEach(f => play(f, type, duration, gain));
+    }
+
+    return {
+        select() {
+            play(880, 'sine', 0.08, 0.15);
+        },
+        noMatch() {
+            play(120, 'sawtooth', 0.18, 0.12);
+            setTimeout(() => play(100, 'sawtooth', 0.15, 0.08), 60);
+        },
+        match(len, comboLevel) {
+            // Higher pitch for longer matches, shifts up with combo
+            const base = 440 * Math.pow(1.05, comboLevel - 1);
+            const freqs = len >= 5 ? [base, base*1.25, base*1.5]
+                        : len >= 4 ? [base, base*1.25]
+                        :            [base];
+            chord(freqs, 'sine', 0.22, 0.22);
+            // satisfying "pop" click layer
+            play(200, 'square', 0.06, 0.08);
+        },
+        cascade(level) {
+            // Ascending ding per cascade step
+            const note = 523.25 * Math.pow(1.12, level); // C5 and up
+            play(note, 'sine', 0.3, 0.2);
+            play(note * 2, 'sine', 0.2, 0.1);
+        },
+        swap() {
+            play(660, 'sine', 0.1, 0.12, 440);
+        },
+        gameOver() {
+            const ac = getCtx();
+            // Descending sad fanfare
+            [392, 349, 330, 294, 261].forEach((f, i) => {
+                setTimeout(() => play(f, 'sine', 0.4, 0.2), i * 110);
+            });
+        },
+        newGame() {
+            // Quick ascending fanfare
+            [523, 659, 784, 1047].forEach((f, i) => {
+                setTimeout(() => play(f, 'sine', 0.18, 0.18), i * 70);
+            });
+        },
+        hint() {
+            play(1047, 'sine', 0.12, 0.15);
+            setTimeout(() => play(1319, 'sine', 0.15, 0.15), 100);
+        },
+    };
+})();
+
 // ═══════════════════════════════════════════════════════════
 //  ALBUMS CONFIG
 // ═══════════════════════════════════════════════════════════
@@ -425,6 +468,7 @@ function startNewGame() {
     createBoard();
     renderBoard();
     updateHUD();
+    SFX.newGame();
 }
 
 function createBoard() {
@@ -531,6 +575,7 @@ function selectGem(r, c) {
     selected = { r, c };
     const el = gemEl(r, c);
     if (el) el.classList.add('selected');
+    SFX.select();
 }
 
 function deselectGem() {
@@ -559,12 +604,14 @@ async function attemptSwap(r1, c1, r2, c2) {
         swapBoard(r1, c1, r2, c2);
         animateSwap(r1, c1, r2, c2);
         await sleep(200);
+        SFX.noMatch();
         shakeGems(r1, c1, r2, c2);
         await sleep(350);
         busy = false;
         return;
     }
 
+    SFX.swap();
     // valid move
     moves--;
     combo = 1;
@@ -660,6 +707,13 @@ async function processMatches(matches) {
         // Score
         const pts = calcPoints(matches.length, combo);
         addScore(pts, matches);
+
+        // Sound: cascade level = combo-1 (0 = first match)
+        if (combo > 1) {
+            SFX.cascade(combo - 1);
+        } else {
+            SFX.match(matches.length, combo);
+        }
         combo++;
 
         // Animate matched gems out
@@ -717,14 +771,16 @@ function addScore(pts, matches) {
 }
 
 function showScorePopup(anchorEl, pts, isCombo) {
-    const boardRect = boardEl.getBoundingClientRect();
-    const gemRect   = anchorEl.getBoundingClientRect();
+    const wrapRect = document.querySelector('.board-wrap').getBoundingClientRect();
+    const gemRect  = anchorEl.getBoundingClientRect();
     const popup = document.createElement('div');
     popup.className = 'score-popup';
     popup.textContent = isCombo ? `+${pts} 🔥` : `+${pts}`;
     popup.style.color = isCombo ? '#f39c12' : '#fff';
-    popup.style.left = (gemRect.left - boardRect.left + gemRect.width / 2 - 25) + 'px';
-    popup.style.top  = (gemRect.top  - boardRect.top  - 10) + 'px';
+    const cx = gemRect.left - wrapRect.left + gemRect.width / 2;
+    const cy = gemRect.top  - wrapRect.top;
+    popup.style.left = Math.max(0, cx - 20) + 'px';
+    popup.style.top  = Math.max(0, cy - 8)  + 'px';
     document.querySelector('.board-wrap').appendChild(popup);
     popup.addEventListener('animationend', () => popup.remove());
 }
@@ -794,6 +850,7 @@ function showHint() {
     if (busy) return;
     const hint = findHint();
     if (!hint) return;
+    SFX.hint();
     const { r1, c1, r2, c2 } = hint;
     const els = [gemEl(r1,c1), gemEl(r2,c2)];
     els.forEach(el => {
@@ -826,6 +883,7 @@ function findHint() {
 // ═══════════════════════════════════════════════════════════
 function endGame() {
     busy = true;
+    SFX.gameOver();
     const messages = [
         ['🎤', 'Rock Your Body!', `You scored like a superstar!`],
         ['💃', 'Sexy Back!',      `You brought it back!`],

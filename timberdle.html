@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timber-dle | Daily JT Puzzle</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Spotify Embed IFrame API -->
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; min-height: 100vh; }
+        nav { background: rgba(10,10,15,0.95); border-bottom: 1px solid rgba(212,168,83,0.15); }
+
+        /* ── PAGE LAYOUT ── */
+        .td-page {
+            max-width: 540px;
+            margin: 0 auto;
+            padding: 90px 16px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* ── HEADER ── */
+        .td-header { text-align: center; }
+        .td-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 8vw, 3.2rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+        .td-logo span { color: var(--accent-bronze, #d4a853); }
+        .td-tagline {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: rgba(255,255,255,0.38);
+            margin-top: 4px;
+        }
+        .td-date {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.25);
+            margin-top: 2px;
+        }
+
+        /* ── STREAK BAR ── */
+        .td-stats-row {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            justify-content: center;
+        }
+        .td-stat {
+            flex: 1;
+            max-width: 100px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(212,168,83,0.15);
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .td-stat-val  { font-size: 1.6rem; font-weight: 700; color: var(--accent-bronze, #d4a853); line-height: 1; }
+        .td-stat-lbl  { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); margin-top: 3px; }
+
+        /* ── SPOTIFY PLAYER ── */
+        .td-player-wrap {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212,168,83,0.15);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .td-player-top {
+            padding: 16px 18px 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .td-album-blur {
+            width: 52px; height: 52px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        .td-album-blur img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: blur(12px) brightness(0.4);
+            position: absolute; inset: 0;
+            transition: filter 0.6s ease;
+        }
+        .td-album-blur img.revealed { filter: blur(0) brightness(1); }
+        .td-album-blur .lock-icon { position: relative; z-index: 1; }
+
+        .td-track-info { flex: 1; min-width: 0; }
+        .td-track-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.9);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .td-track-hint {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.38);
+            margin-top: 2px;
+        }
+
+        /* progress / waveform bar */
+        .td-waveform {
+            height: 36px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.06);
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
+        .td-waveform-bg {
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(90deg,
+                rgba(212,168,83,0.12) 0px, rgba(212,168,83,0.12) 2px,
+                transparent 2px, transparent 5px);
+        }
+        .td-waveform-fill {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(212,168,83,0.5), rgba(212,168,83,0.2));
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        .td-waveform-cursor {
+            position: absolute; top: 0; bottom: 0;
+            width: 2px; background: var(--accent-bronze, #d4a853);
+            left: 0%; transition: left 0.1s linear;
+            display: none;
+        }
+        .td-waveform-label {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.68rem; color: rgba(255,255,255,0.3);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            pointer-events: none; z-index: 2;
+        }
+
+        /* hidden Spotify iframe */
+        #spotify-embed { width: 0; height: 0; border: none; overflow: hidden; position: absolute; left: -9999px; }
+
+        /* ── PLAY BUTTON ── */
+        .td-controls {
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .td-play-btn {
+            flex: 1;
+            padding: 13px 20px;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent-bronze, #d4a853);
+            color: #0a0a0f;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: opacity 0.2s, transform 0.1s;
+            touch-action: manipulation;
+        }
+        .td-play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .td-play-btn:not(:disabled):hover { opacity: 0.88; }
+        .td-play-btn:not(:disabled):active { transform: scale(0.97); }
+        .td-play-btn .play-icon { font-size: 1rem; }
+
+        .td-skip-btn {
+            padding: 13px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: transparent;
+            color: rgba(255,255,255,0.45);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            touch-action: manipulation;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .td-skip-btn:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
+
+        /* ── ATTEMPT GRID ── */
+        .td-attempts {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .td-attempt-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            min-height: 44px;
+            transition: border-color 0.3s, background 0.3s;
+        }
+        .td-attempt-row.active {
+            border-color: rgba(212,168,83,0.35);
+            background: rgba(212,168,83,0.05);
+        }
+        .td-attempt-row.correct {
+            border-color: rgba(74,222,128,0.4);
+            background: rgba(74,222,128,0.06);
+        }
+        .td-attempt-row.wrong {
+            border-color: rgba(239,68,68,0.3);
+            background: rgba(239,68,68,0.04);
+        }
+        .td-attempt-row.skipped {
+            border-color: rgba(255,255,255,0.08);
+            opacity: 0.6;
+        }
+        .attempt-num {
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.25);
+            width: 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .attempt-dur {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.3);
+            width: 28px;
+            flex-shrink: 0;
+        }
+        .attempt-text {
+            flex: 1;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .attempt-icon { font-size: 1rem; flex-shrink: 0; }
+
+        /* ── GUESS INPUT ── */
+        .td-input-wrap {
+            width: 100%;
+            position: relative;
+        }
+        .td-input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(212,168,83,0.3);
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .td-input:focus { border-color: rgba(212,168,83,0.65); }
+        .td-input::placeholder { color: rgba(255,255,255,0.22); }
+        .td-input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .td-autocomplete {
+            position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+            background: #18181f;
+            border: 1px solid rgba(212,168,83,0.25);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+        .td-autocomplete-item {
+            padding: 10px 16px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            transition: background 0.15s;
+        }
+        .td-autocomplete-item:hover, .td-autocomplete-item.highlighted {
+            background: rgba(212,168,83,0.1);
+        }
+        .td-autocomplete-item .song-album {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .td-guess-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(212,168,83,0.15);
+            border: 1px solid rgba(212,168,83,0.3);
+            color: var(--accent-bronze, #d4a853);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            touch-action: manipulation;
+            margin-top: 8px;
+        }
+        .td-guess-btn:hover { background: rgba(212,168,83,0.25); }
+        .td-guess-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        /* ── RESULT CARD ── */
+        .td-result {
+            display: none;
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(212,168,83,0.2);
+            border-radius: 14px;
+            padding: 24px 20px;
+            text-align: center;
+            gap: 12px;
+            flex-direction: column;
+            align-items: center;
+        }
+        .td-result.show { display: flex; }
+        .td-result-emoji { font-size: 2.8rem; }
+        .td-result-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; }
+        .td-result-song {
+            font-size: 1.1rem;
+            color: var(--accent-bronze, #d4a853);
+            font-weight: 700;
+        }
+        .td-result-album { font-size: 0.78rem; color: rgba(255,255,255,0.35); }
+        .td-result-emoji-grid {
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-family: monospace;
+        }
+        .td-share-btn {
+            padding: 11px 28px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent-bronze, #d4a853);
+            color: #0a0a0f;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            touch-action: manipulation;
+        }
+        .td-share-btn:hover { opacity: 0.85; }
+
+        /* ── NEXT SONG TIMER ── */
+        .td-next { font-size: 0.75rem; color: rgba(255,255,255,0.3); }
+
+        /* ── ALREADY PLAYED ── */
+        .td-already { text-align: center; color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+
+        /* ── LOADING ── */
+        .td-loading {
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+            text-align: center;
+            animation: tdPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes tdPulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">Timberlake</div>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="tours.html">Box Office</a></li>
+        <li><a href="streams.html">Live Streaming</a></li>
+        <li><a href="game.html">Album Crush</a></li>
+            <li><a href="transform.html">Timbertrix</a></li>
+        <li><a href="timberdle.html" class="active">Timber-dle</a></li>
+    </ul>
+</nav>
+
+<!-- Hidden Spotify embed target -->
+<iframe id="spotify-embed" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+<div class="td-page">
+
+    <!-- Header -->
+    <div class="td-header">
+        <h1 class="td-logo"><span>Timber</span>-dle</h1>
+        <p class="td-tagline">Günlük JT Ses Bulmacası</p>
+        <p class="td-date" id="td-date"></p>
+    </div>
+
+    <!-- Stats -->
+    <div class="td-stats-row">
+        <div class="td-stat"><div class="td-stat-val" id="stat-played">0</div><div class="td-stat-lbl">Played</div></div>
+        <div class="td-stat"><div class="td-stat-val" id="stat-wins">0</div><div class="td-stat-lbl">Wins</div></div>
+        <div class="td-stat"><div class="td-stat-val" id="stat-streak">0</div><div class="td-stat-lbl">Streak</div></div>
+        <div class="td-stat"><div class="td-stat-val" id="stat-pct">0%</div><div class="td-stat-lbl">Win %</div></div>
+    </div>
+
+    <!-- Player -->
+    <div class="td-player-wrap">
+        <div class="td-player-top">
+            <div class="td-album-blur" id="album-art">
+                <img id="album-img" src="" alt="">
+                <span class="lock-icon">🎵</span>
+            </div>
+            <div class="td-track-info">
+                <div class="td-track-title" id="track-title">???</div>
+                <div class="td-track-hint" id="track-hint">Attempt 1 of 6 · 1 second</div>
+            </div>
+        </div>
+        <div class="td-waveform" id="waveform">
+            <div class="td-waveform-bg"></div>
+            <div class="td-waveform-fill" id="waveform-fill"></div>
+            <div class="td-waveform-cursor" id="waveform-cursor"></div>
+            <div class="td-waveform-label" id="waveform-label">Click ▶ to play</div>
+        </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="td-loading" id="td-loading">Loading today's song…</div>
+
+    <!-- Play controls -->
+    <div class="td-controls" id="td-controls" style="display:none">
+        <button class="td-play-btn" id="play-btn">
+            <span class="play-icon">▶</span>
+            <span id="play-btn-label">Play 1 sec</span>
+        </button>
+        <button class="td-skip-btn" id="skip-btn">Skip</button>
+    </div>
+
+    <!-- Attempt history -->
+    <div class="td-attempts" id="td-attempts"></div>
+
+    <!-- Input -->
+    <div class="td-input-wrap" id="td-input-section" style="display:none">
+        <input class="td-input" id="td-input" type="text" placeholder="Type a JT song title…" autocomplete="off" spellcheck="false">
+        <div class="td-autocomplete" id="td-autocomplete" style="display:none"></div>
+        <button class="td-guess-btn" id="td-guess-btn" disabled>Submit Guess</button>
+    </div>
+
+    <!-- Result card -->
+    <div class="td-result" id="td-result">
+        <div class="td-result-emoji" id="result-emoji">🎤</div>
+        <div class="td-result-title" id="result-title">You got it!</div>
+        <div class="td-result-song" id="result-song"></div>
+        <div class="td-result-album" id="result-album"></div>
+        <div class="td-result-emoji-grid" id="result-grid"></div>
+        <button class="td-share-btn" id="share-btn">Share Result</button>
+        <div class="td-next" id="td-next"></div>
+    </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  SONG POOL
+//  Verify Spotify IDs at: open.spotify.com/track/{id}
+// ═══════════════════════════════════════════════════════════
+const SONGS = [
+    { title: "SexyBack",                         album: "FutureSex/LoveSounds",     year: 2006, spotifyId: "0n4bITAu3ipafB7uJCwa7T" },
+    { title: "Mirrors",                          album: "The 20/20 Experience",     year: 2013, spotifyId: "7snQQk1oBig7Mv9pF1VVZM" },
+    { title: "Can't Stop the Feeling!",          album: "Trolls OST",               year: 2016, spotifyId: "6habFhsOp2NvshLv26DqMb" },
+    { title: "Cry Me a River",                   album: "Justified",                year: 2002, spotifyId: "5z5c7bEMCJNHaJf8D4L0pk" },
+    { title: "What Goes Around.../...Comes Around", album: "FutureSex/LoveSounds", year: 2006, spotifyId: "5jgFfDIR6FR0gvlA56Nakr" },
+    { title: "Suit & Tie",                       album: "The 20/20 Experience",     year: 2013, spotifyId: "3MjUtNVVq3C8Fn0MP3zhXa" },
+    { title: "Rock Your Body",                   album: "Justified",                year: 2003, spotifyId: "1je1IMUlBXcx1Fz0WE7oPT" },
+    { title: "My Love",                          album: "FutureSex/LoveSounds",     year: 2006, spotifyId: "4GBKPq5yVqbJlRrBsEJFaF" },
+    { title: "LoveStoned / I Think She Knows",   album: "FutureSex/LoveSounds",     year: 2007, spotifyId: "5QKniVBMAFGKqeViECxChu" },
+    { title: "Filthy",                           album: "Man of the Woods",         year: 2018, spotifyId: "3pgBTBVYdUTLwSgMGkEJzN" },
+    { title: "Not a Bad Thing",                  album: "The 20/20 Experience 2",   year: 2014, spotifyId: "1OyMSHqAQhFB5XRGAUAIFc" },
+    { title: "Tunnel Vision",                    album: "The 20/20 Experience",     year: 2013, spotifyId: "3TJzN6vCHIOlLEHKCfhBJd" },
+    { title: "Like I Love You",                  album: "Justified",                year: 2002, spotifyId: "6L6dWlUkxjX3nnkGJeOkTe" },
+    { title: "Take Back the Night",              album: "The 20/20 Experience 2",   year: 2013, spotifyId: "5BbMbpSmzqVHDRFkHQxQs0" },
+    { title: "Señorita",                         album: "Justified",                year: 2003, spotifyId: "7nILWQlp0V6uFLEMJVRioI" },
+];
+
+// Autocomplete list — all JT songs (titles only)
+const ALL_SONGS = [
+    ...SONGS.map(s => ({ title: s.title, album: s.album })),
+    { title: "Pusher Love Girl",         album: "The 20/20 Experience" },
+    { title: "Strawberry Bubblegum",     album: "The 20/20 Experience" },
+    { title: "Spaceship Coupe",          album: "The 20/20 Experience" },
+    { title: "Let the Groove In",        album: "The 20/20 Experience 2" },
+    { title: "Drink You Away",           album: "The 20/20 Experience 2" },
+    { title: "True Blood",               album: "The 20/20 Experience 2" },
+    { title: "Gimme What I Don't Know",  album: "Man of the Woods" },
+    { title: "Sauce",                    album: "Man of the Woods" },
+    { title: "Midnight Summer Jam",      album: "Man of the Woods" },
+    { title: "Supplies",                 album: "Man of the Woods" },
+    { title: "Wave",                     album: "Man of the Woods" },
+    { title: "Flannel",                  album: "Man of the Woods" },
+    { title: "Montana",                  album: "Man of the Woods" },
+    { title: "Say Something",            album: "Man of the Woods" },
+    { title: "Morning Light",            album: "Man of the Woods" },
+    { title: "Electric Lady",            album: "Man of the Woods" },
+    { title: "Higher Higher",            album: "Everything I Thought It Was" },
+    { title: "Selfish",                  album: "Everything I Thought It Was" },
+    { title: "No Angels",               album: "Everything I Thought It Was" },
+    { title: "Paradise",                 album: "Everything I Thought It Was" },
+    { title: "Drown",                    album: "Everything I Thought It Was" },
+    { title: "Flame",                    album: "Everything I Thought It Was" },
+    { title: "Summer Love",              album: "FutureSex/LoveSounds" },
+    { title: "Until the End of Time",    album: "FutureSex/LoveSounds" },
+    { title: "Losing My Way",            album: "FutureSex/LoveSounds" },
+    { title: "Damn Girl",                album: "FutureSex/LoveSounds" },
+    { title: "Chop Me Up",              album: "FutureSex/LoveSounds" },
+    { title: "Rehab",                    album: "FutureSex/LoveSounds" },
+    { title: "Still on My Brain",        album: "Justified" },
+    { title: "Nothin' Else",             album: "Justified" },
+    { title: "Right for Me",             album: "Justified" },
+    { title: "Let's Take a Ride",        album: "Justified" },
+    { title: "Last Night",               album: "Justified" },
+];
+
+const DURATIONS   = [1, 2, 4, 7, 11, 16];   // seconds unlocked per attempt
+const MAX_GUESSES = 6;
+const SKIP_EMOJI  = '⬛';
+const WRONG_EMOJI = '🟥';
+const WIN_EMOJI   = '🟩';
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let embedController = null;
+let embedReady      = false;
+let currentSong     = null;
+let guessNum        = 0;        // 0-5
+let gameOver        = false;
+let won             = false;
+let attempts        = [];       // [{type:'correct'|'wrong'|'skipped', text}]
+let playTimer       = null;
+let isPlaying       = false;
+let playbackPos     = 0;        // seconds, updated by Spotify event
+
+// ═══════════════════════════════════════════════════════════
+//  DAILY SEED
+// ═══════════════════════════════════════════════════════════
+function getTodayKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function getDailySong() {
+    const d     = new Date();
+    const epoch = Math.floor(d.getTime() / 86400000);
+    return SONGS[epoch % SONGS.length];
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STATS (localStorage)
+// ═══════════════════════════════════════════════════════════
+function loadStats() {
+    return JSON.parse(localStorage.getItem('td_stats') || '{"played":0,"wins":0,"streak":0,"lastWin":""}');
+}
+function saveStats(s) { localStorage.setItem('td_stats', JSON.stringify(s)); }
+function renderStats() {
+    const s = loadStats();
+    document.getElementById('stat-played').textContent = s.played;
+    document.getElementById('stat-wins').textContent   = s.wins;
+    document.getElementById('stat-streak').textContent = s.streak;
+    document.getElementById('stat-pct').textContent    = s.played ? Math.round(s.wins / s.played * 100) + '%' : '0%';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SPOTIFY EMBED
+// ═══════════════════════════════════════════════════════════
+window.onSpotifyIframeApiReady = function (IFrameAPI) {
+    clearTimeout(window._spotifyFallbackTimer);
+    const el = document.getElementById('spotify-embed');
+    IFrameAPI.createController(el, {
+        width: 1, height: 1,
+        uri: `spotify:track:${currentSong.spotifyId}`,
+    }, (ctrl) => {
+        embedController = ctrl;
+
+        // ready event might not fire on all browsers/regions — set a safety timeout
+        const readyTimer = setTimeout(() => {
+            if (!embedReady) { embedReady = true; onEmbedReady(); }
+        }, 3000);
+
+        ctrl.addListener('ready', () => {
+            clearTimeout(readyTimer);
+            embedReady = true;
+            onEmbedReady();
+        });
+        ctrl.addListener('playback_update', (e) => {
+            playbackPos = e.data.position;
+            updateWaveform(playbackPos, DURATIONS[guessNum] || 30);
+        });
+    });
+};
+
+function onEmbedReady() {
+    clearTimeout(window._spotifyFallbackTimer);
+    document.getElementById('td-loading').style.display = 'none';
+    document.getElementById('td-controls').style.display = 'flex';
+    document.getElementById('td-input-section').style.display = 'block';
+    renderAttempts();
+    updatePlayBtn();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PLAYBACK
+// ═══════════════════════════════════════════════════════════
+function playSong() {
+    if (!embedReady || !embedController || isPlaying) return;
+
+    const dur = DURATIONS[Math.min(guessNum, DURATIONS.length - 1)];
+    clearTimeout(playTimer);
+    isPlaying = true;
+
+    updateWaveformLabel('');
+    document.getElementById('waveform-cursor').style.display = 'block';
+    document.getElementById('play-btn').disabled = true;
+
+    embedController.seek(0);
+    embedController.play();
+
+    playTimer = setTimeout(() => {
+        embedController.pause();
+        isPlaying = false;
+        document.getElementById('play-btn').disabled = false;
+        updateWaveformLabel('▶ Replay');
+        document.getElementById('waveform-cursor').style.display = 'none';
+        setWaveform(0, 0);
+    }, dur * 1000 + 400); // +400ms buffer for seek latency
+}
+
+function updateWaveform(pos, totalDur) {
+    const pct = Math.min((pos / totalDur) * 100, 100);
+    document.getElementById('waveform-fill').style.width  = pct + '%';
+    document.getElementById('waveform-cursor').style.left = pct + '%';
+}
+function setWaveform(pct, curPct) {
+    document.getElementById('waveform-fill').style.width  = pct + '%';
+    document.getElementById('waveform-cursor').style.left = curPct + '%';
+}
+function updateWaveformLabel(txt) {
+    document.getElementById('waveform-label').textContent = txt;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UI UPDATES
+// ═══════════════════════════════════════════════════════════
+function updatePlayBtn() {
+    const dur = DURATIONS[Math.min(guessNum, DURATIONS.length - 1)];
+    document.getElementById('play-btn-label').textContent = `Play ${dur}s`;
+    document.getElementById('track-hint').textContent =
+        `Attempt ${guessNum + 1} of ${MAX_GUESSES} · ${dur} second${dur !== 1 ? 's' : ''}`;
+    updateWaveformLabel('Click ▶ to play');
+}
+
+function renderAttempts() {
+    const wrap = document.getElementById('td-attempts');
+    wrap.innerHTML = '';
+    for (let i = 0; i < MAX_GUESSES; i++) {
+        const row = document.createElement('div');
+        row.className = 'td-attempt-row';
+        const a = attempts[i];
+        if (a) {
+            row.classList.add(a.type);
+        } else if (i === guessNum && !gameOver) {
+            row.classList.add('active');
+        }
+
+        const num  = document.createElement('span'); num.className  = 'attempt-num'; num.textContent = i + 1;
+        const dur  = document.createElement('span'); dur.className  = 'attempt-dur'; dur.textContent = (DURATIONS[i] || '30') + 's';
+        const text = document.createElement('span'); text.className = 'attempt-text';
+        const icon = document.createElement('span'); icon.className = 'attempt-icon';
+
+        if (a) {
+            text.textContent = a.text;
+            icon.textContent = a.type === 'correct' ? '✅' : a.type === 'skipped' ? '⬛' : '❌';
+        } else if (i > guessNum || gameOver) {
+            text.textContent = '—';
+            text.style.opacity = '0.2';
+        }
+
+        row.append(num, dur, text, icon);
+        wrap.appendChild(row);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GUESS LOGIC
+// ═══════════════════════════════════════════════════════════
+function submitGuess(guessTitle) {
+    if (gameOver || !guessTitle.trim()) return;
+
+    const correct = guessTitle.trim().toLowerCase() === currentSong.title.toLowerCase();
+
+    attempts[guessNum] = {
+        type: correct ? 'correct' : 'wrong',
+        text: guessTitle.trim(),
+    };
+    guessNum++;
+
+    document.getElementById('td-input').value = '';
+    document.getElementById('td-autocomplete').style.display = 'none';
+    document.getElementById('td-guess-btn').disabled = true;
+
+    renderAttempts();
+
+    if (correct) {
+        onWin();
+    } else if (guessNum >= MAX_GUESSES) {
+        onLose();
+    } else {
+        updatePlayBtn();
+        // Load more seconds for next attempt
+        embedController && embedController.seek(0);
+    }
+}
+
+function skipGuess() {
+    if (gameOver) return;
+    attempts[guessNum] = { type: 'skipped', text: 'Skipped' };
+    guessNum++;
+    renderAttempts();
+    if (guessNum >= MAX_GUESSES) {
+        onLose();
+    } else {
+        updatePlayBtn();
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WIN / LOSE
+// ═══════════════════════════════════════════════════════════
+function onWin() {
+    gameOver = won = true;
+    revealSong();
+    showResult(true);
+    updateDailyRecord(true);
+}
+function onLose() {
+    gameOver = true;
+    revealSong();
+    showResult(false);
+    updateDailyRecord(false);
+}
+
+function revealSong() {
+    document.getElementById('track-title').textContent = currentSong.title;
+    document.getElementById('track-hint').textContent  = `${currentSong.album} · ${currentSong.year}`;
+    const img = document.getElementById('album-img');
+    if (img.src) img.classList.add('revealed');
+    document.getElementById('td-controls').style.display       = 'flex';
+    document.getElementById('td-input-section').style.display  = 'none';
+    document.getElementById('play-btn-label').textContent = 'Play full preview';
+    document.getElementById('play-btn').disabled = false;
+    clearTimeout(playTimer);
+    isPlaying = false;
+}
+
+function showResult(isWin) {
+    const card = document.getElementById('td-result');
+    card.classList.add('show');
+
+    const grid = attempts.map(a => {
+        if (!a) return SKIP_EMOJI;
+        if (a.type === 'correct') return WIN_EMOJI;
+        if (a.type === 'skipped') return SKIP_EMOJI;
+        return WRONG_EMOJI;
+    });
+    const gridStr = grid.join('');
+
+    document.getElementById('result-emoji').textContent = isWin ? ['🎤','🕺','⭐','💃','🎵'][guessNum - 1] || '🎤' : '💔';
+    document.getElementById('result-title').textContent = isWin ? `Got it in ${guessNum}!` : 'Better luck tomorrow!';
+    document.getElementById('result-song').textContent  = currentSong.title;
+    document.getElementById('result-album').textContent = `${currentSong.album} · ${currentSong.year}`;
+    document.getElementById('result-grid').textContent  = gridStr;
+    updateNextTimer();
+
+    // Share
+    document.getElementById('share-btn').onclick = () => {
+        const text = `Timber-dle #${getDayNumber()}\n${gridStr}\n${isWin ? `${guessNum}/${MAX_GUESSES}` : 'X/6'}\nhttps://your-site.vercel.app/timberdle.html`;
+        navigator.clipboard.writeText(text).then(() => {
+            document.getElementById('share-btn').textContent = 'Copied!';
+            setTimeout(() => document.getElementById('share-btn').textContent = 'Share Result', 2000);
+        });
+    };
+}
+
+function updateDailyRecord(isWin) {
+    const key = getTodayKey();
+    const savedKey = localStorage.getItem('td_today_key');
+    if (savedKey === key) return; // already saved today
+
+    localStorage.setItem('td_today_key', key);
+    const s = loadStats();
+    s.played++;
+    if (isWin) {
+        s.wins++;
+        s.streak++;
+        s.lastWin = key;
+    } else {
+        s.streak = 0;
+    }
+    saveStats(s);
+    renderStats();
+}
+
+function getDayNumber() {
+    const start = new Date('2024-01-01');
+    const now   = new Date();
+    return Math.floor((now - start) / 86400000);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUTOCOMPLETE
+// ═══════════════════════════════════════════════════════════
+let acHighlight = -1;
+
+document.getElementById('td-input').addEventListener('input', function () {
+    const val = this.value.trim().toLowerCase();
+    const ac  = document.getElementById('td-autocomplete');
+    const btn = document.getElementById('td-guess-btn');
+
+    if (!val) { ac.style.display = 'none'; btn.disabled = true; return; }
+
+    const matches = ALL_SONGS.filter(s => s.title.toLowerCase().includes(val)).slice(0, 8);
+    if (!matches.length) { ac.style.display = 'none'; btn.disabled = false; return; }
+
+    ac.innerHTML = '';
+    acHighlight = -1;
+    matches.forEach((s, i) => {
+        const item = document.createElement('div');
+        item.className = 'td-autocomplete-item';
+        item.innerHTML = `<span>${s.title}</span><span class="song-album">${s.album}</span>`;
+        item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            document.getElementById('td-input').value = s.title;
+            ac.style.display = 'none';
+            btn.disabled = false;
+        });
+        ac.appendChild(item);
+    });
+    ac.style.display = 'block';
+    btn.disabled = false;
+});
+
+document.getElementById('td-input').addEventListener('keydown', function (e) {
+    const ac    = document.getElementById('td-autocomplete');
+    const items = ac.querySelectorAll('.td-autocomplete-item');
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        acHighlight = Math.min(acHighlight + 1, items.length - 1);
+        items.forEach((el, i) => el.classList.toggle('highlighted', i === acHighlight));
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        acHighlight = Math.max(acHighlight - 1, 0);
+        items.forEach((el, i) => el.classList.toggle('highlighted', i === acHighlight));
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (acHighlight >= 0 && items[acHighlight]) {
+            this.value = items[acHighlight].querySelector('span').textContent;
+            ac.style.display = 'none';
+        }
+        submitGuess(this.value);
+    } else if (e.key === 'Escape') {
+        ac.style.display = 'none';
+    }
+});
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.td-input-wrap')) {
+        document.getElementById('td-autocomplete').style.display = 'none';
+    }
+});
+
+document.getElementById('td-guess-btn').addEventListener('click', () => {
+    submitGuess(document.getElementById('td-input').value);
+});
+document.getElementById('play-btn').addEventListener('click', playSong);
+document.getElementById('skip-btn').addEventListener('click', skipGuess);
+
+// ═══════════════════════════════════════════════════════════
+//  NEXT TIMER
+// ═══════════════════════════════════════════════════════════
+function updateNextTimer() {
+    const now     = new Date();
+    const midnight = new Date(now); midnight.setHours(24,0,0,0);
+    const diff = midnight - now;
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('td-next').textContent =
+        `Next Timber-dle in ${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+    if (gameOver) setTimeout(updateNextTimer, 1000);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CHECK IF ALREADY PLAYED TODAY
+// ═══════════════════════════════════════════════════════════
+function checkAlreadyPlayed() {
+    const key = getTodayKey();
+    return localStorage.getItem('td_today_key') === key;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════
+(function init() {
+    currentSong = getDailySong();
+
+    // Date display
+    const d = new Date();
+    document.getElementById('td-date').textContent =
+        d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    renderStats();
+    renderAttempts();
+
+    // Fallback: if Spotify API script blocked/failed, show UI after 5s with a warning
+    window._spotifyFallbackTimer = setTimeout(() => {
+        if (!embedReady) {
+            embedReady = true; // allow UI to show
+            document.getElementById('td-loading').textContent = '⚠️ Spotify preview unavailable — audio won\'t play. You can still guess!';
+            document.getElementById('td-loading').style.animation = 'none';
+            document.getElementById('td-loading').style.color = 'rgba(255,200,100,0.6)';
+            document.getElementById('td-controls').style.display = 'flex';
+            document.getElementById('td-input-section').style.display = 'block';
+            document.getElementById('play-btn').disabled = true;
+            document.getElementById('play-btn-label').textContent = 'Audio unavailable';
+            updatePlayBtn();
+            renderAttempts();
+        }
+    }, 5000);
+
+    // If Spotify IFrame API loaded before our song was set (timing edge case), load now
+    if (window._spotifyApiReady) window.onSpotifyIframeApiReady(window._spotifyApiReady);
+})();
+</script>
+
+<script src="fab.js"></script>
+</body>
+</html>
