@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JT Match | Album Crush</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav { background: rgba(10,10,15,0.95); border-bottom: 1px solid rgba(212,168,83,0.15); }
+
+        /* ── GAME PAGE ── */
+        .game-page {
+            padding: 100px 20px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .game-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            font-weight: 900;
+            text-align: center;
+        }
+        .game-title span { color: var(--accent-bronze, #d4a853); }
+        .game-subtitle {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.85rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            text-align: center;
+            margin-top: -16px;
+        }
+
+        /* ── HUD ── */
+        .game-hud {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            max-width: 560px;
+            justify-content: center;
+        }
+        .hud-card {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(212,168,83,0.18);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+        .hud-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 4px;
+        }
+        .hud-value {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--accent-bronze, #d4a853);
+            line-height: 1;
+        }
+        .hud-value.combo-flash {
+            animation: comboFlash 0.4s ease;
+        }
+        @keyframes comboFlash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35); color: #fff; }
+            100% { transform: scale(1); }
+        }
+
+        /* ── MOVES BAR ── */
+        .moves-bar-wrap {
+            width: 100%;
+            max-width: 560px;
+        }
+        .moves-bar-track {
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .moves-bar-fill {
+            height: 100%;
+            background: var(--accent-bronze, #d4a853);
+            border-radius: 2px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        /* ── BOARD ── */
+        .board-wrap {
+            position: relative;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212,168,83,0.15);
+            border-radius: 16px;
+            padding: 10px;
+        }
+
+        .gem {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.25s ease;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .gem::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: border-color 0.15s ease;
+        }
+        .gem:hover { transform: scale(1.06); }
+        .gem.selected {
+            transform: scale(1.1);
+            box-shadow: 0 0 0 3px #fff, 0 0 16px rgba(255,255,255,0.6);
+            z-index: 5;
+        }
+        .gem.matched {
+            animation: matchPop 0.35s ease forwards;
+        }
+        @keyframes matchPop {
+            0% { transform: scale(1); opacity: 1; }
+            40% { transform: scale(1.25); opacity: 1; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .gem.falling {
+            transition: none;
+        }
+        .gem.empty {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .gem.drop-in {
+            animation: dropIn 0.28s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        }
+        @keyframes dropIn {
+            0% { transform: translateY(-40px) scale(0.7); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .gem.swap-anim {
+            transition: transform 0.18s ease;
+        }
+        .gem.no-match-shake {
+            animation: shake 0.35s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        /* score popup */
+        .score-popup {
+            position: absolute;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #fff;
+            pointer-events: none;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            animation: floatUp 0.7s ease forwards;
+            z-index: 20;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-50px) scale(1.3); }
+        }
+
+        /* ── CONTROLS ── */
+        .game-controls {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-game {
+            padding: 11px 28px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-bronze, #d4a853);
+            background: transparent;
+            color: var(--accent-bronze, #d4a853);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-game:hover, .btn-game.primary {
+            background: var(--accent-bronze, #d4a853);
+            color: #0a0a0f;
+        }
+        .btn-game.primary { padding: 11px 36px; }
+
+        /* ── LEGEND ── */
+        .legend {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 560px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.5);
+        }
+        .legend-gem {
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+        }
+
+        /* ── OVERLAY (Game Over / Level Up) ── */
+        .game-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-overlay.show { display: flex; }
+        .overlay-card {
+            background: #111118;
+            border: 1px solid rgba(212,168,83,0.3);
+            border-radius: 20px;
+            padding: 48px 40px;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+        }
+        .overlay-emoji { font-size: 3.5rem; margin-bottom: 12px; }
+        .overlay-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .overlay-sub {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+        .overlay-score {
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--accent-bronze, #d4a853);
+            margin: 12px 0 24px;
+        }
+
+        /* ── MOBILE ── */
+        @media (max-width: 560px) {
+            .gem { width: 38px; height: 38px; border-radius: 7px; }
+            .game-board { gap: 3px; padding: 7px; }
+            .game-hud { gap: 10px; }
+            .hud-value { font-size: 1.3rem; }
+        }
+        @media (max-width: 380px) {
+            .gem { width: 32px; height: 32px; border-radius: 6px; }
+            .game-board { gap: 2px; padding: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">Timberlake</div>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="tours.html">Box Office</a></li>
+        <li><a href="streams.html">Live Streaming</a></li>
+        <li><a href="game.html" class="active">Album Crush</a></li>
+    </ul>
+</nav>
+
+<div class="game-page">
+
+    <div>
+        <h1 class="game-title"><span>Album</span> Crush</h1>
+        <p class="game-subtitle">Match JT albums · 30 moves · crush the high score</p>
+    </div>
+
+    <!-- HUD -->
+    <div class="game-hud">
+        <div class="hud-card">
+            <div class="hud-label">Score</div>
+            <div class="hud-value" id="hud-score">0</div>
+        </div>
+        <div class="hud-card">
+            <div class="hud-label">Best</div>
+            <div class="hud-value" id="hud-best">0</div>
+        </div>
+        <div class="hud-card">
+            <div class="hud-label">Moves</div>
+            <div class="hud-value" id="hud-moves">30</div>
+        </div>
+        <div class="hud-card">
+            <div class="hud-label">Combo</div>
+            <div class="hud-value" id="hud-combo">x1</div>
+        </div>
+    </div>
+
+    <!-- Moves progress bar -->
+    <div class="moves-bar-wrap">
+        <div class="moves-bar-track">
+            <div class="moves-bar-fill" id="moves-bar" style="width:100%"></div>
+        </div>
+    </div>
+
+    <!-- Board -->
+    <div class="board-wrap">
+        <div class="game-board" id="game-board"></div>
+    </div>
+
+    <!-- Album legend -->
+    <div class="legend" id="album-legend"></div>
+
+    <!-- Controls -->
+    <div class="game-controls">
+        <button class="btn-game primary" id="btn-new">New Game</button>
+        <button class="btn-game" id="btn-hint">Hint</button>
+    </div>
+
+</div>
+
+<!-- Game Over overlay -->
+<div class="game-overlay" id="overlay">
+    <div class="overlay-card">
+        <div class="overlay-emoji" id="overlay-emoji">🎤</div>
+        <div class="overlay-title" id="overlay-title">Game Over</div>
+        <div class="overlay-sub" id="overlay-sub">No moves left!</div>
+        <div class="overlay-score" id="overlay-score-val">0 pts</div>
+        <button class="btn-game primary" onclick="startNewGame()" style="width:100%">Play Again</button>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  ALBUMS CONFIG
+// ═══════════════════════════════════════════════════════════
+const ALBUMS = [
+    { id: 0, name: 'Justified',            short: 'JUS', img: 'assets/justified.jpg',  color: '#d4a853' },
+    { id: 1, name: 'FutureSex/LoveSounds', short: 'FLS', img: 'assets/fsls.jpg',       color: '#5dade2' },
+    { id: 2, name: '20/20 Experience',     short: '20E', img: 'assets/the20.jpg',      color: '#8e44ad' },
+    { id: 3, name: '20/20 Exp. 2',         short: '2.0', img: 'assets/the20pt2.jpg',   color: '#c0392b' },
+    { id: 4, name: 'Man of the Woods',     short: 'MOW', img: 'assets/motw.jpg',       color: '#27ae60' },
+    { id: 5, name: 'Everything I…',        short: 'EIT', img: 'assets/eitiw.jpg',      color: '#e85d9a' },
+];
+
+const ROWS = 8;
+const COLS = 8;
+const MAX_MOVES = 30;
+const BASE_POINTS = [0, 0, 0, 30, 60, 100, 150]; // index = match length
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let board = [];          // 2D array of album id (0-5) or -1 (empty)
+let selected = null;     // { r, c }
+let score = 0;
+let moves = MAX_MOVES;
+let combo = 1;
+let busy = false;        // block input during animations
+let bestScore = parseInt(localStorage.getItem('jt_best') || '0');
+
+// ═══════════════════════════════════════════════════════════
+//  DOM REFS
+// ═══════════════════════════════════════════════════════════
+const boardEl   = document.getElementById('game-board');
+const scoreEl   = document.getElementById('hud-score');
+const bestEl    = document.getElementById('hud-best');
+const movesEl   = document.getElementById('hud-moves');
+const comboEl   = document.getElementById('hud-combo');
+const barEl     = document.getElementById('moves-bar');
+const overlayEl = document.getElementById('overlay');
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+function startNewGame() {
+    score = 0;
+    moves = MAX_MOVES;
+    combo = 1;
+    selected = null;
+    busy = false;
+    overlayEl.classList.remove('show');
+    createBoard();
+    renderBoard();
+    updateHUD();
+}
+
+function createBoard() {
+    board = [];
+    for (let r = 0; r < ROWS; r++) {
+        board[r] = [];
+        for (let c = 0; c < COLS; c++) {
+            board[r][c] = safeGem(r, c);
+        }
+    }
+}
+
+function safeGem(r, c) {
+    const used = new Set();
+    // avoid forming match-3 horizontally
+    if (c >= 2 && board[r][c-1] === board[r][c-2]) used.add(board[r][c-1]);
+    // avoid forming match-3 vertically
+    if (r >= 2 && board[r-1][c] === board[r-2][c]) used.add(board[r-1][c]);
+
+    const choices = ALBUMS.map(a => a.id).filter(id => !used.has(id));
+    return choices[Math.floor(Math.random() * choices.length)];
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════
+function renderBoard() {
+    boardEl.innerHTML = '';
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            boardEl.appendChild(createGemEl(r, c, board[r][c]));
+        }
+    }
+}
+
+function createGemEl(r, c, id) {
+    const el = document.createElement('div');
+    el.className = 'gem';
+    el.dataset.r = r;
+    el.dataset.c = c;
+    if (id >= 0) {
+        const album = ALBUMS[id];
+        el.style.backgroundImage = `url('${album.img}')`;
+        el.style.boxShadow = `inset 0 0 0 1px rgba(255,255,255,0.1)`;
+        el.title = album.name;
+    } else {
+        el.classList.add('empty');
+    }
+    el.addEventListener('click', () => onGemClick(r, c));
+    return el;
+}
+
+function gemEl(r, c) {
+    return boardEl.children[r * COLS + c];
+}
+
+function updateHUD() {
+    scoreEl.textContent = score.toLocaleString();
+    bestEl.textContent  = bestScore.toLocaleString();
+    movesEl.textContent = moves;
+    comboEl.textContent = `x${combo}`;
+
+    const pct = (moves / MAX_MOVES) * 100;
+    barEl.style.width = pct + '%';
+    barEl.style.background = pct > 40 ? 'var(--accent-bronze, #d4a853)'
+                           : pct > 20 ? '#e67e22'
+                           : '#e74c3c';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INPUT
+// ═══════════════════════════════════════════════════════════
+function onGemClick(r, c) {
+    if (busy || moves <= 0) return;
+    if (board[r][c] < 0) return;
+
+    if (!selected) {
+        selectGem(r, c);
+        return;
+    }
+
+    const { r: sr, c: sc } = selected;
+
+    if (sr === r && sc === c) {
+        deselectGem();
+        return;
+    }
+
+    const dr = Math.abs(r - sr);
+    const dc = Math.abs(c - sc);
+
+    if (dr + dc === 1) {
+        // adjacent — try swap
+        deselectGem();
+        attemptSwap(sr, sc, r, c);
+    } else {
+        // re-select
+        deselectGem();
+        selectGem(r, c);
+    }
+}
+
+function selectGem(r, c) {
+    selected = { r, c };
+    const el = gemEl(r, c);
+    if (el) el.classList.add('selected');
+}
+
+function deselectGem() {
+    if (selected) {
+        const el = gemEl(selected.r, selected.c);
+        if (el) el.classList.remove('selected');
+    }
+    selected = null;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SWAP & MATCH
+// ═══════════════════════════════════════════════════════════
+async function attemptSwap(r1, c1, r2, c2) {
+    busy = true;
+
+    swapBoard(r1, c1, r2, c2);
+    animateSwap(r1, c1, r2, c2);
+
+    await sleep(200);
+
+    const matches = findMatches();
+
+    if (matches.length === 0) {
+        // no match — swap back
+        swapBoard(r1, c1, r2, c2);
+        animateSwap(r1, c1, r2, c2);
+        await sleep(200);
+        shakeGems(r1, c1, r2, c2);
+        await sleep(350);
+        busy = false;
+        return;
+    }
+
+    // valid move
+    moves--;
+    combo = 1;
+    await processMatches(matches);
+    updateHUD();
+
+    if (moves <= 0) {
+        endGame();
+    }
+    busy = false;
+}
+
+function swapBoard(r1, c1, r2, c2) {
+    [board[r1][c1], board[r2][c2]] = [board[r2][c2], board[r1][c1]];
+}
+
+function animateSwap(r1, c1, r2, c2) {
+    const e1 = gemEl(r1, c1);
+    const e2 = gemEl(r2, c2);
+
+    // update visuals
+    const id1 = board[r1][c1];
+    const id2 = board[r2][c2];
+
+    if (e1) {
+        e1.style.backgroundImage = id1 >= 0 ? `url('${ALBUMS[id1].img}')` : '';
+        e1.classList.add('swap-anim');
+        setTimeout(() => e1.classList.remove('swap-anim'), 200);
+    }
+    if (e2) {
+        e2.style.backgroundImage = id2 >= 0 ? `url('${ALBUMS[id2].img}')` : '';
+        e2.classList.add('swap-anim');
+        setTimeout(() => e2.classList.remove('swap-anim'), 200);
+    }
+}
+
+function shakeGems(r1, c1, r2, c2) {
+    [gemEl(r1,c1), gemEl(r2,c2)].forEach(el => {
+        if (!el) return;
+        el.classList.add('no-match-shake');
+        el.addEventListener('animationend', () => el.classList.remove('no-match-shake'), { once: true });
+    });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  MATCH DETECTION
+// ═══════════════════════════════════════════════════════════
+function findMatches() {
+    const matched = new Set();
+
+    // horizontal
+    for (let r = 0; r < ROWS; r++) {
+        let run = 1;
+        for (let c = 1; c <= COLS; c++) {
+            const same = c < COLS && board[r][c] === board[r][c-1] && board[r][c] >= 0;
+            if (same) {
+                run++;
+            } else {
+                if (run >= 3) {
+                    for (let k = c - run; k < c; k++) matched.add(key(r,k));
+                }
+                run = 1;
+            }
+        }
+    }
+
+    // vertical
+    for (let c = 0; c < COLS; c++) {
+        let run = 1;
+        for (let r = 1; r <= ROWS; r++) {
+            const same = r < ROWS && board[r][c] === board[r-1][c] && board[r][c] >= 0;
+            if (same) {
+                run++;
+            } else {
+                if (run >= 3) {
+                    for (let k = r - run; k < r; k++) matched.add(key(k,c));
+                }
+                run = 1;
+            }
+        }
+    }
+
+    return [...matched].map(k => { const [r,c] = k.split(',').map(Number); return { r, c }; });
+}
+
+function key(r, c) { return `${r},${c}`; }
+
+// ═══════════════════════════════════════════════════════════
+//  CASCADE LOOP
+// ═══════════════════════════════════════════════════════════
+async function processMatches(matches) {
+    while (matches.length > 0) {
+        // Score
+        const pts = calcPoints(matches.length, combo);
+        addScore(pts, matches);
+        combo++;
+
+        // Animate matched gems out
+        matches.forEach(({ r, c }) => {
+            const el = gemEl(r, c);
+            if (el) el.classList.add('matched');
+            board[r][c] = -1;
+        });
+        await sleep(380);
+
+        // Drop
+        dropGems();
+        updateFallingVisuals();
+        await sleep(60);
+
+        // Fill from top
+        fillEmpty();
+        await sleep(40);
+        renderDropped();
+        await sleep(320);
+
+        // Check cascade
+        matches = findMatches();
+        updateHUD();
+    }
+    combo = 1;
+    updateHUD();
+}
+
+function calcPoints(count, comboMult) {
+    const base = BASE_POINTS[Math.min(count, BASE_POINTS.length - 1)] || count * 15;
+    return base * comboMult;
+}
+
+function addScore(pts, matches) {
+    score += pts;
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('jt_best', bestScore);
+    }
+
+    // floating score popup
+    if (matches.length > 0) {
+        const midMatch = matches[Math.floor(matches.length / 2)];
+        const el = gemEl(midMatch.r, midMatch.c);
+        if (el) showScorePopup(el, pts, combo > 1);
+    }
+
+    // combo flash
+    if (combo > 1) {
+        comboEl.classList.remove('combo-flash');
+        void comboEl.offsetWidth;
+        comboEl.classList.add('combo-flash');
+    }
+}
+
+function showScorePopup(anchorEl, pts, isCombo) {
+    const boardRect = boardEl.getBoundingClientRect();
+    const gemRect   = anchorEl.getBoundingClientRect();
+    const popup = document.createElement('div');
+    popup.className = 'score-popup';
+    popup.textContent = isCombo ? `+${pts} 🔥` : `+${pts}`;
+    popup.style.color = isCombo ? '#f39c12' : '#fff';
+    popup.style.left = (gemRect.left - boardRect.left + gemRect.width / 2 - 25) + 'px';
+    popup.style.top  = (gemRect.top  - boardRect.top  - 10) + 'px';
+    document.querySelector('.board-wrap').appendChild(popup);
+    popup.addEventListener('animationend', () => popup.remove());
+}
+
+function dropGems() {
+    for (let c = 0; c < COLS; c++) {
+        let writeRow = ROWS - 1;
+        for (let r = ROWS - 1; r >= 0; r--) {
+            if (board[r][c] >= 0) {
+                board[writeRow][c] = board[r][c];
+                if (writeRow !== r) board[r][c] = -1;
+                writeRow--;
+            }
+        }
+        while (writeRow >= 0) {
+            board[writeRow--][c] = -1;
+        }
+    }
+}
+
+function fillEmpty() {
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            if (board[r][c] < 0) {
+                board[r][c] = ALBUMS[Math.floor(Math.random() * ALBUMS.length)].id;
+            }
+        }
+    }
+}
+
+function updateFallingVisuals() {
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            const el = gemEl(r, c);
+            if (!el) continue;
+            if (board[r][c] < 0) {
+                el.classList.add('empty');
+                el.style.backgroundImage = '';
+            } else {
+                el.classList.remove('empty', 'matched');
+                el.style.backgroundImage = `url('${ALBUMS[board[r][c]].img}')`;
+            }
+        }
+    }
+}
+
+function renderDropped() {
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            const el = gemEl(r, c);
+            if (!el) continue;
+            const id = board[r][c];
+            if (id >= 0) {
+                el.style.backgroundImage = `url('${ALBUMS[id].img}')`;
+                el.classList.remove('empty', 'matched');
+                el.classList.add('drop-in');
+                el.addEventListener('animationend', () => el.classList.remove('drop-in'), { once: true });
+            }
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HINT
+// ═══════════════════════════════════════════════════════════
+function showHint() {
+    if (busy) return;
+    const hint = findHint();
+    if (!hint) return;
+    const { r1, c1, r2, c2 } = hint;
+    const els = [gemEl(r1,c1), gemEl(r2,c2)];
+    els.forEach(el => {
+        if (!el) return;
+        el.style.outline = '3px solid #f39c12';
+        el.style.outlineOffset = '2px';
+        setTimeout(() => { el.style.outline = ''; el.style.outlineOffset = ''; }, 1200);
+    });
+}
+
+function findHint() {
+    const dirs = [[0,1],[1,0]];
+    for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+            for (const [dr,dc] of dirs) {
+                const nr = r+dr, nc = c+dc;
+                if (nr >= ROWS || nc >= COLS) continue;
+                swapBoard(r, c, nr, nc);
+                const has = findMatches().length > 0;
+                swapBoard(r, c, nr, nc);
+                if (has) return { r1:r, c1:c, r2:nr, c2:nc };
+            }
+        }
+    }
+    return null;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GAME OVER
+// ═══════════════════════════════════════════════════════════
+function endGame() {
+    busy = true;
+    const messages = [
+        ['🎤', 'Rock Your Body!', `You scored like a superstar!`],
+        ['💃', 'Sexy Back!',      `You brought it back!`],
+        ['🌲', 'Man of the Woods!',`Nature vibes only.`],
+        ['⭐', "Can't Stop\u2026",  `The feeling of this score!`],
+        ['🎵', 'Mirrors!',        `Reflecting on that run.`],
+    ];
+    const pick = messages[Math.floor(Math.random() * messages.length)];
+
+    document.getElementById('overlay-emoji').textContent  = pick[0];
+    document.getElementById('overlay-title').textContent  = pick[1];
+    document.getElementById('overlay-sub').textContent    = pick[2];
+    document.getElementById('overlay-score-val').textContent = `${score.toLocaleString()} pts`;
+
+    overlayEl.classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LEGEND
+// ═══════════════════════════════════════════════════════════
+function buildLegend() {
+    const leg = document.getElementById('album-legend');
+    ALBUMS.forEach(a => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        const gem = document.createElement('div');
+        gem.className = 'legend-gem';
+        gem.style.backgroundImage = `url('${a.img}')`;
+        gem.style.border = `1px solid ${a.color}55`;
+        const label = document.createElement('span');
+        label.textContent = a.name;
+        item.appendChild(gem);
+        item.appendChild(label);
+        leg.appendChild(item);
+    });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ═══════════════════════════════════════════════════════════
+//  EVENTS
+// ═══════════════════════════════════════════════════════════
+document.getElementById('btn-new').addEventListener('click', startNewGame);
+document.getElementById('btn-hint').addEventListener('click', showHint);
+
+// ═══════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════
+bestEl.textContent = bestScore.toLocaleString();
+buildLegend();
+startNewGame();
+</script>
+
+<script src="fab.js"></script>
+</body>
+</html>
