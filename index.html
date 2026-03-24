@@ -45,7 +45,8 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -265,9 +266,9 @@
 
     </section>
 
-    <script src="config.js"></script>
-    <script src="song-map.js"></script>
-    <script src="fab.js"></script>
+    <script src="config.js" defer></script>
+    <script src="song-map.js" defer></script>
+    <script src="fab.js" defer></script>
 
     <script type="module">
   // 1. İhtiyacımız olan tüm Firebase v12 modüllerini (Sayaç için doc, setDoc, increment dahil) içe aktarıyoruz
@@ -387,7 +388,7 @@
 
 </script>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 
     <!-- ── GALLERY ──────────────────────────────────────────── -->
     <section id="gallery" style="padding: 80px 5%; background: #050505;">
@@ -426,7 +427,7 @@
         </div>
     </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js" defer></script>
     <script>
         const GALLERY_PHOTOS = [
             'assets/random%20pics/IMG_7431.JPG','assets/random%20pics/IMG_7432.JPG',

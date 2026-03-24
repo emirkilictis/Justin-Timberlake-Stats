@@ -20,7 +20,8 @@
     <meta name="twitter:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-hero.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" media="print" onload="this.media=\'all\'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Sadece bu sayfaya özel dashboard stilleri */
@@ -97,8 +98,8 @@
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="song-map.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="song-map.js" defer></script>
 
 </head>
 <body>
@@ -327,9 +328,9 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="config.js"></script>
-    <script src="fab.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="config.js" defer></script>
+    <script src="fab.js" defer></script>
 
     <!-- Firebase Modülü: Firestore'a erişim sağlar ve window'a helper açar -->
     <script type="module">
@@ -362,6 +363,6 @@
         window.dispatchEvent(new Event('firestore-ready'));
     </script>
 
-    <script src="streams.js"></script>
+    <script src="streams.js" defer></script>
 </body>
 </html>
