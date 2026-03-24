@@ -5,7 +5,7 @@
         { id: "default",                     color: DEFAULT_COLOR, cover: "assets/jt-hero.jpg", short: "JT"    },
         { id: "Justified",                   color: "#5dade2",     cover: "assets/justified.jpg", short: "JUS" },
         { id: "FutureSex/LoveSounds",        color: "#e74c3c",     cover: "assets/fsls.jpg",      short: "FSLS" },
-        { id: "The 20/20 Experience",        color: "#d4a853",     cover: "assets/the20.jpg",     short: "20/20"},
+        { id: "The 20/20 Experience",        color: "#b8912e",     cover: "assets/the20.jpg",     short: "20/20"},
         { id: "Man of the Woods",            color: "#e67e22",     cover: "assets/motw.jpg",      short: "MOTW" },
         { id: "Everything I Thought It Was", color: "#ca510f",     cover: "assets/eitiw.jpg",     short: "EITIW"},
         { id: "Orphan",                      color: "#bdc3c7",     cover: null,                   short: "ORP"  },
@@ -286,6 +286,13 @@
         `;
 
         document.dispatchEvent(new CustomEvent('eraChanged', { detail: { album: albumName, color: c } }));
+
+        // Persist selection across pages
+        if (albumName === 'default') {
+            localStorage.removeItem('jt_era');
+        } else {
+            localStorage.setItem('jt_era', albumName);
+        }
     };
 
     // ── Active nav link ──────────────────────────────────────────────
@@ -342,17 +349,24 @@
         tbody.appendChild(tr);
     }
 
+    function restoreEra() {
+        const saved = localStorage.getItem('jt_era');
+        if (saved) window.applyEraTheme(saved);
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             injectFAB();
             injectLoadingStyles();
             setActiveNav();
             injectEASLoading();
+            restoreEra();
         });
     } else {
         injectFAB();
         injectLoadingStyles();
         setActiveNav();
         injectEASLoading();
+        restoreEra();
     }
 })();
