@@ -114,8 +114,7 @@ function render(albumId, albumData, tracks) {
     const dlEAS    = albumData.digitalSinglesEAS  || 0;
     const physSales = Math.round(physEAS * 10 / 3);
     const dlSales   = Math.round(dlEAS   * 20 / 3);
-    const baseSpotifyStreams = tracks.reduce((s, t) => s + t.total, 0);
-    const spotifyStreams = baseSpotifyStreams + (albumData.streams.uncreditedSpotify || 0);
+    const spotifyStreams = tracks.reduce((s, t) => s + t.total, 0);
     const audioEAS = Math.floor((spotifyStreams * ARTIST_RATIO) / 1166);
     const videoEAS = Math.floor((albumData.streams?.youtube || 0) / 6750);
     const totalEAS = (albumData.pureSales || 0) + physEAS + dlEAS + audioEAS + videoEAS;

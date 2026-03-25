@@ -63,7 +63,6 @@
       "digitalSinglesEAS": 7650000,
       "streams": { 
           "spotify": 0, 
-          "uncreditedSpotify": 1630000000,
           "youtubeVideoIds": ["rtOvBOTyX00", "p5R0fHn9L6I", "i7S_R3m8S-c", "lHjNmyzrVvM", "Y_mXByiMIsE"] 
       }
     }
