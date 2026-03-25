@@ -36,6 +36,37 @@
     </noscript>
     <link rel="stylesheet" href="style.css?v=1.1">
     <style>
+        :root {
+            --accent-gold: #d4a853;
+            --container-bg: rgba(10, 10, 15, 0.95);
+        }
+
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ── BACKGROUND LAYER ── */
+        .hero-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background-image: linear-gradient(to right, rgba(10, 10, 15, 0.9) 30%, rgba(10, 10, 15, 0.5) 100%),
+                linear-gradient(to bottom, transparent 60%, #0a0a0f 100%),
+                url('assets/jt-hero.jpg');
+            background-size: cover;
+            background-position: center 20%;
+            z-index: -1;
+            opacity: 0.6;
+            transition: background-image 0.8s ease, background-position 0.8s ease;
+        }
+
         .awards-container {
             padding: 120px 5% 60px;
             color: #fff;
@@ -43,30 +74,36 @@
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 50px;
+            gap: 60px;
+            position: relative;
         }
 
         /* ── PAGE HEADER ── */
         .awards-header {
             text-align: center;
+            margin-bottom: 20px;
         }
 
         .awards-header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(2.8rem, 7vw, 5rem);
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            line-height: 1.1;
         }
 
         .awards-header h1 span {
-            color: #d4a853;
+            color: var(--accent-gold);
+            display: block;
+            font-style: italic;
         }
 
         .awards-header p {
-            color: #888;
-            font-size: 1rem;
-            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
             text-transform: uppercase;
+            font-weight: 300;
         }
 
         /* ── HERO STAT CARDS ── */
@@ -77,19 +114,22 @@
         }
 
         .hero-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(212, 168, 83, 0.2);
-            padding: 28px 24px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 35px 25px;
+            border-radius: 16px;
             position: relative;
             overflow: hidden;
             text-align: center;
-            transition: transform 0.3s, border-color 0.3s;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         .hero-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(212, 168, 83, 0.5);
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--accent-gold);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
         .hero-card::before {
@@ -98,10 +138,10 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #d4a853, transparent);
+            height: 4px;
+            background: var(--accent-gold);
+            opacity: 0.6;
         }
-
         .hero-card .card-icon {
             font-size: 2rem;
             margin-bottom: 10px;
@@ -111,7 +151,7 @@
             font-family: 'Space Grotesk', sans-serif;
             font-size: 2.8rem;
             font-weight: 700;
-            color: #d4a853;
+            color: var(--accent-gold);
             line-height: 1;
         }
 
@@ -130,31 +170,50 @@
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
         }
 
         .filter-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
             padding: 10px 22px;
             border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.03);
-            color: #aaa;
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            letter-spacing: 0.06em;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .filter-btn:hover {
-            border-color: #d4a853;
-            color: #d4a853;
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
         }
 
         .filter-btn.active {
-            background: #d4a853;
-            border-color: #d4a853;
-            color: #0a0a0a;
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            color: #000;
+            box-shadow: 0 0 20px rgba(212, 168, 83, 0.3);
+        }
+
+        .filter-count {
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 12px;
+            opacity: 0.8;
+        }
+
+        .active .filter-count {
+            background: rgba(0, 0, 0, 0.15);
         }
 
         /* ── AWARDS TIMELINE ── */
@@ -212,33 +271,33 @@
 
         .award-dot {
             position: absolute;
-            left: -33px;
-            top: 18px;
-            width: 12px;
-            height: 12px;
+            left: -8px;
+            top: 24px;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-gold);
             border-radius: 50%;
-            background: #d4a853;
-            border: 3px solid #0a0a0a;
-            box-shadow: 0 0 0 2px #d4a853;
             z-index: 2;
+            box-shadow: 0 0 15px var(--accent-gold);
+            transition: background-color 0.8s ease, box-shadow 0.8s ease;
         }
 
         .award-card {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
-            padding: 22px 26px;
-            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            transition: all 0.3s;
         }
 
         .award-card:hover {
             background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(212, 168, 83, 0.3);
-            transform: translateX(6px);
+            border-color: rgba(255, 255, 255, 0.12);
+            transform: scale(1.01);
         }
 
         .award-card-left {
@@ -247,15 +306,15 @@
 
         .award-year-badge {
             display: inline-block;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #d4a853;
-            background: rgba(212, 168, 83, 0.12);
-            padding: 3px 10px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--accent-gold);
+            padding: 4px 12px;
             border-radius: 20px;
-            letter-spacing: 0.08em;
-            margin-bottom: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.1em;
+            transition: color 0.8s ease;
         }
 
         .award-name {
@@ -415,18 +474,19 @@
 
 <body>
 
-    <nav>
-        <div class="logo">Timberlake</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="tours.html">Box Office</a></li>
-            <li><a href="streams.html">Live Streaming</a></li>
-            <li><a href="game.html">Album Crush</a></li>
-            <li><a href="awards.html" style="color: #d4a853; font-weight: 700;">Awards</a></li>
-        </ul>
-    </nav>
-
+    <div class="hero-bg"></div>
     <div class="awards-container">
+        <!-- NAVIGATION -->
+        <nav>
+            <div class="logo">TIMBERLAKE</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="tours.html">Box Office</a></li>
+                <li><a href="streams.html">Live Streaming</a></li>
+                <li><a href="album.html">Album Crush</a></li>
+                <li><a href="awards.html">Awards</a></li>
+            </ul>
+        </nav>
 
         <!-- PAGE HEADER -->
         <div class="awards-header">
@@ -646,6 +706,7 @@
             renderTimeline();
         });
     </script>
+    <script src="fab.js"></script>
 </body>
 
 </html>

@@ -287,8 +287,35 @@
             /* Chart accent wrapper */
             .chart-wrapper { border-color: ${c}20 !important; }
 
-            /* Streams leaderboard album adı */
+             /* Streams leaderboard album adı */
             .leaderboard-album { color: ${c} !important; }
+
+            /* ══════════════════════════════════════
+               AWARDS.HTML — Kapsamlı tema
+               ══════════════════════════════════════ */
+            .awards-header h1 span { color: ${c} !important; }
+            .hero-card { border-color: ${c}25 !important; }
+            .hero-card::before { background: ${c} !important; }
+            .hero-value, .card-value { color: ${c} !important; }
+            .filter-btn.active { 
+                background: ${c} !important; 
+                border-color: ${c} !important; 
+                box-shadow: 0 0 20px ${c}40 !important; 
+                color: #000 !important; 
+            }
+            .award-dot { 
+                background: ${c} !important; 
+                box-shadow: 0 0 15px ${c} !important; 
+            }
+            .award-year-badge { color: ${c} !important; background: ${c}15 !important; }
+            .awards-footer h2 span { color: ${c} !important; }
+            
+            /* Background takeover */
+            .hero-bg {
+                background-image: linear-gradient(to right, rgba(10,10,15,0.92) 30%, rgba(10,10,15,0.5) 100%),
+                                  linear-gradient(to bottom, transparent 60%, #0a0a0f 100%),
+                                  url('${era.cover || "assets/jt-hero.jpg"}') !important;
+            }
         `;
 
         document.dispatchEvent(new CustomEvent('eraChanged', { detail: { album: albumName, color: c } }));
