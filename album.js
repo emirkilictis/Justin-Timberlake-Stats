@@ -58,8 +58,7 @@ function parseKworb(html) {
     return tracks;
 }
 
-const MIX_FILTER = /remix|radio edit|\bedit\b|mix\b|reprise|instrumental|version\b|vip|dub|extended|acoustic|live |bootleg/i;
-
+// Filter kaldırıldı, tüm remiksler ve versiyonlar EAS'e dahil edilecek
 // ── Match track → album ───────────────────────────────────────
 function getAlbumTracks(allTracks, albumId) {
     const result = [];
@@ -67,7 +66,6 @@ function getAlbumTracks(allTracks, albumId) {
 
     allTracks.forEach((track, idx) => {
         if (usedIndices.has(idx)) return;
-        if (MIX_FILTER.test(track.title)) return; // remix/edit'leri atla
         const lower = track.title.toLowerCase();
         for (const key of Object.keys(SONG_MAP)) {
             if (lower.includes(key.toLowerCase())) {
@@ -125,7 +123,7 @@ function render(albumId, albumData, tracks) {
         { label: 'Pure Sales',        value: fmt(albumData.pureSales), sub: 'album units' },
         { label: 'Physical Singles',  value: fmt(physSales),           sub: `≈ ${fmt(physEAS)} EAS` },
         { label: 'Download Singles',  value: fmt(dlSales),             sub: `≈ ${fmt(dlEAS)} EAS` },
-        { label: 'Spotify Streams',   value: fmt(spotifyStreams),       sub: 'career total' },
+        { label: 'Spotify Streams',   value: fmt(spotifyStreams),       sub: 'album total' },
         { label: 'Audio EAS',         value: fmt(audioEAS),            sub: 'from streams' },
         { label: 'Total EAS',         value: fmt(totalEAS),            sub: 'equivalent album sales' }
     ];

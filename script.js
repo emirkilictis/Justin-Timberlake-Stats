@@ -41,8 +41,10 @@ function smartParseKworb(input) {
             let title = cols[0].textContent.trim();
             let val = parseInt(cols[1].textContent.replace(/,/g, ''), 10);
             
+            let lowerTitle = title.toLowerCase();
+            
             for (let key in songToAlbumMap) {
-                if (title.includes(key)) {
+                if (lowerTitle.includes(key.toLowerCase())) {
                     // Güvenlik kontrolü ile ekle
                     if (stats[songToAlbumMap[key]] !== undefined) {
                         stats[songToAlbumMap[key]] += val;
