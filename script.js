@@ -109,6 +109,7 @@ async function fetchAllData() {
 
         updateCareerOverview(liveStats);
         console.log("DİNAMİK GÜNCELLEME TAMAMLANDI! EITIW aktif.");
+        document.dispatchEvent(new Event('dataReady'));
 
     } catch (e) {
         console.error("Hata:", e);
@@ -395,7 +396,4 @@ window.sortEasTable = function(key) {
     });
 
     renderEasTable();
-    // Everything finished
-    document.dispatchEvent(new Event('dataReady'));
-    renderCspcDashboard();
 };
