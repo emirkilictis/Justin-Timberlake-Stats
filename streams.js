@@ -833,7 +833,11 @@ window.generateShareCard = function() {
     // Top Daily Track — o gün en yüksek daily stream'e sahip şarkı
     const topDaily = [..._tracksData].sort((a, b) => b.daily - a.daily)[0];
     if (topDaily) {
-        document.getElementById('sc-top-track').textContent = topDaily.title;
+        let displayTopTitle = topDaily.title;
+        if (displayTopTitle.toUpperCase().includes("CAN'T STOP THE FEELING!") && !displayTopTitle.toUpperCase().includes("FILM VERSION")) {
+            displayTopTitle = "CAN'T STOP THE FEELING!";
+        }
+        document.getElementById('sc-top-track').textContent = displayTopTitle;
         document.getElementById('sc-top-track-total').textContent = '+' + topDaily.daily.toLocaleString('en-US');
     }
 

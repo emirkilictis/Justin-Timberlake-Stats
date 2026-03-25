@@ -145,10 +145,15 @@ function render(albumId, albumData, tracks) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:rgba(255,255,255,0.3);padding:40px;text-align:center;">No track data available</td></tr>`;
     } else {
         const maxTotal = tracks[0].total;
-        tbody.innerHTML = tracks.map((t, i) => `
+        tbody.innerHTML = tracks.map((t, i) => {
+            let displayTitle = t.title;
+            if (displayTitle.toUpperCase().includes("CAN'T STOP THE FEELING!") && !displayTitle.toUpperCase().includes("FILM VERSION")) {
+                displayTitle = "CAN'T STOP THE FEELING!";
+            }
+            return `
             <tr>
                 <td class="track-rank">${i + 1}</td>
-                <td class="track-name">${t.title}</td>
+                <td class="track-name">${displayTitle}</td>
                 <td class="track-total">${fmt(t.total)}</td>
                 <td class="track-daily">${t.daily > 0 ? '+' + t.daily.toLocaleString('en-US') : '—'}</td>
                 <td class="track-bar-cell">
@@ -157,7 +162,8 @@ function render(albumId, albumData, tracks) {
                     </div>
                 </td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
     }
 
     document.getElementById('track-status').textContent =

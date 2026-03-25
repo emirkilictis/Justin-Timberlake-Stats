@@ -205,6 +205,12 @@
             .scroll-line { background: ${c} !important; }
             .section-title::before { color: ${c} !important; }
 
+            @media (max-width: 768px) {
+                .hero-bg {
+                    background-position: ${albumName === 'FutureSex/LoveSounds' ? '80% center' : 'center 20%'} !important;
+                }
+            }
+
             /* ── INDEX — CSPC Dashboard ── */
             #eas-total, .stat-value, .cspc-title { color: ${c} !important; }
             .cspc-header { border-left: 4px solid ${c} !important; padding-left: 15px; }
