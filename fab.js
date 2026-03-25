@@ -360,6 +360,101 @@
         if (saved) window.applyEraTheme(saved);
     }
 
+    // ── JT Head Features ─────────────────────────────
+    function injectJTLoader() {
+        if (document.getElementById('jt-global-loader')) return;
+        const loader = document.createElement('div');
+        loader.id = 'jt-global-loader';
+        loader.innerHTML = `
+            <img src="assets/jt-head.png" alt="Loading JT" id="jt-loader-img"/>
+            <div id="jt-loader-text">SYNCING LIVE DATA</div>
+        `;
+        document.documentElement.appendChild(loader);
+
+        const css = document.createElement('style');
+        css.textContent = `
+            #jt-global-loader {
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                background: #0a0a0f; z-index: 100000;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            #jt-loader-img {
+                width: 100px; height: auto;
+                animation: jtPulseSpin 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                filter: drop-shadow(0 0 25px rgba(212,168,83,0.5));
+            }
+            #jt-loader-text {
+                margin-top: 25px; color: #d4a853; font-family: 'Space Grotesk', sans-serif;
+                font-size: 0.9rem; font-weight: 700; letter-spacing: 3px;
+                animation: pulseText 1.5s infinite;
+            }
+            @keyframes jtPulseSpin {
+                0% { transform: rotateY(0deg) scale(1); }
+                50% { transform: rotateY(180deg) scale(1.15); filter: drop-shadow(0 0 40px rgba(212,168,83,0.8)); }
+                100% { transform: rotateY(360deg) scale(1); }
+            }
+            @keyframes pulseText {
+                0%, 100% { opacity: 0.5; }
+                50% { opacity: 1; }
+            }
+
+            /* ── Scroll To Top (JT Head) ── */
+            #jt-scroll-top {
+                position: fixed; bottom: -120px; left: 30px; width: 65px; height: auto;
+                cursor: pointer; z-index: 9998;
+                transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+                filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
+            }
+            #jt-scroll-top img {
+                width: 100%; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            #jt-scroll-top:hover img {
+                transform: scale(1.25) rotate(-8deg);
+            }
+            #jt-scroll-top.visible {
+                bottom: 0px;
+            }
+            @media (max-width: 768px) {
+                #jt-scroll-top { left: 16px; width: 55px; }
+            }
+        `;
+        document.head.appendChild(css);
+
+        let isHidden = false;
+        function hideLoader() {
+            if (isHidden || !document.getElementById('jt-global-loader')) return;
+            isHidden = true;
+            loader.style.opacity = '0';
+            loader.style.transform = 'scale(1.05)';
+            setTimeout(() => loader.remove(), 600);
+        }
+        
+        window.addEventListener('load', () => setTimeout(hideLoader, 800));
+        document.addEventListener('dataReady', () => setTimeout(hideLoader, 300));
+        setTimeout(hideLoader, 3500); 
+    }
+
+    function injectJTScrollTop() {
+        const stt = document.createElement('div');
+        stt.id = 'jt-scroll-top';
+        stt.innerHTML = `<img src="assets/jt-head.png" alt="Scroll to Top" />`;
+        document.body.appendChild(stt);
+
+        window.addEventListener('scroll', () => {
+             if (window.scrollY > 400) {
+                 stt.classList.add('visible');
+             } else {
+                 stt.classList.remove('visible');
+             }
+        });
+        stt.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    injectJTLoader();
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             injectFAB();
@@ -367,6 +462,7 @@
             setActiveNav();
             injectEASLoading();
             restoreEra();
+            injectJTScrollTop();
         });
     } else {
         injectFAB();
@@ -374,5 +470,6 @@
         setActiveNav();
         injectEASLoading();
         restoreEra();
+        injectJTScrollTop();
     }
 })();

@@ -395,5 +395,7 @@ window.sortEasTable = function(key) {
     });
 
     renderEasTable();
+    // Everything finished
+    document.dispatchEvent(new Event('dataReady'));
+    renderCspcDashboard();
 };
-
