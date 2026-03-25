@@ -77,16 +77,18 @@ function calculateRealCSPC(album) {
 
 async function fetchAllData() {
     try {
-        const response = await fetch('data.json');
-        jtData = await response.json();
+        // data.json ve kworb API'yi paralel çek
+        const [dataRes, kworbRes] = await Promise.all([
+            fetch('data.json'),
+            fetch(MY_DYNAMIC_API)
+        ]);
 
-        const kworbRes = await fetch(MY_DYNAMIC_API);
+        jtData = await dataRes.json();
         const htmlText = await kworbRes.text();
         const liveStats = smartParseKworb(htmlText);
 
-        // İŞTE ÇÖZÜM: Hardcode yerine otomatik ve dinamik dağıtım!
+        // Hardcode yerine otomatik ve dinamik dağıtım
         Object.keys(liveStats).forEach(key => {
-            // Total ve Orphan hariç tüm albümleri otomatik eşle
             if (key !== "TotalSpotify" && key !== "Orphan" && jtData.albums[key]) {
                 jtData.albums[key].streams.spotify = liveStats[key];
             }
@@ -97,19 +99,24 @@ async function fetchAllData() {
             jtData.albums["Orphan"].streams.spotify = liveStats.Orphan;
         }
 
-        // Tüm albümlerin YouTube verilerini paralel çek
-        if (YOUTUBE_API_KEY) {
-            await Promise.all(Object.keys(jtData.albums).map(async id => {
-                const ids = jtData.albums[id].streams.youtubeVideoIds;
-                if (ids && ids.length > 0) {
-                    jtData.albums[id].streams.youtube = await fetchRealYouTubeViews(ids);
-                }
-            }));
-        }
-
+        // Önce cached YouTube değerleriyle hemen hesapla
         updateCareerOverview(liveStats);
         console.log("DİNAMİK GÜNCELLEME TAMAMLANDI! EITIW aktif.");
         document.dispatchEvent(new Event('dataReady'));
+
+        // Arka planda YouTube'u çek, gelince EAS'ı güncelle
+        if (YOUTUBE_API_KEY) {
+            Promise.all(Object.keys(jtData.albums).map(async id => {
+                const ids = jtData.albums[id].streams.youtubeVideoIds;
+                if (ids && ids.length > 0) {
+                    const live = await fetchRealYouTubeViews(ids);
+                    if (live > 0) jtData.albums[id].streams.youtube = live;
+                }
+            })).then(() => {
+                updateCareerOverview(liveStats);
+                console.log("YouTube verileri güncellendi.");
+            }).catch(() => {});
+        }
 
     } catch (e) {
         console.error("Hata:", e);

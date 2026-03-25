@@ -9,9 +9,10 @@
       "pureSales": 10572000,
       "physicalSinglesEAS": 450000,
       "digitalSinglesEAS": 1290000,
-      "streams": { 
-          "spotify": 0, 
-          "youtubeVideoIds": ["DksSPZTZES0", "NSyVVVf6u2Y", "3nUovJpY0Yc", "H64QG_YSn_U"] 
+      "streams": {
+          "spotify": 0,
+          "youtube": 1068000000,
+          "youtubeVideoIds": ["DksSPZTZES0", "FQ3slUz7Jo8", "TSVHoHyErBQ", "nJHYDkvRB2Y"]
       }
     },
     "FutureSex/LoveSounds": {
@@ -19,9 +20,10 @@
       "pureSales": 10840000,
       "physicalSinglesEAS": 360000,
       "digitalSinglesEAS": 5250000,
-      "streams": { 
-          "spotify": 0, 
-          "youtubeVideoIds": ["3gOHvDP_vCs", "xjvwPExf1mI", "TOrnUquxtwA", "8X_XGq1knaM", "GE7_S1U8S_0"] 
+      "streams": {
+          "spotify": 0,
+          "youtube": 1050000000,
+          "youtubeVideoIds": ["3gOHvDP_vCs", "TOrnUquxtwA", "QUuKvHHt8Sk", "I34ZLZOyN68", "zMaNfqfsMtE"]
       }
     },
     "The 20/20 Experience": {
@@ -29,9 +31,10 @@
       "pureSales": 8370000,
       "physicalSinglesEAS": 4500,
       "digitalSinglesEAS": 2700000,
-      "streams": { 
-          "spotify": 0, 
-          "youtubeVideoIds": ["uLS_qe-W88E", "IsUsVbTj2AY", "07FYdnEawAQ", "6S0In7_fIgs"] 
+      "streams": {
+          "spotify": 0,
+          "youtube": 1930000000,
+          "youtubeVideoIds": ["uuZE_IRwLNI", "IsUsVbTj2AY", "07FYdnEawAQ", "DEzREJbln-o"]
       }
     },
     "Man of the Woods": {
@@ -39,9 +42,10 @@
       "pureSales": 1100000,
       "physicalSinglesEAS": 150,
       "digitalSinglesEAS": 150000,
-      "streams": { 
-          "spotify": 0, 
-          "youtubeVideoIds": ["8mp7G17aj6A", "gA-NDZb29I4", "vXf6M-TuvX0", "M66fWjZ0fEY"] 
+      "streams": {
+          "spotify": 0,
+          "youtube": 604000000,
+          "youtubeVideoIds": ["8MPbR6Cbwi4", "gA-NDZb29I4", "baj6llvgpWA", "M4vnmgZLA8s"]
       }
     },
 
@@ -50,20 +54,22 @@
       "pureSales": 150000,
       "physicalSinglesEAS": 100,
       "digitalSinglesEAS": 5000,
-      "streams": { 
-          "spotify": 0, 
-          "youtubeVideoIds": ["0D26K8YqR2k", "Q1YxM1e5P2k", "1D_s659u4Hw"] 
+      "streams": {
+          "spotify": 0,
+          "youtube": 68000000,
+          "youtubeVideoIds": ["je0roKRn3nY", "hAnePKLB1EY", "g-n0AkzFjjQ"]
       }
     },
-    
+
     "Orphan": {
       "year": "Various",
       "pureSales": 10000,
       "physicalSinglesEAS": 900000,
       "digitalSinglesEAS": 7650000,
-      "streams": { 
-          "spotify": 0, 
-          "youtubeVideoIds": ["rtOvBOTyX00", "p5R0fHn9L6I", "i7S_R3m8S-c", "lHjNmyzrVvM", "Y_mXByiMIsE"] 
+      "streams": {
+          "spotify": 0,
+          "youtube": 2300000000,
+          "youtubeVideoIds": ["ru0K8uYEZWw", "la0-5QFLr14", "C5RrNaCfUXE", "v8P_go_vj00", "k8iqN8hOvQA"]
       }
     }
   }
