@@ -52,7 +52,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
-        rel="stylesheet" media="print" onload="this.media=\'all\'">
+        rel="stylesheet" media="print" onload="this.media='all'">
     <noscript>
         <link
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
@@ -348,13 +348,14 @@
 
     <script src="config.js?v=1.1" defer></script>
     <script src="song-map.js?v=1.1" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
     <script src="fab.js?v=1.1" defer></script>
 
     <script type="module">
         // 1. İhtiyacımız olan tüm Firebase v12 modüllerini (Sayaç için doc, setDoc, increment dahil) içe aktarıyoruz
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js?v=1.1";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js?v=1.1";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js?v=1.1";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
         // 2. config.js yüklenmediyse erken çık
         if (typeof CONFIG === 'undefined' || !CONFIG.FIREBASE) {
@@ -364,7 +365,12 @@
             throw new Error("CONFIG missing");
         }
         const app = initializeApp(CONFIG.FIREBASE);
-        const analytics = getAnalytics(app);
+        let analytics;
+        try {
+            analytics = getAnalytics(app);
+        } catch (e) {
+            console.warn("Analytics registration failed:", e);
+        }
         const db = getFirestore(app);
 
         // 3. Yorum Gönderme Fonksiyonu
