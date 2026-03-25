@@ -1,6 +1,6 @@
 // --- 1. AYARLAR VE MAPPING ---
 let jtData = null;
-const ARTIST_RATIO = 1.65; 
+const ARTIST_RATIO = 1.82; 
 // script.js en üst kısım
 let YOUTUBE_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.YOUTUBE_API_KEY : "";
 let MY_DYNAMIC_API = typeof CONFIG !== 'undefined' ? CONFIG.MY_DYNAMIC_API : "";

@@ -94,7 +94,7 @@ function fmt(n) {
 function render(albumId, albumData, tracks) {
     const meta  = ALBUM_META[albumId];
     const color = meta.color;
-    const ARTIST_RATIO = 1.65;
+    const ARTIST_RATIO = 1.82;
 
     // Apply era color CSS var
     document.documentElement.style.setProperty('--era-color', color);
