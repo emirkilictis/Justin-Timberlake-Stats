@@ -374,7 +374,7 @@
         const css = document.createElement('style');
         css.textContent = `
             #jt-global-loader {
-                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                position: fixed; inset: 0; /* width/height yerine inset her telefonda hatasız çalışır */
                 background: #0a0a0f; z-index: 100000;
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -387,6 +387,7 @@
             #jt-loader-text {
                 margin-top: 25px; color: #d4a853; font-family: 'Space Grotesk', sans-serif;
                 font-size: 0.9rem; font-weight: 700; letter-spacing: 3px;
+                text-align: center; padding: 0 20px;
                 animation: pulseText 1.5s infinite;
             }
             @keyframes jtPulseSpin {
