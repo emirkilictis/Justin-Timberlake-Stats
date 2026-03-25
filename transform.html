@@ -683,6 +683,85 @@
             100% { opacity: 0; }
         }
 
+        /* ── CARTOON-ACCURATE ANIMATIONS ── */
+
+        /* Hourglass green glow (Step 0) */
+        .hourglass-svg.glowing {
+            animation: hourglassGlow 0.4s ease forwards;
+        }
+        @keyframes hourglassGlow {
+            0%   { filter: drop-shadow(0 0 10px rgba(0,255,0,0.6)); }
+            50%  { filter: drop-shadow(0 0 40px rgba(0,255,0,1)) brightness(1.5); }
+            100% { filter: drop-shadow(0 0 60px rgba(0,255,0,1)) brightness(2); }
+        }
+
+        /* Faceplate RISES UP physically (Step 1) */
+        .trix-faceplate.rising {
+            animation: faceplateRise 0.3s var(--mech) forwards;
+        }
+        @keyframes faceplateRise {
+            0%   { transform: scale(1) translateY(0);
+                   box-shadow: none; }
+            60%  { transform: scale(1.18) translateY(-16px);
+                   box-shadow: 0 24px 60px rgba(0,0,0,0.95),
+                               0 0 0 3px #00ff00,
+                               0 0 60px rgba(0,255,0,0.7); }
+            100% { transform: scale(1.15) translateY(-14px);
+                   box-shadow: 0 22px 70px rgba(0,0,0,0.95),
+                               0 0 0 3px #00cc00,
+                               0 0 45px rgba(0,255,0,0.5); }
+        }
+
+        /* SLAM the dial DOWN to transform */
+        .trix-faceplate.slamming {
+            animation: faceplateSlam 0.22s cubic-bezier(0.6, 0, 0.4, 1) forwards;
+        }
+        @keyframes faceplateSlam {
+            0%   { transform: scale(1.15) translateY(-14px);
+                   box-shadow: 0 22px 70px rgba(0,0,0,0.95),
+                               0 0 0 3px #00cc00,
+                               0 0 45px rgba(0,255,0,0.5); }
+            45%  { transform: scale(0.9) translateY(8px);
+                   box-shadow: 0 2px 10px rgba(0,0,0,0.5),
+                               0 0 100px rgba(0,255,0,0.9); }
+            70%  { transform: scale(1.03) translateY(-2px); }
+            100% { transform: scale(1) translateY(0);
+                   box-shadow: none; }
+        }
+
+        /* Green energy burst from center */
+        .green-burst {
+            position: absolute;
+            inset: -30%;
+            border-radius: 50%;
+            z-index: 8;
+            pointer-events: none;
+            background: radial-gradient(circle,
+                rgba(0,255,0,0.9) 0%,
+                rgba(0,255,0,0.4) 25%,
+                rgba(0,200,0,0.1) 50%,
+                transparent 70%);
+            opacity: 0;
+            transform: scale(0);
+        }
+        @keyframes burstPulse {
+            0%   { opacity: 0; transform: scale(0.15); }
+            25%  { opacity: 1; transform: scale(0.8); }
+            60%  { opacity: 0.6; transform: scale(1.3); }
+            100% { opacity: 0; transform: scale(1.8); }
+        }
+        .green-burst.active {
+            animation: burstPulse 0.5s ease-out forwards;
+        }
+
+        /* Smooth hourglass fade (replaces mechanical split) */
+        .hg-wrap.fading-out {
+            transition: opacity 0.2s ease, filter 0.2s ease;
+            opacity: 0;
+            filter: blur(4px) brightness(2);
+        }
+        .hg-wrap.invisible { opacity: 0; pointer-events: none; }
+
         /* ── MOBILE ── */
         @media (max-width: 400px) {
             .omnitrix { width: 260px; height: 260px; }
@@ -762,6 +841,9 @@
 
                 </div>
             </div>
+
+            <!-- Green energy burst (cartoon-style activation) -->
+            <div class="green-burst" id="green-burst"></div>
 
             <!-- Close button (açıkken görünür) -->
             <button class="trix-close" id="trix-close" onclick="closeOmnitrix()">✕</button>
@@ -969,32 +1051,41 @@ function openOmnitrix() {
     if (omnitrixOpen) return;
     omnitrixOpen = true;
 
+    const hgWrap = faceplate.querySelector('.hg-wrap');
+    const svgs   = faceplate.querySelectorAll('.hourglass-svg');
+    const burst   = document.getElementById('green-burst');
+
     // Activation sound
     SFX.activation.currentTime = 0;
     SFX.activation.play().catch(() => {});
 
-    // ── STEP 0 (0ms): PINCH — panels slide in, hourglass → diamond (0.2s) ──
-    faceplate.classList.add('pinching');
+    // ── STEP 0 (0ms): Hourglass GLOWS bright green ──
+    svgs.forEach(s => s.classList.add('glowing'));
+    omnitrix.classList.add('activated');
 
-    // ── STEP 1 (200ms): Mechanical pop-out (diamond fully formed) ──
+    // ── STEP 1 (380ms): Faceplate RISES UP + green energy burst ──
     setTimeout(() => {
-        faceplate.classList.add('popping');
-        omnitrix.classList.add('activated');
-    }, 200);
+        burst.classList.remove('active');
+        void burst.offsetWidth;
+        burst.classList.add('active');
+        faceplate.classList.add('rising');
+    }, 380);
 
-    // ── STEP 2 (280ms): Interlocking twist ────────────────
+    // ── STEP 2 (580ms): Outer ring twists (mechanical unlock) ──
     setTimeout(() => {
         omnitrix.classList.add('unlocking');
-    }, 280);
+    }, 580);
 
-    // ── STEP 3 (400ms): Hourglass/diamond split ──────────
+    // ── STEP 3 (700ms): Hourglass fades out with glow ──
     setTimeout(() => {
-        hgTop.classList.add('splitting');
-        hgBottom.classList.add('splitting');
-    }, 400);
+        hgWrap.classList.add('fading-out');
+    }, 700);
 
-    // ── STEP 4 (570ms): Faceplate fades, dial reveals ────
+    // ── STEP 4 (900ms): Selection dial appears — hologram style ──
     setTimeout(() => {
+        hgWrap.classList.remove('fading-out');
+        hgWrap.classList.add('invisible');
+        svgs.forEach(s => s.classList.remove('glowing'));
         faceplate.classList.add('faded');
         omnitrix.classList.remove('unlocking', 'activated');
         omnitrix.classList.add('open');
@@ -1004,11 +1095,13 @@ function openOmnitrix() {
         selection.classList.remove('hiding');
         selection.classList.add('visible');
         document.getElementById('trix-cta').textContent = 'Select era · Press to transform';
-    }, 570);
+    }, 900);
 }
 
 function closeOmnitrix() {
     if (!omnitrixOpen || transforming) return;
+
+    const hgWrap = faceplate.querySelector('.hg-wrap');
 
     // Dial kapanır
     ringRotation = 0;
@@ -1020,21 +1113,17 @@ function closeOmnitrix() {
     setTimeout(() => {
         selection.classList.remove('hiding');
 
-        // Faceplate geri gelir
-        faceplate.classList.remove('faded', 'popping', 'pinching');
-        faceplate.style.transform = 'scale(1)';
+        // Faceplate descends back
+        faceplate.classList.remove('faded', 'rising', 'popping', 'pinching', 'slamming');
+        faceplate.style.transform = '';
         faceplate.style.boxShadow = '';
 
-        // Hourglass birleşir
-        hgTop.classList.remove('splitting');
-        hgBottom.classList.remove('splitting');
-        hgTop.classList.add('merging');
-        hgBottom.classList.add('merging');
+        // Hourglass reappears (smooth)
+        hgWrap.classList.remove('invisible', 'fading-out');
+        hgTop.classList.remove('splitting', 'merging');
+        hgBottom.classList.remove('splitting', 'merging');
 
-        // Twist geri döner (unlocking sınıfı zaten yok, open'dan çıktık → transition: 0.25s settle)
         setTimeout(() => {
-            hgTop.classList.remove('merging');
-            hgBottom.classList.remove('merging');
             omnitrixOpen = false;
             document.getElementById('trix-cta').textContent = 'Tap the Omnitrix to activate';
         }, 300);
@@ -1064,19 +1153,28 @@ function pressTransform() {
     if (transforming) return;
     transforming = true;
 
-    const era = ERAS[current];
+    const era   = ERAS[current];
+    const burst = document.getElementById('green-burst');
 
     // Set CSS variable for overlay colors
     overlay.style.setProperty('--era-color', era.color);
 
-    // Shake omnitrix
-    omnitrix.style.animation = 'none';
-    omnitrix.style.transform = 'scale(1.05)';
-    setTimeout(() => { omnitrix.style.transform = ''; }, 150);
+    // ── SLAM THE DIAL DOWN! (like Ben slamming the Omnitrix) ──
+    faceplate.classList.remove('rising');
+    faceplate.classList.add('slamming');
+
+    // Green energy burst on impact
+    burst.classList.remove('active');
+    void burst.offsetWidth;
+    burst.classList.add('active');
+
+    // Omnitrix body recoils from slam
+    omnitrix.style.transform = 'scale(1.06)';
+    setTimeout(() => { omnitrix.style.transform = ''; }, 180);
 
     playTransformSound();
 
-    // Flash
+    // Green flash (the signature transformation flash)
     flashEl.classList.remove('go');
     void flashEl.offsetWidth;
     flashEl.classList.add('go');
@@ -1094,7 +1192,7 @@ function pressTransform() {
 
         // Apply site era theme (if fab.js is loaded)
         if (window.applyEraTheme) window.applyEraTheme(era.name);
-    }, 200);
+    }, 220);
 }
 
 function revert() {
@@ -1120,6 +1218,7 @@ function revert() {
     setTimeout(() => {
         overlay.classList.remove('active', 'blast', 'reveal', 'detransforming');
         omnitrix.classList.remove('reverting');
+        faceplate.classList.remove('slamming');
         transforming = false;
         if (window.resetToCareer) window.resetToCareer();
         else if (window.applyEraTheme) window.applyEraTheme('default');
