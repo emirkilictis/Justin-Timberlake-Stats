@@ -380,11 +380,23 @@
         }
         const db = getFirestore(app);
 
-        // 3. Yorum Gönderme Fonksiyonu
+        // 3. Yorum Gönderme Fonksiyonu (30-second rate limit)
+        let _lastCommentTime = 0;
+        const COMMENT_COOLDOWN_MS = 30000; // 30 seconds
+
         window.sendComment = async function () {
             const nameEl = document.getElementById('guest-name');
             const msgEl = document.getElementById('guest-msg');
             const btn = document.querySelector('.comment-form .era-btn');
+
+            // Rate limit check
+            const now = Date.now();
+            const elapsed = now - _lastCommentTime;
+            if (_lastCommentTime && elapsed < COMMENT_COOLDOWN_MS) {
+                const wait = Math.ceil((COMMENT_COOLDOWN_MS - elapsed) / 1000);
+                alert(`Please wait ${wait} seconds before posting again.`);
+                return;
+            }
 
             const name = nameEl.value.trim();
             const msg = msgEl.value.trim();
@@ -410,6 +422,7 @@
                     message: msg,
                     timestamp: serverTimestamp()
                 });
+                _lastCommentTime = Date.now();
                 nameEl.value = "";
                 msgEl.value = "";
             } catch (error) {
@@ -464,20 +477,25 @@
         }
 
         // 5. ZİYARETÇİ SAYACI MOTORU (V12 Modular Syntax)
+        // Only increment once per browser session to avoid inflation on refresh
         const statsRef = doc(db, "analytics", "visitor_stats");
 
-        // Sayfa açıldığında sayacı 1 artır (merge: true dosyayı sıfırdan oluşturmasını sağlar)
-        setDoc(statsRef, { count: increment(1) }, { merge: true })
+        const shouldCount = !sessionStorage.getItem('jt_counted');
+        const counterPromise = shouldCount
+            ? setDoc(statsRef, { count: increment(1) }, { merge: true })
+                  .then(() => { sessionStorage.setItem('jt_counted', '1'); })
+            : Promise.resolve();
+
+        counterPromise
             .then(() => {
-                // Artırdıktan sonra güncel rakamı canlı olarak dinle
+                // Listen for live count updates
                 onSnapshot(statsRef, (docSnap) => {
                     if (docSnap.exists() && document.getElementById('visitor-count')) {
-                        // Sayıyı al ve virgüllü formatta ekrana bas
                         document.getElementById('visitor-count').innerText = docSnap.data().count.toLocaleString('en-US');
                     }
                 });
             })
-            .catch(err => console.error("Sayaç hatası:", err));
+            .catch(err => console.error("Counter error:", err));
 
     </script>
 

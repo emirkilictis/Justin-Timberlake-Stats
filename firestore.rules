@@ -1,0 +1,52 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Comments Collection ──────────────────────────────────────
+    // Anyone can read comments (public guestbook).
+    // Writes must include valid name (≤60 chars) and message (≤500 chars).
+    // Only 'name', 'message', and 'timestamp' fields are allowed.
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if
+        request.resource.data.keys().hasOnly(['name', 'message', 'timestamp'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.message is string
+        && request.resource.data.message.size() > 0
+        && request.resource.data.message.size() <= 500;
+      allow update, delete: if false;
+    }
+
+    // ── Visitor Analytics ────────────────────────────────────────
+    // Anyone can read the visitor count.
+    // Writes only allowed to the specific visitor_stats document,
+    // and only to increment the 'count' field.
+    match /analytics/visitor_stats {
+      allow read: if true;
+      allow update: if
+        request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count is int
+        && request.resource.data.count == resource.data.count + 1;
+      allow create: if
+        request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count is int;
+      allow delete: if false;
+    }
+
+    // ── Historical Snapshots (read-only from client) ─────────────
+    // The daily-snapshot script writes via Admin SDK (bypasses rules).
+    // Clients can only read snapshot data.
+    match /snapshots/{snapshotId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── Deny everything else ─────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
