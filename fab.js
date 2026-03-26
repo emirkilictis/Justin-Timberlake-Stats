@@ -175,15 +175,20 @@
 
         // Hero arkaplanı (index.html)
         const heroBg = document.querySelector('.hero-bg');
+        const heroVideo = document.querySelector('.hero video');
         if (heroBg) {
-            const img = isDefault ? "url('assets/jt-hero.jpg')" : `url('${era.cover || "assets/jt-hero.jpg"}')`;
+            const img = isDefault ? "url('assets/jt-horizontal.png')" : `url('${era.cover || "assets/jt-horizontal.png"}')`;
             heroBg.style.backgroundImage =
                 `linear-gradient(to right, rgba(10,10,15,0.6) 30%, rgba(10,10,15,0.25) 100%),
                  linear-gradient(to bottom, transparent 60%, #0a0a0f 100%), ${img}`;
             const isFSLS = era.id === 'FutureSex/LoveSounds';
             heroBg.style.backgroundSize = isFSLS ? 'contain' : 'cover';
-            heroBg.style.backgroundPosition = isFSLS ? 'center center' : 'center 20%';
+            heroBg.style.backgroundPosition = isFSLS ? 'center center' : 'center 30%';
             heroBg.style.backgroundColor = isFSLS ? '#0a0a0f' : '';
+        }
+        if (heroVideo) {
+            heroVideo.style.transition = 'opacity 0.6s ease';
+            heroVideo.style.opacity = isDefault ? '0.55' : '0';
         }
 
         // Dynamic style tag
@@ -424,7 +429,7 @@
 
             /* ── Scroll To Top (JT Head) ── */
             #jt-scroll-top {
-                position: fixed; bottom: -120px; left: 30px; width: 65px; height: auto;
+                position: fixed; bottom: -120px; left: 50%; transform: translateX(-50%); width: 65px; height: auto;
                 cursor: pointer; z-index: 9998;
                 transition: bottom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
                 filter: drop-shadow(0 5px 15px rgba(0,0,0,0.6));
@@ -439,7 +444,7 @@
                 bottom: 0px;
             }
             @media (max-width: 768px) {
-                #jt-scroll-top { left: 16px; width: 55px; }
+                #jt-scroll-top { width: 55px; }
             }
         `;
         document.head.appendChild(css);
