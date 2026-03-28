@@ -96,6 +96,11 @@ async function fetchAllData() {
             }
         });
 
+        // album.html ile sync için Spotify değerlerini localStorage'a kaydet
+        try {
+            localStorage.setItem('jt_kworb_cache', JSON.stringify({ ts: Date.now(), data: liveStats }));
+        } catch (_) {}
+
         // Orphan özel durumu
         if (jtData.albums["Orphan"]) {
             jtData.albums["Orphan"].streams.spotify = liveStats.Orphan;
