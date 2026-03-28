@@ -45,7 +45,9 @@ function smartParseKworb(input) {
 
             for (let key in songToAlbumMap) {
                 if (lowerTitle.includes(key.toLowerCase())) {
-                    const target = songToAlbumMap[key];
+                    let target = songToAlbumMap[key];
+                    // Part 2'yi Part 1 era'sına dahil et
+                    if (target === "The 20/20 Experience \u2013 2 of 2") target = "The 20/20 Experience";
                     if (stats[target] !== undefined) {
                         stats[target] += val;
                         if (target !== "Orphan") assignedToRealAlbums += val;

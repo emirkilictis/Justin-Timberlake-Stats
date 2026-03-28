@@ -450,8 +450,8 @@ function renderTables() {
                 <td>
                     <div class="flex items-center">
                         ${thumb}
-                        <div>
-                            <div class="font-playfair font-bold text-lg text-white">${a.title}</div>
+                        <div class="title-inner">
+                            <div class="font-playfair font-bold text-lg text-white title-text">${a.title}</div>
                         </div>
                     </div>
                 </td>
@@ -483,9 +483,9 @@ function renderTables() {
         let tr = `
             <tr>
                 <td>
-                    <div>
-                        <div class="font-bold text-[15px] text-white">${s.title}</div>
-                        <div class="text-[10px] uppercase tracking-widest" style="color: ${color}99">${s.album_id}</div>
+                    <div class="title-inner">
+                        <div class="font-bold text-[15px] text-white title-text">${s.title}</div>
+                        <div class="text-[10px] uppercase tracking-widest title-text" style="color: ${color}99">${s.album_id}</div>
                     </div>
                 </td>
                 <td class="col-total text-right">${s.certTotal ? s.certTotal.toLocaleString() : '—'}</td>

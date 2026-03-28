@@ -1,6 +1,16 @@
 // album.js — Dynamic album detail page
 
-const MY_API = typeof CONFIG !== 'undefined' ? CONFIG.MY_DYNAMIC_API : '';
+const MY_API          = typeof CONFIG !== 'undefined' ? CONFIG.MY_DYNAMIC_API  : '';
+const YT_API_KEY      = typeof CONFIG !== 'undefined' ? CONFIG.YOUTUBE_API_KEY : '';
+
+async function fetchYouTubeViews(ids) {
+    if (!YT_API_KEY || !ids || ids.length === 0) return 0;
+    try {
+        const res  = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(',')}&key=${YT_API_KEY}`);
+        const data = await res.json();
+        return (data.items || []).reduce((sum, item) => sum + parseInt(item.statistics.viewCount || 0), 0);
+    } catch { return 0; }
+}
 
 const ALBUM_META = {
     "Justified": {
@@ -69,12 +79,17 @@ function getAlbumTracks(allTracks, albumId) {
     const result = [];
     const usedIndices = new Set();
 
+    // 20/20 Part 1 sayfasında Part 2 şarkıları da göster
+    const targetAlbums = albumId === "The 20/20 Experience"
+        ? ["The 20/20 Experience", "The 20/20 Experience \u2013 2 of 2"]
+        : [albumId];
+
     allTracks.forEach((track, idx) => {
         if (usedIndices.has(idx)) return;
         const lower = track.title.toLowerCase();
         for (const key of Object.keys(SONG_MAP)) {
             if (lower.includes(key.toLowerCase())) {
-                if (SONG_MAP[key] === albumId) {
+                if (targetAlbums.includes(SONG_MAP[key])) {
                     usedIndices.add(idx);
                     result.push(track);
                 }
@@ -202,6 +217,13 @@ async function init() {
             const html = await kworbRes.text();
             const all  = parseKworb(html);
             tracks     = getAlbumTracks(all, albumId);
+        }
+
+        // Live YouTube — index.html ile aynı değeri kullan
+        const ytIds = albumData.streams?.youtubeVideoIds;
+        if (ytIds && ytIds.length > 0) {
+            const liveYT = await fetchYouTubeViews(ytIds);
+            if (liveYT > 0) albumData.streams.youtube = liveYT;
         }
 
         render(albumId, albumData, tracks);

@@ -26,7 +26,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1774657938">
+    <link rel="stylesheet" href="style.css?v=1774701163">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -118,6 +118,16 @@
         /* Total column highlight */
         .col-total { color: var(--accent-color); font-weight: 700; text-align: right; white-space: nowrap; }
         .col-total-head { color: var(--accent-color) !important; }
+
+        /* Title column — prevent flex collapse on mobile */
+        .cert-table th:first-child,
+        .cert-table td:first-child { min-width: 180px; }
+        .cert-table td:first-child .title-inner { min-width: 0; overflow: hidden; }
+        .cert-table td:first-child .title-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
@@ -236,8 +246,8 @@
 
     </div>
 
-    <script src="config.js?v=1774657938" defer></script>
-    <script src="song-map.js?v=1774657938" defer></script>
-    <script src="vault.js?v=1774657938" defer></script>
+    <script src="config.js?v=1774701163" defer></script>
+    <script src="song-map.js?v=1774701163" defer></script>
+    <script src="vault.js?v=1774701163" defer></script>
 </body>
 </html>
