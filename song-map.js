@@ -4,7 +4,7 @@
 // "Orphan" = singles/features not belonging to any studio album.
 //
 // EAS methodology divisors (Chartmasters CSPC):
-//   Audio streams  : streams × artist_ratio (1.65) / 1166
+//   Audio streams  : streams × artist_ratio (1.82) / 1166
 //   Video streams  : views / 6750
 //   Physical single: sales × 3/10
 //   Download single: sales × 1.5/10
@@ -24,10 +24,13 @@ const SONG_TO_ALBUM_MAP = {
     "Never Again":           "Justified",
 
     // ── FUTURESEX/LOVESOUNDS (2006) — standard + deluxe ────────
+    // ── FUTURESEX/LOVESOUNDS (2006) — standard + deluxe ────────
     "Boutique In Heaven":    "FutureSex/LoveSounds",
     "LoveStoned":            "FutureSex/LoveSounds",
+    "I Think She Knows":     "FutureSex/LoveSounds",
     "Losing My Way":         "FutureSex/LoveSounds",
     "What Goes Around":      "FutureSex/LoveSounds",
+    "Comes Around":          "FutureSex/LoveSounds",
     "Until The End Of Time": "FutureSex/LoveSounds",
     "Chop Me Up":            "FutureSex/LoveSounds",
     "Summer Love":           "FutureSex/LoveSounds",
@@ -36,30 +39,38 @@ const SONG_TO_ALBUM_MAP = {
     "FutureSex":             "FutureSex/LoveSounds",
     "SexyBack":              "FutureSex/LoveSounds",
     "My Love":               "FutureSex/LoveSounds",
+    "All Over Again":        "FutureSex/LoveSounds",
+    "Pose":                  "FutureSex/LoveSounds",
+    "Another Song":          "FutureSex/LoveSounds",
+    "Set The Mood":          "FutureSex/LoveSounds",
 
-    // ── THE 20/20 EXPERIENCE (2013) — Part 1 + Part 2 ──────────
+    // ── THE 20/20 EXPERIENCE (2013) — Part 1 ───────────────────
     "Strawberry Bubblegum":  "The 20/20 Experience",
     "Spaceship Coupe":       "The 20/20 Experience",
     "Pusher Love Girl":      "The 20/20 Experience",
-    "Take Back the Night":   "The 20/20 Experience",
     "Don't Hold the Wall":   "The 20/20 Experience",
     "Let the Groove Get In": "The 20/20 Experience",
-    "Only When I Walk Away": "The 20/20 Experience",
-    "Gimme What I Don't Know":"The 20/20 Experience",
-    "Blue Ocean Floor":      "The 20/20 Experience",
-    "Not a Bad Thing":       "The 20/20 Experience",
-    "Drink You Away":        "The 20/20 Experience",
-    "Tunnel Vision":         "The 20/20 Experience",
-    "True Blood":            "The 20/20 Experience",
-    "You Got It On":         "The 20/20 Experience",
     "Suit & Tie":            "The 20/20 Experience",
-    "Dress On":              "The 20/20 Experience",
     "That Girl":             "The 20/20 Experience",
-    "Amnesia":               "The 20/20 Experience",
-    "Cabaret":               "The 20/20 Experience",
     "Mirrors":               "The 20/20 Experience",
-    "Murder":                "The 20/20 Experience",
-    "TKO":                   "The 20/20 Experience",
+    "Tunnel Vision":         "The 20/20 Experience",
+    "Body Count":            "The 20/20 Experience",
+    "Dress On":              "The 20/20 Experience",
+
+    // ── THE 20/20 EXPERIENCE (2013) – 2 of 2 (Part 2) ──────────
+    "Take Back the Night":   "The 20/20 Experience – 2 of 2",
+    "Only When I Walk Away": "The 20/20 Experience – 2 of 2",
+    "Gimme What I Don't Know":"The 20/20 Experience – 2 of 2",
+    "Not a Bad Thing":       "The 20/20 Experience – 2 of 2",
+    "Drink You Away":        "The 20/20 Experience – 2 of 2",
+    "True Blood":            "The 20/20 Experience – 2 of 2",
+    "You Got It On":         "The 20/20 Experience – 2 of 2",
+    "Amnesia":               "The 20/20 Experience – 2 of 2",
+    "Cabaret":               "The 20/20 Experience – 2 of 2",
+    "Murder":                "The 20/20 Experience – 2 of 2",
+    "TKO":                   "The 20/20 Experience – 2 of 2",
+    "Blindness":             "The 20/20 Experience – 2 of 2",
+    "Electric Lady":         "The 20/20 Experience – 2 of 2",
 
     // ── MAN OF THE WOODS (2018) ─────────────────────────────────
     "Midnight Summer Jam":   "Man of the Woods",
@@ -99,6 +110,18 @@ const SONG_TO_ALBUM_MAP = {
     "Liar":                  "Everything I Thought It Was",
     "Play":                  "Everything I Thought It Was",
 
-    // Orphan / Features: map'te YOK — residual olarak hesaplanır
-    // (TotalSpotify - tüm albüm streamleri = Orphan)
+    // ── ORPHAN / FEATURES ─────────────────────────────────────
+    "CAN'T STOP THE FEELING!": "Orphan",
+    "Holy Grail":              "Orphan",
+    "Dead and Gone":           "Orphan",
+    "4 Minutes":               "Orphan",
+    "Give It To Me":           "Orphan",
+    "Love Never Felt So Good": "Orphan",
+    "Ayo Technology":          "Orphan",
+    "Carry Out":               "Orphan",
+    "The Other Side":          "Orphan",
+    "Signs":                   "Orphan",
+    "Stay With Me":            "Orphan",
+    "Better Place":            "Orphan",
+    "Where Is The Love":       "Orphan",
 };

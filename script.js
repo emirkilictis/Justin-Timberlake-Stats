@@ -33,7 +33,7 @@ function smartParseKworb(input) {
         if (totalCell) stats.TotalSpotify = parseInt(totalCell.textContent.replace(/,/g, ''), 10);
     }
 
-    let assignedToAlbums = 0;
+    let assignedToRealAlbums = 0;
     const rows = doc.querySelectorAll('table.addpos tbody tr');
     rows.forEach(row => {
         const cols = row.querySelectorAll('td');
@@ -45,10 +45,10 @@ function smartParseKworb(input) {
 
             for (let key in songToAlbumMap) {
                 if (lowerTitle.includes(key.toLowerCase())) {
-                    // Güvenlik kontrolü ile ekle
-                    if (stats[songToAlbumMap[key]] !== undefined) {
-                        stats[songToAlbumMap[key]] += val;
-                        assignedToAlbums += val;
+                    const target = songToAlbumMap[key];
+                    if (stats[target] !== undefined) {
+                        stats[target] += val;
+                        if (target !== "Orphan") assignedToRealAlbums += val;
                     }
                     break;
                 }
@@ -56,7 +56,7 @@ function smartParseKworb(input) {
         }
     });
 
-    stats.Orphan = stats.TotalSpotify - assignedToAlbums;
+    stats.Orphan = stats.TotalSpotify - assignedToRealAlbums;
     return stats;
 }
 

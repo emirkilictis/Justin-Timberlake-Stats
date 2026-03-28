@@ -27,6 +27,11 @@ const ALBUM_META = {
         year: 2024, color: "#ca510f",
         cover: "assets/eitiw.jpg",
         label: "RCA Records"
+    },
+    "Orphan": {
+        year: "Various", color: "#bdc3c7",
+        cover: null,
+        label: "Features / OST"
     }
 };
 

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
+    <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
+    <title>Justin Timberlake Record Sales & Certifications — Global Units Database</title>
+    <meta name="description" content="Justin Timberlake's certified record sales across USA, UK, Brazil, Germany, Australia and Canada. Live RIAA eligibility, album sales, and single sales data.">
+    <meta name="keywords" content="Justin Timberlake record sales, Justin Timberlake certifications, RIAA, album sales, single sales, platinum, gold, diamond, global units">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://justin-timberlake-stats.vercel.app/vault.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Timberlake Analytics">
+    <meta property="og:title" content="Justin Timberlake Record Sales & Certifications — Global Units Database">
+    <meta property="og:description" content="Justin Timberlake's certified record sales across USA, UK, Brazil, Germany, Australia and Canada. Live RIAA eligibility, album and single sales data.">
+    <meta property="og:url" content="https://justin-timberlake-stats.vercel.app/vault.html">
+    <meta property="og:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-hero.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Justin Timberlake Record Sales & Certifications — Global Units Database">
+    <meta name="twitter:description" content="Justin Timberlake's certified record sales across USA, UK, Brazil, Germany, Australia and Canada. Live RIAA eligibility, album and single sales data.">
+    <meta name="twitter:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-hero.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css?v=1774657938">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: 'var(--accent-color, #d4a853)'
+                    },
+                    fontFamily: {
+                        playfair: ['"Playfair Display"', 'serif'],
+                        space: ['"Space Grotesk"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --accent-color: #d4a853; 
+        }
+        body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+        .hero-bg {
+            position: fixed; top: 0; left: 0; right: 0; height: 100vh;
+            background-image: linear-gradient(to right, rgba(10,10,15,0.9) 30%, rgba(10,10,15,0.7) 100%), url('assets/jt-horizontal.png');
+            background-size: cover; background-position: center; z-index: -1; opacity: 0.4;
+        }
+        .vault-container {
+            padding: 120px 5% 60px; max-width: 1400px; margin: 0 auto; position: relative;
+        }
+
+        .diamond-glow {
+            border-color: #b9f2ff !important;
+            box-shadow: 0 0 15px rgba(185,242,255,0.4), inset 0 0 10px rgba(185,242,255,0.2) !important;
+            animation: diamondShimmer 2s infinite alternate;
+        }
+        @keyframes diamondShimmer {
+            0% { box-shadow: 0 0 15px rgba(185,242,255,0.3), inset 0 0 10px rgba(185,242,255,0.1); }
+            100% { box-shadow: 0 0 25px rgba(185,242,255,0.7), inset 0 0 20px rgba(185,242,255,0.5); }
+        }
+
+        /* Table Styles */
+        .cert-table { width: 100%; border-collapse: collapse; text-align: left; }
+        .cert-table th { padding: 16px; font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); border-bottom: 1px solid rgba(255,255,255,0.1); white-space: nowrap; }
+        .cert-table td { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.03); vertical-align: middle; }
+        .cert-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+        
+        .badge {
+            display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+        }
+        .badge-none { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.1); }
+        .badge-silver { background: rgba(192,192,192,0.1); color: #c0c0c0; border: 1px solid rgba(192,192,192,0.3); }
+        .badge-gold { background: rgba(212,168,83,0.15); color: #d4a853; border: 1px solid rgba(212,168,83,0.4); }
+        .badge-platinum { background: rgba(229,228,226,0.15); color: #e5e4e2; border: 1px solid rgba(229,228,226,0.5); }
+        .badge-diamond { background: rgba(185,242,255,0.2); color: #b9f2ff; border: 1px solid #b9f2ff; box-shadow: 0 0 10px rgba(185,242,255,0.4); }
+
+        .live-indicator { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 8px #4ade80; margin-right: 6px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+        /* Grand Total Footer */
+        .vault-grand-total {
+            margin-top: 48px;
+            padding: 24px 32px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .vault-grand-total .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: rgba(255,255,255,0.4);
+        }
+        .vault-grand-total .value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+        .vault-grand-total .sub {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+            margin-top: 2px;
+        }
+
+        /* Total column highlight */
+        .col-total { color: var(--accent-color); font-weight: 700; text-align: right; white-space: nowrap; }
+        .col-total-head { color: var(--accent-color) !important; }
+    </style>
+</head>
+
+<body>
+    <div class="hero-bg"></div>
+
+    <div class="vault-container">
+
+        <nav>
+            <div class="logo">Timberlake</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="tours.html">Box Office</a></li>
+                <li><a href="streams.html">Live Streaming</a></li>
+                <li><a href="awards.html">Awards</a></li>
+                <li><a href="vault.html" class="active">Certifications</a></li>
+                <li><a href="game.html">Album Crush</a></li>
+                <li><a href="transform.html">Timbertrix</a></li>
+            </ul>
+        </nav>
+        
+        <div class="text-center mb-12">
+            <h1 class="font-playfair text-5xl md:text-7xl font-black mb-4 leading-tight">
+                Record Sales <span class="italic text-accent">Vault</span>
+            </h1>
+            <p class="text-gray-400 text-sm tracking-[0.3em] uppercase">Global Album & Single Sales — Certifications Database</p>
+        </div>
+
+        <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h2 class="font-playfair text-2xl text-accent">Studio Albums</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="cert-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4">Title / Context</th>
+                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'certTotal')">Cert. Total ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'USA')">🇺🇸 USA ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'UK')">🇬🇧 UK ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Brazil')">🇧🇷 Brazil ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Germany')">🇩🇪 Germany ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Australia')">🇦🇺 Australia ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Canada')">🇨🇦 Canada ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Mexico')">🇲🇽 Mexico ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Other')">🌍 Other ⇕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="albums-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h2 class="font-playfair text-2xl text-accent">Singles</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="cert-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4 cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'title')">Song Title ⇕</th>
+                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'certTotal')">Cert. Total ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'USA')">🇺🇸 USA ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'UK')">🇬🇧 UK ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Brazil')">🇧🇷 Brazil ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Germany')">🇩🇪 Germany ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Australia')">🇦🇺 Australia ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="songs-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Country Summary Table -->
+        <section class="mt-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h2 class="font-playfair text-2xl text-accent">Country Summary</h2>
+                <span class="text-xs text-gray-500 uppercase tracking-widest">Albums + Singles Combined</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="cert-table">
+                    <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th class="text-center">Albums</th>
+                            <th class="text-center">Singles</th>
+                            <th class="text-accent text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="country-summary-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Grand Total Footer — plain, no neon -->
+        <div class="vault-grand-total">
+            <div>
+                <div class="label">Total Global Certified Units</div>
+                <div class="sub">US Eligible + Global Official Summation</div>
+            </div>
+            <div>
+                <div id="grand-total-odometer" class="value">—</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="config.js?v=1774657938" defer></script>
+    <script src="song-map.js?v=1774657938" defer></script>
+    <script src="vault.js?v=1774657938" defer></script>
+</body>
+</html>

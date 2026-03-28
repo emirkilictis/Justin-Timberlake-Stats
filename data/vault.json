@@ -1,0 +1,761 @@
+{
+  "songs": [
+    {
+      "id": "like_i_love_you",
+      "title": "Like I Love You",
+      "album_id": "Justified",
+      "pure_sales_us": 300000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "1x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "cry_me_a_river",
+      "title": "Cry Me a River",
+      "album_id": "Justified",
+      "pure_sales_us": 1200000,
+      "official_certifications": {
+        "USA": "2x Platinum",
+        "UK": "2x Platinum",
+        "Brazil": "1x Platinum",
+        "Germany": "Gold",
+        "Australia": "2x Platinum",
+        "Canada": "None",
+        "New Zealand": "3x Platinum",
+        "Denmark":"5x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "rock_your_body",
+      "title": "Rock Your Body",
+      "album_id": "Justified",
+      "pure_sales_us": 2000000,
+      "official_certifications": {
+        "USA": "Gold",
+        "UK": "Platinum",
+        "Brazil": "Gold",
+        "Germany": "Gold",
+        "Australia": "2x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "señorita",
+      "title": "Señorita",
+      "album_id": "Justified",
+      "pure_sales_us": 200000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "1x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "lovestoned",
+      "title": "LoveStoned",
+      "album_id": "FutureSex/LoveSounds",
+      "pure_sales_us": 1000000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "1x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "what_goes_around",
+      "title": "What Goes Around",
+      "album_id": "FutureSex/LoveSounds",
+      "pure_sales_us": 2800000,
+      "official_certifications": {
+        "USA": "1x Platinum",
+        "UK": "1x Platinum",
+        "Brazil": "1x Diamond",
+        "Germany": "1x Platinum",
+        "Australia": "2x Platinum",
+        "Canada": "1x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "until_the_end_of_time",
+      "title": "Until The End Of Time",
+      "album_id": "FutureSex/LoveSounds",
+      "pure_sales_us": 1000000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "Gold",
+        "Canada": "None",
+        "New Zealand": "1x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "summer_love",
+      "title": "Summer Love",
+      "album_id": "FutureSex/LoveSounds",
+      "pure_sales_us": 1500000,
+      "official_certifications": {
+        "USA": "1x Platinum",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "sexyback",
+      "title": "SexyBack",
+      "album_id": "FutureSex/LoveSounds",
+      "pure_sales_us": 4900000,
+      "official_certifications": {
+        "USA": "3x Platinum",
+        "UK": "2x Platinum",
+        "Brazil": "None",
+        "Germany": "1x Platinum",
+        "Australia": "2x Platinum",
+        "Canada": "6x Platinum",
+        "Spain": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "my_love",
+      "title": "My Love",
+      "album_id": "FutureSex/LoveSounds",
+      "pure_sales_us": 2500000,
+      "official_certifications": {
+        "USA": "1x Platinum",
+        "UK": "1x Platinum",
+        "Brazil": "1x Platinum",
+        "Germany": "Gold",
+        "Australia": "Gold",
+        "Canada": "2x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "take_back_the_night",
+      "title": "Take Back the Night",
+      "album_id": "The 20/20 Experience",
+      "pure_sales_us": 500000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "Gold",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "not_a_bad_thing",
+      "title": "Not a Bad Thing",
+      "album_id": "The 20/20 Experience – 2 of 2",
+      "pure_sales_us": 1500000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "Gold",
+        "Germany": "None",
+        "Australia": "1x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "drink_you_away",
+      "title": "Drink You Away",
+      "album_id": "The 20/20 Experience",
+      "pure_sales_us": 300000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "tunnel_vision",
+      "title": "Tunnel Vision",
+      "album_id": "The 20/20 Experience",
+      "pure_sales_us": 200000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "suit_and_tie",
+      "title": "Suit & Tie",
+      "album_id": "The 20/20 Experience",
+      "pure_sales_us": 3300000,
+      "official_certifications": {
+        "USA": "1x Platinum",
+        "UK": "Gold",
+        "Brazil": "2x Platinum",
+        "Germany": "None",
+        "Australia": "1x Platinum",
+        "Canada": "7x Platinum",
+        "Mexico": "None",
+        "Italy": "Gold",
+        "Poland": "2x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "mirrors",
+      "title": "Mirrors",
+      "album_id": "The 20/20 Experience",
+      "pure_sales_us": 3900000,
+      "official_certifications": {
+        "USA": "",
+        "UK": "3x Platinum",
+        "Brazil": "3x Diamond",
+        "Germany": "1x Platinum",
+        "Australia": "2x Platinum",
+        "Canada": "3x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "tko",
+      "title": "TKO",
+      "album_id": "The 20/20 Experience – 2 of 2",
+      "pure_sales_us": 400000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "say_something",
+      "title": "Say Something",
+      "album_id": "Man of the Woods",
+      "pure_sales_us": 1000000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Platinum",
+        "Brazil": "1x Diamond",
+        "Germany": "Gold",
+        "Australia": "2x Platinum",
+        "Canada": "2x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "man_of_the_woods",
+      "title": "Man of the Woods",
+      "album_id": "Man of the Woods",
+      "pure_sales_us": 100000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "supplies",
+      "title": "Supplies",
+      "album_id": "Man of the Woods",
+      "pure_sales_us": 100000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "filthy",
+      "title": "Filthy",
+      "album_id": "Man of the Woods",
+      "pure_sales_us": 500000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "Gold",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "1x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "no_angels",
+      "title": "No Angels",
+      "album_id": "Everything I Thought It Was",
+      "pure_sales_us": 20000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "selfish",
+      "title": "Selfish",
+      "album_id": "Everything I Thought It Was",
+      "pure_sales_us": 100000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Silver",
+        "Brazil": "Gold",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "1x Platinum",
+        "Poland": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "drown",
+      "title": "Drown",
+      "album_id": "Everything I Thought It Was",
+      "pure_sales_us": 30000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "cant_stop_the_feeling",
+      "title": "CAN'T STOP THE FEELING!",
+      "album_id": "Orphan",
+      "pure_sales_us": 3800000,
+      "official_certifications": {
+        "USA": "1x Diamond",
+        "UK": "5x Platinum",
+        "Brazil": "3x Diamond",
+        "Germany": "1x Diamond",
+        "Australia": "9x Platinum",
+        "Canada": "1x Diamond",
+        "Denmark": "5x Platinum",
+        "Mexico": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "true_colors",
+      "title": "True Colors",
+      "album_id": "Orphan",
+      "pure_sales_us": 100000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "1x Platinum",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "give_it_to_me",
+      "title": "Give It To Me",
+      "album_id": "Orphan",
+      "pure_sales_us": 1500000,
+      "official_certifications": {
+        "USA": "3x Platinum",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "3x Gold",
+        "Australia": "None",
+        "Canada": "1x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "4_minutes",
+      "title": "4 Minutes",
+      "album_id": "Orphan",
+      "pure_sales_us": 3000000,
+      "official_certifications": {
+        "USA": "2x Platinum",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "3x Gold",
+        "Australia": "3x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "love_never_felt_so_good",
+      "title": "Love Never Felt So Good",
+      "album_id": "Orphan",
+      "pure_sales_us": 1000000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Platinum",
+        "Brazil": "3x Platinum",
+        "Germany": "1x Platinum",
+        "Australia": "None",
+        "Canada": "2x Platinum",
+        "Mexico": "Platinum + Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "ayo_technology",
+      "title": "Ayo Technology",
+      "album_id": "Orphan",
+      "pure_sales_us": 1000000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "Gold",
+        "Australia": "3x Platinum",
+        "Canada": "None",
+        "New Zealand": "2x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "holy_grail",
+      "title": "Holy Grail",
+      "album_id": "Orphan",
+      "pure_sales_us": 3500000,
+      "official_certifications": {
+        "USA": "6x Platinum",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "Gold",
+        "Australia": "2x Platinum",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "dead_and_gone",
+      "title": "Dead And Gone",
+      "album_id": "Orphan",
+      "pure_sales_us": 3500000,
+      "official_certifications": {
+        "USA": "5x Platinum",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "2x Platinum",
+        "Canada": "None",
+        "New Zealand": "2x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "carry_out",
+      "title": "Carry Out",
+      "album_id": "Orphan",
+      "pure_sales_us": 2000000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "the_other_side",
+      "title": "The Other Side",
+      "album_id": "Orphan",
+      "pure_sales_us": 300000,
+      "official_certifications": {
+        "USA": "1x Platinum",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "signs",
+      "title": "Signs",
+      "album_id": "Orphan",
+      "pure_sales_us": 300000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Gold",
+        "Brazil": "None",
+        "Germany": "Gold",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "stay_with_me",
+      "title": "Stay With Me",
+      "album_id": "Orphan",
+      "pure_sales_us": 50000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
+      "id": "better_place",
+      "title": "Better Place",
+      "album_id": "Orphan",
+      "pure_sales_us": 50000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "1x Platinum",
+        "World": "None"
+      }
+    },
+    {
+      "id": "where_is_the_love",
+      "title": "Where Is The Love",
+      "album_id": "Orphan",
+      "pure_sales_us": 2000000,
+      "official_certifications": {
+        "USA": "5x Platinum",
+        "UK": "4x Platinum",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "4x Platinum",
+        "Canada": "Gold",
+        "World": "None"
+      }
+    },
+    {
+      "id": "rehab",
+      "title": "Rehab",
+      "album_id": "Orphan",
+      "pure_sales_us": 1000000,
+      "official_certifications": {
+        "USA": "2x Platinum",
+        "UK": "Platinum",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      },
+      "streams": {}
+    }
+  ],
+  "albums": [
+    {
+      "id": "Justified",
+      "title": "Justified",
+      "pure_sales_us": 4000000,
+      "official_certifications": {
+        "USA": "3x Platinum",
+        "UK": "7x Platinum",
+        "Brazil": "None",
+        "Germany": "1x Platinum",
+        "Australia": "5x Platinum",
+        "Canada": "2x Platinum",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": [
+          "DksSPZTZES0",
+          "FQ3slUz7Jo8",
+          "TSVHoHyErBQ",
+          "nJHYDkvRB2Y"
+        ]
+      }
+    },
+    {
+      "id": "FutureSex/LoveSounds",
+      "title": "FutureSex/LoveSounds",
+      "pure_sales_us": 4800000,
+      "official_certifications": {
+        "USA": "8x Platinum",
+        "UK": "4x Platinum",
+        "Brazil": "1x Platinum",
+        "Germany": "2x Platinum",
+        "Australia": "6x Platinum",
+        "Canada": "7x Platinum",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": [
+          "3gOHvDP_vCs",
+          "TOrnUquxtwA",
+          "QUuKvHHt8Sk",
+          "I34ZLZOyN68",
+          "zMaNfqfsMtE"
+        ]
+      }
+    },
+    {
+      "id": "The 20/20 Experience",
+      "title": "The 20/20 Experience",
+      "pure_sales_us": 3800000,
+      "official_certifications": {
+        "USA": "2x Platinum",
+        "UK": "1x Platinum",
+        "Brazil": "2x Platinum",
+        "Germany": "Gold",
+        "Australia": "1x Platinum",
+        "Canada": "2x Platinum",
+        "Denmark": "5x Platinum",
+        "Poland": "1x Platinum",
+        "Mexico": "None",
+        "New Zealand": "2x Platinum",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": [
+          "uuZE_IRwLNI",
+          "IsUsVbTj2AY",
+          "07FYdnEawAQ",
+          "DEzREJbln-o"
+        ]
+      }
+    },
+    {
+      "id": "The 20/20 Experience – 2 of 2",
+      "title": "The 20/20 Experience – 2 of 2",
+      "pure_sales_us": 1912000,
+      "official_certifications": {
+        "USA": "1x Platinum",
+        "UK": "Silver",
+        "Brazil": "1x Diamond",
+        "Germany": "None",
+        "Australia": "Gold",
+        "Canada": "1x Platinum",
+        "Mexico": "3x Platinum + Gold",
+        "New Zealand": "Gold",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": []
+      }
+    },
+    {
+      "id": "Man of the Woods",
+      "title": "Man of the Woods",
+      "pure_sales_us": 500000,
+      "official_certifications": {
+        "USA": "Gold",
+        "UK": "Silver",
+        "Brazil": "None",
+        "Germany": "Gold",
+        "Australia": "2x Platinum",
+        "Canada": "Gold",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": [
+          "8MPbR6Cbwi4",
+          "gA-NDZb29I4",
+          "baj6llvgpWA",
+          "M4vnmgZLA8s"
+        ]
+      }
+    },
+    {
+      "id": "Everything I Thought It Was",
+      "title": "Everything I Thought It Was",
+      "pure_sales_us": 50000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": [
+          "je0roKRn3nY",
+          "hAnePKLB1EY",
+          "g-n0AkzFjjQ"
+        ]
+      }
+    },
+    {
+      "id": "Orphan",
+      "title": "Orphan",
+      "pure_sales_us": 10000,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "None",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      },
+      "streams": {
+        "youtubeVideoIds": [
+          "ru0K8uYEZWw",
+          "la0-5QFLr14",
+          "C5RrNaCfUXE",
+          "v8P_go_vj00",
+          "k8iqN8hOvQA"
+        ]
+      }
+    }
+  ]
+}
