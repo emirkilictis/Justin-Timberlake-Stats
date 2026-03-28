@@ -104,11 +104,7 @@ function animateValue(obj, start, end, duration, prefix = "") {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const current = Math.floor(progress * (end - start) + start);
-        if (end >= 1000000000 && obj.id === 'jt-total-career') {
-            obj.innerHTML = prefix + (current / 1000000000).toFixed(2) + 'B';
-        } else {
-            obj.innerHTML = prefix + current.toLocaleString('en-US');
-        }
+        obj.innerHTML = prefix + current.toLocaleString('en-US');
         if (progress < 1) window.requestAnimationFrame(step);
     };
     window.requestAnimationFrame(step);
