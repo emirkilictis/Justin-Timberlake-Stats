@@ -84,21 +84,25 @@ async function fetchLiveStreams() {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         
+        const seen = new Set();
         const rows = doc.querySelectorAll('table.addpos tbody tr');
         rows.forEach(row => {
             const cols = row.querySelectorAll('td');
-            if (cols.length >= 2) {
+            if (cols.length >= 3) {
                 let title = cols[0].textContent.trim();
-                let val = parseInt(cols[1].textContent.replace(/,/g, ''), 10);
+                let val = parseInt(cols[1].textContent.replace(/,/g, ''), 10) || 0;
+                if (!title || seen.has(title)) return;
+                seen.add(title);
                 let lowerTitle = title.toLowerCase();
-                
+
                 // Track mapping
                 liveStreams.tracks[lowerTitle] = val;
 
                 // Album grouping logic
-                for (let key in (typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {})) {
+                const map = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {};
+                for (let key in map) {
                     if (lowerTitle.includes(key.toLowerCase())) {
-                        let album = SONG_TO_ALBUM_MAP[key];
+                        let album = map[key];
                         liveStreams.albums[album] = (liveStreams.albums[album] || 0) + val;
                         break;
                     }

@@ -105,7 +105,7 @@ function getAlbumTracks(allTracks, albumId) {
 function fmt(n) {
     if (!n || isNaN(n)) return '—';
     if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + 'B';
-    if (n >= 1_000_000)     return (n / 1_000_000).toFixed(1) + 'M';
+    if (n >= 1_000_000)     return (n / 1_000_000).toFixed(2) + 'M';
     if (n >= 1_000)         return Math.round(n / 1_000) + 'K';
     return n.toLocaleString('en-US');
 }
