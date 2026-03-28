@@ -6,10 +6,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
     <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
-    <title>About — Timberlake Analytics</title>
-    <meta name="description" content="About Timberlake Analytics — methodology, data sources, and CSPC formula explained. A fan-built real-time stats platform for Justin Timberlake.">
+    <title>Methodology — How We Calculate Justin Timberlake Sales & Streaming Stats</title>
+    <meta name="description" content="How Timberlake Analytics calculates Justin Timberlake's EAS, certified units, and RIAA live eligibility. CSPC formula, data sources, certified units vs pure sales, and why this site differs from ChartMasters.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://justin-timberlake-stats.vercel.app/about.html">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://justin-timberlake-stats.vercel.app/"},
+            {"@type": "ListItem", "position": 2, "name": "About & Methodology", "item": "https://justin-timberlake-stats.vercel.app/about.html"}
+          ]
+        },
+        {
+          "@type": "WebPage",
+          "name": "Methodology — How We Calculate Justin Timberlake Sales & Streaming Stats",
+          "url": "https://justin-timberlake-stats.vercel.app/about.html",
+          "description": "Detailed methodology behind Timberlake Analytics: CSPC formula, EAS conversion rates, RIAA live eligibility, certified units vs pure sales, and all data sources explained.",
+          "isPartOf": {"@type": "WebSite", "url": "https://justin-timberlake-stats.vercel.app/"},
+          "about": {"@type": "MusicGroup", "name": "Justin Timberlake"}
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is Equivalent Album Sales (EAS)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Equivalent Album Sales (EAS) is a unified metric that converts all music consumption formats — physical album sales, digital downloads, physical singles, digital singles, audio streams, and video streams — into a single comparable number. The formula was popularised by Chartmasters' CSPC methodology. For example, 1,166 Spotify streams equal approximately 1 EAS."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why does this site show a different number than ChartMasters?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "ChartMasters is a multi-artist platform using the CSPC methodology with dynamic streaming data. Timberlake Analytics focuses exclusively on Justin Timberlake with deeper breakdowns: live RIAA eligibility per song and album, certified units across 60+ certifying bodies, era-level combined album and singles totals, and nightly growth snapshots. The differentiator is depth and artist-specific detail."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the difference between certified units and pure sales?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Pure sales count only physical and digital purchases. Certified units (from RIAA, BPI, ARIA etc.) include streaming equivalents: since 2016 in the US, 150 streams count as one single sale and 1,500 streams count as one album sale for certification purposes. This is why Justin Timberlake's label reports ~117 million pure sales while his total certified units across all certifying bodies exceed 170 million."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How often is the streaming data updated?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Spotify stream counts are fetched live from Kworb on every page load and reflect Kworb's daily-updated data. Historical growth snapshots (7-day, 30-day, year-to-date) are captured nightly at 00:05 UTC via a GitHub Actions script and stored in Firestore."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the artist ratio used in the EAS formula?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The artist ratio (1.82) represents the proportion of a global artist's streams that are counted toward their own catalog versus total platform streams. It is used to adjust raw Spotify stream counts before applying the EAS conversion rate of 1,166 streams per album equivalent."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Timberlake Analytics">
     <meta property="og:title" content="About — Timberlake Analytics">
@@ -21,7 +88,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=1774714512">
+    <link rel="stylesheet" href="style.css?v=1774715095">
     <style>
         body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
 
@@ -310,6 +377,126 @@
             </table>
         </div>
 
+        <!-- Certified Units vs Pure Sales -->
+        <div class="about-section">
+            <h2>Certified Units vs. Pure Sales</h2>
+            <p>
+                These are two different metrics that are often confused. Justin Timberlake's record label
+                reports approximately <strong style="color:#fff;">117 million pure sales</strong> — meaning
+                physical and digital purchases only, with no streaming counted.
+            </p>
+            <p>
+                However, modern certification bodies (RIAA since 2016, BPI since 2014, ARIA since 2016, and others)
+                count streaming equivalents toward certifications: in the US, 150 streams = 1 single sale and
+                1,500 streams = 1 album sale. When all certifications are aggregated across RIAA, BPI, ARIA,
+                Music Canada, and 60+ other certifying bodies, Justin Timberlake's total reaches
+                <strong style="color:#fff;">over 170 million certified units</strong>.
+            </p>
+            <div class="note-box">
+                Neither number is "wrong" — they measure different things. Pure sales reflect purchases.
+                Certified units reflect the industry's current standard for measuring consumption,
+                which includes streaming.
+            </div>
+        </div>
+
+        <!-- Why this site differs from ChartMasters -->
+        <div class="about-section">
+            <h2>Why This Site Differs From ChartMasters</h2>
+            <p>
+                <a href="https://chartmasters.org" target="_blank" rel="noopener">ChartMasters</a> is
+                the original publisher of the CSPC methodology and an authoritative source for career
+                sales estimates. Timberlake Analytics builds on that foundation with a different focus:
+                <strong style="color:#fff;">Justin Timberlake exclusively</strong>, with deeper per-era and per-certification breakdowns not available on a multi-artist platform.
+            </p>
+            <table class="formula-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>ChartMasters</th>
+                        <th>Timberlake Analytics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Spotify streams</td>
+                        <td>Dynamic (proprietary source)</td>
+                        <td>Dynamic via Kworb.net</td>
+                    </tr>
+                    <tr>
+                        <td>YouTube views</td>
+                        <td>Dynamic</td>
+                        <td>Live via YouTube Data API v3</td>
+                    </tr>
+                    <tr>
+                        <td>Artist focus</td>
+                        <td>Multi-artist, general</td>
+                        <td>Justin Timberlake only — deeper detail</td>
+                    </tr>
+                    <tr>
+                        <td>RIAA eligibility</td>
+                        <td>Not shown</td>
+                        <td>Live estimate per song/album</td>
+                    </tr>
+                    <tr>
+                        <td>Daily/weekly growth</td>
+                        <td>Not shown</td>
+                        <td>Nightly Firestore snapshots</td>
+                    </tr>
+                    <tr>
+                        <td>Era breakdown</td>
+                        <td>Album level</td>
+                        <td>Album + singles combined per era</td>
+                    </tr>
+                    <tr>
+                        <td>Certified units</td>
+                        <td>Not shown</td>
+                        <td>170M+ across 60+ certifying bodies</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Update Frequency -->
+        <div class="about-section">
+            <h2>Update Frequency</h2>
+            <table class="formula-table">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Frequency</th>
+                        <th>Method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Spotify streams</td>
+                        <td>Every page load</td>
+                        <td>Live fetch from Kworb.net</td>
+                    </tr>
+                    <tr>
+                        <td>YouTube views</td>
+                        <td>Every page load</td>
+                        <td>YouTube Data API v3</td>
+                    </tr>
+                    <tr>
+                        <td>Growth snapshots</td>
+                        <td>Nightly 00:05 UTC</td>
+                        <td>GitHub Actions → Firestore</td>
+                    </tr>
+                    <tr>
+                        <td>Certifications</td>
+                        <td>Manual</td>
+                        <td>Cross-referenced with RIAA, BPI, ARIA databases</td>
+                    </tr>
+                    <tr>
+                        <td>Tour grosses</td>
+                        <td>Manual</td>
+                        <td>Pollstar / Billboard Boxscore reports</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- RIAA Live Eligibility -->
         <div class="about-section">
             <h2>RIAA Live Eligibility</h2>
@@ -344,15 +531,13 @@
                     </div>
                 </a>
 
-                <a class="contact-card" href="https://www.instagram.com/kilicemir1907/" target="_blank" rel="noopener">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                        <circle cx="12" cy="12" r="4.5"/>
-                        <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/>
+                <a class="contact-card" href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
                     </svg>
                     <div>
-                        <div class="cc-label">Instagram</div>
-                        <div class="cc-handle">@kilicemir1907</div>
+                        <div class="cc-label">TikTok</div>
+                        <div class="cc-handle">@emirtimber</div>
                     </div>
                 </a>
             </div>
@@ -375,7 +560,7 @@
     <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
         <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
             <a href="https://x.com/emoycukv3" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">X / Twitter</a>
-            <a href="https://www.instagram.com/kilicemir1907/" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">Instagram</a>
+            <a href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">TikTok</a>
             <a href="about.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
         </div>
         Timberlake Analytics — Independent Fan Project · Not affiliated with Justin Timberlake or RCA Records
