@@ -190,6 +190,11 @@ function updateCareerOverview(liveStats) {
     });
 
     careerSnapshot = { totalEAS: careerTotalEAS, totalSpotify: liveStats.TotalSpotify, bestEra };
+
+    // AI crawler için statik veri bölümünü güncelle
+    const aiEasEl = document.getElementById('ai-eas-value');
+    if (aiEasEl) aiEasEl.textContent = (careerTotalEAS / 1_000_000).toFixed(2) + 'M';
+
     animateValue(document.getElementById('eas-total'), 0, careerTotalEAS, 600);
     animateValue(document.getElementById('spotify-total'), 0, liveStats.TotalSpotify, 600);
 

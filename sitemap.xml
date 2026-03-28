@@ -2,39 +2,47 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://justin-timberlake-stats.vercel.app/</loc>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://justin-timberlake-stats.vercel.app/tours.html</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
   </url>
   <url>
     <loc>https://justin-timberlake-stats.vercel.app/streams.html</loc>
-    <priority>0.8</priority>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://justin-timberlake-stats.vercel.app/vault.html</loc>
     <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://justin-timberlake-stats.vercel.app/album.html</loc>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://justin-timberlake-stats.vercel.app/tours.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://justin-timberlake-stats.vercel.app/awards.html</loc>
     <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://justin-timberlake-stats.vercel.app/about.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://justin-timberlake-stats.vercel.app/game.html</loc>
-    <priority>0.6</priority>
     <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
-
   <url>
     <loc>https://justin-timberlake-stats.vercel.app/transform.html</loc>
-    <priority>0.6</priority>
     <changefreq>monthly</changefreq>
-  </url>
-
-  <url>
-    <loc>https://justin-timberlake-stats.vercel.app/awards.html</loc>
-    <priority>0.8</priority>
-    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

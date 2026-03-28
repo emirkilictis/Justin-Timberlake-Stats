@@ -57,6 +57,12 @@ let _albumsData   = [];   // { id, year, total, daily, real7d, pctDaily }
 let _jtTotalDaily = 0;
 let trackSort = { col: 'total', asc: false };
 let albumSort = { col: 'total', asc: false };
+let _trackSearchQuery = '';
+
+window._trackSearch = function(val) {
+    _trackSearchQuery = val.trim().toLowerCase();
+    renderTracksTable();
+};
 
 const eraColors = {
     "Justified": "#5dade2", "FutureSex/LoveSounds": "#e74c3c",
@@ -265,8 +271,12 @@ function renderTracksTable() {
         }
     });
 
+    const filtered = _trackSearchQuery
+        ? sorted.filter(t => t.title.toLowerCase().includes(_trackSearchQuery))
+        : sorted;
+
     tbody.innerHTML = '';
-    sorted.forEach(track => {
+    filtered.forEach(track => {
         let real7Cell, real30Cell, ytdCell;
 
         if (track.real7d !== null && !track.real7dEst) {
