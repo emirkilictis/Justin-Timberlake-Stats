@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
+    <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
+    <title>About — Timberlake Analytics</title>
+    <meta name="description" content="About Timberlake Analytics — methodology, data sources, and CSPC formula explained. A fan-built real-time stats platform for Justin Timberlake.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://justin-timberlake-stats.vercel.app/about.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Timberlake Analytics">
+    <meta property="og:title" content="About — Timberlake Analytics">
+    <meta property="og:description" content="Methodology, data sources, and contact info for Timberlake Analytics.">
+    <meta property="og:url" content="https://justin-timberlake-stats.vercel.app/about.html">
+    <meta property="og:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-hero.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=1774702628">
+    <style>
+        body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+
+        .hero-bg {
+            position: fixed; top: 0; left: 0; right: 0; height: 100vh;
+            background-image: linear-gradient(to right, rgba(10,10,15,0.92) 30%, rgba(10,10,15,0.75) 100%), url('assets/jt-hero.jpg');
+            background-size: cover; background-position: center top; z-index: -1; opacity: 0.35;
+        }
+
+        .about-container {
+            padding: 120px 5% 80px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .about-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .about-hero-title span { color: #d4a853; font-style: italic; }
+
+        .about-subtitle {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            margin-bottom: 64px;
+        }
+
+        .about-section {
+            margin-bottom: 56px;
+        }
+
+        .about-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #d4a853;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(212,168,83,0.2);
+        }
+
+        .about-section p {
+            color: rgba(255,255,255,0.7);
+            line-height: 1.8;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+        }
+
+        .about-section a {
+            color: #d4a853;
+            text-decoration: none;
+        }
+        .about-section a:hover { text-decoration: underline; }
+
+        .formula-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.88rem;
+        }
+
+        .formula-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.4);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .formula-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: rgba(255,255,255,0.75);
+            vertical-align: top;
+        }
+
+        .formula-table td:first-child {
+            color: #d4a853;
+            font-weight: 600;
+            white-space: nowrap;
+            width: 180px;
+        }
+
+        .formula-table code {
+            background: rgba(255,255,255,0.06);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 0.82rem;
+            color: #b9f2ff;
+        }
+
+        .contact-grid {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+
+        .contact-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #fff;
+            transition: border-color 0.2s, background 0.2s;
+            min-width: 200px;
+        }
+
+        .contact-card:hover {
+            border-color: rgba(212,168,83,0.4);
+            background: rgba(212,168,83,0.06);
+            text-decoration: none;
+        }
+
+        .contact-card svg { flex-shrink: 0; }
+
+        .contact-card .cc-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .contact-card .cc-handle {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #d4a853;
+        }
+
+        .note-box {
+            background: rgba(212,168,83,0.06);
+            border: 1px solid rgba(212,168,83,0.2);
+            border-left: 3px solid #d4a853;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.7;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero-bg"></div>
+
+    <nav>
+        <div class="logo">Timberlake</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="vault.html">Certifications</a></li>
+            <li><a href="tours.html">Box Office</a></li>
+            <li><a href="streams.html">Live Streaming</a></li>
+            <li><a href="awards.html">Awards</a></li>
+            <li><a href="game.html">Album Crush</a></li>
+            <li><a href="transform.html">Timbertrix</a></li>
+            <li><a href="about.html" class="active">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="about-container">
+
+        <h1 class="about-hero-title">Timberlake <span>Analytics</span></h1>
+        <p class="about-subtitle">A fan-built real-time statistics platform</p>
+
+        <!-- What is this -->
+        <div class="about-section">
+            <h2>What Is This?</h2>
+            <p>
+                Timberlake Analytics is an independently built, data-driven fan site tracking Justin Timberlake's
+                career in real time — album sales, streaming statistics, record certifications, box office grosses,
+                and awards history, all in one place.
+            </p>
+            <p>
+                Every number on this site is sourced from publicly available data and updated continuously.
+                This is not an official Justin Timberlake or RCA Records project.
+            </p>
+        </div>
+
+        <!-- Methodology -->
+        <div class="about-section">
+            <h2>Methodology — CSPC</h2>
+            <p>
+                Career Sales Performance Chart (CSPC) is a methodology developed by
+                <a href="https://chartmasters.org" target="_blank" rel="noopener">Chartmasters</a>
+                to convert all music consumption formats into a single unified metric:
+                <strong style="color:#fff;">Equivalent Album Sales (EAS)</strong>.
+            </p>
+            <p>
+                The following conversion formulas are applied across all eras:
+            </p>
+
+            <table class="formula-table">
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Formula</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Pure Album Sales</td>
+                        <td><code>× 1</code></td>
+                        <td>Direct unit count — global sales</td>
+                    </tr>
+                    <tr>
+                        <td>Physical Singles</td>
+                        <td><code>sales × 3/10</code></td>
+                        <td>3 singles ≈ 1 album equivalent</td>
+                    </tr>
+                    <tr>
+                        <td>Download Singles</td>
+                        <td><code>sales × 1.5/10</code></td>
+                        <td>Lower weight due to lower price point</td>
+                    </tr>
+                    <tr>
+                        <td>Audio Streams</td>
+                        <td><code>(streams × 1.82) ÷ 1166</code></td>
+                        <td>1.82 = artist ratio (catalog/total); 1166 streams ≈ 1 EAS</td>
+                    </tr>
+                    <tr>
+                        <td>Video Streams</td>
+                        <td><code>views ÷ 6750</code></td>
+                        <td>YouTube — lower weight than audio streams</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="note-box">
+                US streaming share is adjusted by era: pre-2016 catalog uses <strong>27%</strong> US share
+                (lower global penetration at release time); post-2016 uses <strong>35%</strong>.
+                This affects RIAA live eligibility calculations on the Certifications page.
+            </div>
+        </div>
+
+        <!-- Data Sources -->
+        <div class="about-section">
+            <h2>Data Sources</h2>
+            <table class="formula-table">
+                <thead>
+                    <tr>
+                        <th>Data Type</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Spotify Streams</td>
+                        <td><a href="https://kworb.net" target="_blank" rel="noopener">Kworb.net</a> — live, updated daily</td>
+                    </tr>
+                    <tr>
+                        <td>YouTube Views</td>
+                        <td>YouTube Data API v3 — fetched on page load</td>
+                    </tr>
+                    <tr>
+                        <td>Album Sales</td>
+                        <td>Chartmasters CSPC articles, industry reports</td>
+                    </tr>
+                    <tr>
+                        <td>Certifications</td>
+                        <td>RIAA, BPI, ARIA, Music Canada — official databases</td>
+                    </tr>
+                    <tr>
+                        <td>Tour Grosses</td>
+                        <td>Pollstar, Billboard Boxscore</td>
+                    </tr>
+                    <tr>
+                        <td>Awards</td>
+                        <td>Grammy, AMA, VMA, Billboard official records</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- RIAA Live Eligibility -->
+        <div class="about-section">
+            <h2>RIAA Live Eligibility</h2>
+            <p>
+                The Certifications page shows both <em>official</em> RIAA certifications and a
+                <em>live eligibility estimate</em> computed in real time from current streams and sales data.
+                When the live estimate exceeds the official certification (which may not have been updated),
+                the higher value is displayed.
+            </p>
+            <p>
+                RIAA album formula: <code>(US streams ÷ 1500) + pure sales + (track sales ÷ 10)</code>.
+                RIAA single formula: <code>(US streams ÷ 150) + pure sales</code>.
+            </p>
+        </div>
+
+        <!-- Contact -->
+        <div class="about-section">
+            <h2>Contact & Socials</h2>
+            <p>
+                Built and maintained by a JT fan. If you have data corrections, suggestions,
+                or just want to say hi — reach out on social media.
+            </p>
+
+            <div class="contact-grid">
+                <a class="contact-card" href="https://x.com/emoycukv3" target="_blank" rel="noopener">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <div>
+                        <div class="cc-label">X / Twitter</div>
+                        <div class="cc-handle">@emoycukv3</div>
+                    </div>
+                </a>
+
+                <a class="contact-card" href="https://www.instagram.com/kilicemir1907/" target="_blank" rel="noopener">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                        <circle cx="12" cy="12" r="4.5"/>
+                        <circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/>
+                    </svg>
+                    <div>
+                        <div class="cc-label">Instagram</div>
+                        <div class="cc-handle">@kilicemir1907</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="about-section">
+            <h2>Disclaimer</h2>
+            <p>
+                This is an independent fan project with no affiliation to Justin Timberlake,
+                RCA Records, Sony Music Entertainment, or any associated management.
+                All data is sourced from public records and third-party databases.
+                Sales figures are estimates and may not reflect exact label-reported numbers.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
+        <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
+            <a href="https://x.com/emoycukv3" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">X / Twitter</a>
+            <a href="https://www.instagram.com/kilicemir1907/" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">Instagram</a>
+            <a href="about.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
+        </div>
+        Timberlake Analytics — Independent Fan Project · Not affiliated with Justin Timberlake or RCA Records
+    </footer>
+
+</body>
+</html>

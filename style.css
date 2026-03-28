@@ -55,7 +55,7 @@ nav {
     top: 0;
     left: 0;
     width: 100%;
-    padding: 2rem 4rem;
+    padding: 1.4rem 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -86,18 +86,19 @@ nav {
 
 .nav-links {
     display: flex;
-    gap: 3rem;
+    gap: 2rem;
     list-style: none;
 }
 
 .nav-links a {
     color: var(--text-secondary);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.15em;
     transition: all 0.3s ease;
     position: relative;
+    white-space: nowrap;
 }
 
 .nav-links a::after {
