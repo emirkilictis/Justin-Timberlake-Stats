@@ -82,13 +82,17 @@
     <meta property="og:title" content="About — Timberlake Analytics">
     <meta property="og:description" content="Methodology, data sources, and contact info for Timberlake Analytics.">
     <meta property="og:url" content="https://justin-timberlake-stats.vercel.app/about.html">
-    <meta property="og:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-hero.jpg">
+    <meta property="og:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-horizontal.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Methodology — Timberlake Analytics">
+    <meta name="twitter:description" content="How Timberlake Analytics calculates Justin Timberlake's EAS, certified units, and RIAA live eligibility.">
+    <meta name="twitter:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-horizontal.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=1774736867">
+    <link rel="stylesheet" href="style.css?v=1774786094">
     <style>
         body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
 
@@ -149,10 +153,17 @@
         }
         .about-section a:hover { text-decoration: underline; }
 
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
         .formula-table {
             width: 100%;
+            min-width: 480px;
             border-collapse: collapse;
-            margin: 20px 0;
             font-size: 0.88rem;
         }
 
@@ -164,6 +175,7 @@
             letter-spacing: 0.1em;
             color: rgba(255,255,255,0.4);
             border-bottom: 1px solid rgba(255,255,255,0.08);
+            white-space: nowrap;
         }
 
         .formula-table td {
@@ -294,7 +306,7 @@
                 The following conversion formulas are applied across all eras:
             </p>
 
-            <table class="formula-table">
+            <div class="table-scroll"><table class="formula-table">
                 <thead>
                     <tr>
                         <th>Source</th>
@@ -329,7 +341,7 @@
                         <td>YouTube — lower weight than audio streams</td>
                     </tr>
                 </tbody>
-            </table>
+            </table></div>
 
             <div class="note-box">
                 US streaming share is adjusted by era: pre-2016 catalog uses <strong>27%</strong> US share
@@ -341,7 +353,7 @@
         <!-- Data Sources -->
         <div class="about-section">
             <h2>Data Sources</h2>
-            <table class="formula-table">
+            <div class="table-scroll"><table class="formula-table">
                 <thead>
                     <tr>
                         <th>Data Type</th>
@@ -374,7 +386,7 @@
                         <td>Grammy, AMA, VMA, Billboard official records</td>
                     </tr>
                 </tbody>
-            </table>
+            </table></div>
         </div>
 
         <!-- Certified Units vs Pure Sales -->
@@ -408,7 +420,7 @@
                 sales estimates. Timberlake Analytics builds on that foundation with a different focus:
                 <strong style="color:#fff;">Justin Timberlake exclusively</strong>, with deeper per-era and per-certification breakdowns not available on a multi-artist platform.
             </p>
-            <table class="formula-table">
+            <div class="table-scroll"><table class="formula-table">
                 <thead>
                     <tr>
                         <th>Aspect</th>
@@ -453,13 +465,13 @@
                         <td>170M+ across 60+ certifying bodies</td>
                     </tr>
                 </tbody>
-            </table>
+            </table></div>
         </div>
 
         <!-- Update Frequency -->
         <div class="about-section">
             <h2>Update Frequency</h2>
-            <table class="formula-table">
+            <div class="table-scroll"><table class="formula-table">
                 <thead>
                     <tr>
                         <th>Data</th>
@@ -494,7 +506,7 @@
                         <td>Pollstar / Billboard Boxscore reports</td>
                     </tr>
                 </tbody>
-            </table>
+            </table></div>
         </div>
 
         <!-- RIAA Live Eligibility -->
