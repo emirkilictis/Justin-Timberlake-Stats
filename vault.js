@@ -31,6 +31,7 @@ const CERT_MAPPINGS = {
     "Switzerland": { "Gold": 15000, "Platinum": 30000, "Diamond": 100000 },
     "Sweden": { "Gold": 30000, "Platinum": 60000, "Diamond": 150000 },
     "Japan": { "Gold": 100000, "Platinum": 250000, "Diamond": 1000000 },
+    "Belgium": { "Gold": 15000, "Platinum": 30000, "Diamond": 150000 },
     "World": { "Silver": 500000, "Gold": 1000000, "Platinum": 2000000, "Diamond": 10000000 },
     
 };
@@ -53,7 +54,7 @@ const ALBUM_COVERS = {
 // Data States
 let vaultData = { songs: [], albums: [] };
 let jtData = null; // For base data.json including youtubeVideoIds and Orphan
-let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {} };
+let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {}, songs: {} };
 let computedData = { songs: [], albums: [] };
 
 let sortState = {
@@ -201,7 +202,10 @@ function calculateUSALive(item, type = 'song') {
         const usAudio = (globalSpot * ARTIST_RATIO) * effectiveUSShare; 
         
         let usVideo = 0;
-        if (item.album_id && jtData && jtData.albums[item.album_id]) {
+        if (liveStreams.songs[item.id]) {
+            // Per-song YouTube views (used for orphan tracks and any song with direct YT data)
+            usVideo = liveStreams.songs[item.id] * effectiveUSShare;
+        } else if (item.album_id && jtData && jtData.albums[item.album_id]) {
             const albumData = jtData.albums[item.album_id];
             const albumSpot = liveStreams.albums[item.album_id] || 0;
             if (albumData.streams && albumData.streams.youtube && albumSpot > 0) {
@@ -633,11 +637,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([fetchVaultData(), fetchLiveStreams()]);
     
     if (YOUTUBE_API_KEY && jtData) {
+        // Fetch album-level YouTube views
         await Promise.all(Object.keys(jtData.albums).map(async id => {
             const ids = jtData.albums[id].streams.youtubeVideoIds;
             if (ids && ids.length > 0) {
                 const live = await fetchRealYouTubeViews(ids);
                 if (live > 0) jtData.albums[id].streams.youtube = live;
+            }
+        }));
+        // Fetch per-song YouTube views (e.g. orphan tracks with individual video IDs)
+        await Promise.all(vaultData.songs.map(async song => {
+            if (song.youtubeVideoIds && song.youtubeVideoIds.length > 0) {
+                const live = await fetchRealYouTubeViews(song.youtubeVideoIds);
+                if (live > 0) liveStreams.songs[song.id] = live;
             }
         }));
     }
