@@ -191,7 +191,7 @@ function calculateUSALive(item, type = 'song') {
     let effectiveUSShare = US_SHARE;
     const era = type === 'song' ? item.album_id : item.id;
     const pre2016Eras = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience – 2 of 2"];
-    const post2016Orphans = ["CAN'T STOP THE FEELING!", "Stay With Me", "Better Place", "Selfish", "No Angels", "Drown"];
+    const post2016Orphans = ["Stay With Me", "Better Place", "Selfish", "No Angels", "Drown"];
 
     if (pre2016Eras.includes(era) || (era === "Orphan" && !post2016Orphans.includes(item.title))) {
         effectiveUSShare = 0.27;
