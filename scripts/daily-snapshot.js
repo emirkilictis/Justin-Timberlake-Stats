@@ -36,17 +36,27 @@ const songToAlbumMap = {
     "Damn Girl": "FutureSex/LoveSounds", "FutureSex": "FutureSex/LoveSounds",
     "SexyBack": "FutureSex/LoveSounds", "My Love": "FutureSex/LoveSounds",
     // THE 20/20 EXPERIENCE
+    // THE 20/20 EXPERIENCE — Part 1
     "Strawberry Bubblegum": "The 20/20 Experience", "Spaceship Coupe": "The 20/20 Experience",
-    "Pusher Love Girl": "The 20/20 Experience", "Take Back the Night": "The 20/20 Experience",
-    "Don't Hold the Wall": "The 20/20 Experience", "Let the Groove Get In": "The 20/20 Experience",
-    "Only When I Walk Away": "The 20/20 Experience", "Gimme What I Don't Know": "The 20/20 Experience",
-    "Blue Ocean Floor": "The 20/20 Experience", "Not a Bad Thing": "The 20/20 Experience",
-    "Drink You Away": "The 20/20 Experience", "Tunnel Vision": "The 20/20 Experience",
-    "True Blood": "The 20/20 Experience", "You Got It On": "The 20/20 Experience",
-    "Suit & Tie": "The 20/20 Experience", "Dress On": "The 20/20 Experience",
-    "That Girl": "The 20/20 Experience", "Amnesia": "The 20/20 Experience",
-    "Cabaret": "The 20/20 Experience", "Mirrors": "The 20/20 Experience",
-    "Murder": "The 20/20 Experience", "TKO": "The 20/20 Experience",
+    "Pusher Love Girl": "The 20/20 Experience", "Don't Hold the Wall": "The 20/20 Experience",
+    "Let the Groove Get In": "The 20/20 Experience", "Suit & Tie": "The 20/20 Experience",
+    "That Girl": "The 20/20 Experience", "Mirrors": "The 20/20 Experience",
+    "Tunnel Vision": "The 20/20 Experience", "Body Count": "The 20/20 Experience",
+    "Dress On": "The 20/20 Experience", "Blue Ocean Floor": "The 20/20 Experience",
+    // THE 20/20 EXPERIENCE – 2 of 2
+    "Take Back the Night": "The 20/20 Experience \u2013 2 of 2",
+    "Only When I Walk Away": "The 20/20 Experience \u2013 2 of 2",
+    "Gimme What I Don't Know": "The 20/20 Experience \u2013 2 of 2",
+    "Not a Bad Thing": "The 20/20 Experience \u2013 2 of 2",
+    "Drink You Away": "The 20/20 Experience \u2013 2 of 2",
+    "True Blood": "The 20/20 Experience \u2013 2 of 2",
+    "You Got It On": "The 20/20 Experience \u2013 2 of 2",
+    "Amnesia": "The 20/20 Experience \u2013 2 of 2",
+    "Cabaret": "The 20/20 Experience \u2013 2 of 2",
+    "Murder": "The 20/20 Experience \u2013 2 of 2",
+    "TKO": "The 20/20 Experience \u2013 2 of 2",
+    "Blindness": "The 20/20 Experience \u2013 2 of 2",
+    "Electric Lady": "The 20/20 Experience \u2013 2 of 2",
     // MAN OF THE WOODS
     "Midnight Summer Jam": "Man of the Woods", "Breeze Off the Pond": "Man of the Woods",
     "Hers (interlude)": "Man of the Woods", "Livin' Off the Land": "Man of the Woods",
@@ -71,6 +81,7 @@ const songToAlbumMap = {
 
 const allAlbums = [
     "Justified", "FutureSex/LoveSounds", "The 20/20 Experience",
+    "The 20/20 Experience \u2013 2 of 2",
     "Man of the Woods", "Everything I Thought It Was", "Orphan"
 ];
 
@@ -96,6 +107,7 @@ function analyzeKworbData(htmlInput) {
         "Justified": { total: 0, daily: 0 },
         "FutureSex/LoveSounds": { total: 0, daily: 0 },
         "The 20/20 Experience": { total: 0, daily: 0 },
+        "The 20/20 Experience \u2013 2 of 2": { total: 0, daily: 0 },
         "Man of the Woods": { total: 0, daily: 0 },
         "Everything I Thought It Was": { total: 0, daily: 0 },
         "Orphan": { total: 0, daily: 0 },
