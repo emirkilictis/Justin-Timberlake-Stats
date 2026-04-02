@@ -56,6 +56,7 @@ const SONG_TO_ALBUM_MAP = {
     "Tunnel Vision":         "The 20/20 Experience",
     "Body Count":            "The 20/20 Experience",
     "Dress On":              "The 20/20 Experience",
+    "Blue Ocean Floor":      "The 20/20 Experience",
 
     // ── THE 20/20 EXPERIENCE (2013) – 2 of 2 (Part 2) ──────────
     "Take Back the Night":   "The 20/20 Experience – 2 of 2",

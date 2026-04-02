@@ -79,42 +79,65 @@ function calculateRealCSPC(album) {
 
 // --- 3. VERİ YÜKLEME VE DASHBOARD ---
 
+const KWORB_CACHE_TTL = 60 * 60 * 1000; // 1 saat
+
+function applyKworbStats(liveStats) {
+    Object.keys(liveStats).forEach(key => {
+        if (key !== "TotalSpotify" && key !== "Orphan" && jtData.albums[key]) {
+            jtData.albums[key].streams.spotify = liveStats[key];
+        }
+    });
+    if (jtData.albums["Orphan"]) {
+        jtData.albums["Orphan"].streams.spotify = liveStats.Orphan;
+    }
+}
+
 async function fetchAllData() {
     try {
-        // data.json ve kworb API'yi paralel çek
-        const [dataRes, kworbRes] = await Promise.all([
-            fetch('data.json'),
-            fetch(MY_DYNAMIC_API)
-        ]);
-
+        // data.json'u her zaman çek (local, hızlı)
+        const dataRes = await fetch('data.json');
         jtData = await dataRes.json();
-        const htmlText = await kworbRes.text();
-        const liveStats = smartParseKworb(htmlText);
 
-        // Hardcode yerine otomatik ve dinamik dağıtım
-        Object.keys(liveStats).forEach(key => {
-            if (key !== "TotalSpotify" && key !== "Orphan" && jtData.albums[key]) {
-                jtData.albums[key].streams.spotify = liveStats[key];
-            }
-        });
-
-        // album.html ile sync için Spotify değerlerini localStorage'a kaydet
+        // Cache kontrol: 1 saatten tazeyse hemen göster
+        let cachedKworb = null;
         try {
-            localStorage.setItem('jt_kworb_cache', JSON.stringify({ ts: Date.now(), data: liveStats }));
+            const raw = localStorage.getItem('jt_kworb_cache');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Date.now() - parsed.ts < KWORB_CACHE_TTL) {
+                    cachedKworb = parsed.data;
+                }
+            }
         } catch (_) {}
 
-        // Orphan özel durumu
-        if (jtData.albums["Orphan"]) {
-            jtData.albums["Orphan"].streams.spotify = liveStats.Orphan;
+        if (cachedKworb) {
+            // Cache varsa anında render et
+            applyKworbStats(cachedKworb);
+            updateCareerOverview(cachedKworb);
+            document.dispatchEvent(new Event('dataReady'));
+            // Arka planda yenile (sessizce)
+            fetch(MY_DYNAMIC_API).then(r => r.text()).then(html => {
+                const fresh = smartParseKworb(html);
+                try { localStorage.setItem('jt_kworb_cache', JSON.stringify({ ts: Date.now(), data: fresh })); } catch (_) {}
+                applyKworbStats(fresh);
+                updateCareerOverview(fresh);
+            }).catch(() => {});
+        } else {
+            // Cache yok, API'yi bekle
+            const kworbRes = await fetch(MY_DYNAMIC_API);
+            const htmlText = await kworbRes.text();
+            const liveStats = smartParseKworb(htmlText);
+            try { localStorage.setItem('jt_kworb_cache', JSON.stringify({ ts: Date.now(), data: liveStats })); } catch (_) {}
+            applyKworbStats(liveStats);
+            updateCareerOverview(liveStats);
+            document.dispatchEvent(new Event('dataReady'));
         }
 
-        // Önce cached YouTube değerleriyle hemen hesapla
-        updateCareerOverview(liveStats);
         console.log("DİNAMİK GÜNCELLEME TAMAMLANDI! EITIW aktif.");
-        document.dispatchEvent(new Event('dataReady'));
 
         // Arka planda YouTube'u çek, gelince EAS'ı güncelle
         if (YOUTUBE_API_KEY) {
+            const liveStats = cachedKworb || (() => { try { return JSON.parse(localStorage.getItem('jt_kworb_cache') || '{}').data || {}; } catch(_) { return {}; } })();
             Promise.all(Object.keys(jtData.albums).map(async id => {
                 const ids = jtData.albums[id].streams.youtubeVideoIds;
                 if (ids && ids.length > 0) {

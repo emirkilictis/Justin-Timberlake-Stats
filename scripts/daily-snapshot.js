@@ -30,11 +30,15 @@ const songToAlbumMap = {
     "Nothin' Else": "Justified", "Never Again": "Justified",
     // FUTURESEX/LOVESOUNDS
     "Boutique In Heaven": "FutureSex/LoveSounds", "LoveStoned": "FutureSex/LoveSounds",
+    "I Think She Knows": "FutureSex/LoveSounds",
     "Losing My Way": "FutureSex/LoveSounds", "What Goes Around": "FutureSex/LoveSounds",
+    "Comes Around": "FutureSex/LoveSounds",
     "Until The End Of Time": "FutureSex/LoveSounds", "Chop Me Up": "FutureSex/LoveSounds",
     "Summer Love": "FutureSex/LoveSounds", "Sexy Ladies": "FutureSex/LoveSounds",
     "Damn Girl": "FutureSex/LoveSounds", "FutureSex": "FutureSex/LoveSounds",
     "SexyBack": "FutureSex/LoveSounds", "My Love": "FutureSex/LoveSounds",
+    "All Over Again": "FutureSex/LoveSounds", "Pose": "FutureSex/LoveSounds",
+    "Another Song": "FutureSex/LoveSounds", "Set The Mood": "FutureSex/LoveSounds",
     // THE 20/20 EXPERIENCE
     // THE 20/20 EXPERIENCE — Part 1
     "Strawberry Bubblegum": "The 20/20 Experience", "Spaceship Coupe": "The 20/20 Experience",
