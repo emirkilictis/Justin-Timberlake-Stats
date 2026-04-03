@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
+    <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
+    <title>Justin Timberlake Chart History — Billboard & UK Charts</title>
+    <meta name="description"
+        content="Complete chart history for Justin Timberlake: Billboard Hot 100, Billboard 200, UK Singles and UK Albums chart positions.">
+    <meta name="keywords"
+        content="Justin Timberlake charts, Billboard Hot 100, UK chart, SexyBack number one, Can't Stop the Feeling chart">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://justin-timberlake-stats.vercel.app/charts.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Timberlake Analytics">
+    <meta property="og:title" content="Justin Timberlake Chart History — Billboard & UK Charts">
+    <meta property="og:description"
+        content="Complete chart history for Justin Timberlake: Billboard Hot 100, Billboard 200, UK Singles and UK Albums chart positions.">
+    <meta property="og:url" content="https://justin-timberlake-stats.vercel.app/charts.html">
+    <meta property="og:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-horizontal.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Justin Timberlake Chart History — Billboard & UK Charts">
+    <meta name="twitter:description"
+        content="Complete chart history for Justin Timberlake: Billboard Hot 100, Billboard 200, UK Singles and UK Albums chart positions.">
+    <meta name="twitter:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-horizontal.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
+            rel="stylesheet">
+    </noscript>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root { --accent-gold: #d4a853; }
+
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .hero-bg {
+            position: fixed; top: 0; left: 0; right: 0; height: 100vh;
+            background-image:
+                linear-gradient(to right, rgba(10,10,15,0.93) 30%, rgba(10,10,15,0.65) 100%),
+                linear-gradient(to bottom, transparent 60%, #0a0a0f 100%),
+                url('assets/jt-horizontal.png');
+            background-size: cover; background-position: center 30%;
+            z-index: -1; opacity: 0.5;
+        }
+
+        .charts-container {
+            padding: 110px 5% 80px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ── HEADER ── */
+        .charts-header { text-align: center; margin-bottom: 36px; }
+
+        .charts-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900; line-height: 1.1; margin-bottom: 8px;
+        }
+
+        .charts-header h1 span { color: var(--accent-gold); font-style: italic; }
+
+        .charts-header p {
+            font-size: 0.75rem; letter-spacing: 0.3em;
+            text-transform: uppercase; color: rgba(255,255,255,0.3);
+        }
+
+        /* ── STAT PILLS ── */
+        .stat-pills {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            justify-content: center; margin-bottom: 32px;
+        }
+
+        .stat-pill {
+            display: flex; align-items: baseline; gap: 6px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 100px; padding: 6px 14px;
+        }
+
+        .pill-val { font-size: 1rem; font-weight: 700; color: var(--accent-gold); }
+        .pill-lbl { font-size: 0.7rem; color: #555; text-transform: uppercase; letter-spacing: 0.07em; }
+
+        /* ── TABS ── */
+        .chart-tabs {
+            display: flex; gap: 4px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px; padding: 4px;
+            margin-bottom: 28px;
+        }
+
+        .chart-tab {
+            flex: 1; padding: 8px 10px;
+            background: none; border: none;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; border-radius: 7px;
+            transition: color 0.2s, background 0.2s;
+            white-space: nowrap; text-align: center;
+        }
+
+        .chart-tab:hover { color: rgba(255,255,255,0.7); }
+        .chart-tab.active { background: var(--accent-gold); color: #000; }
+
+        /* ── SECTIONS ── */
+        .chart-section { display: none; }
+        .chart-section.active { display: block; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ── BLOCK ── */
+        .chart-block { margin-bottom: 36px; }
+
+        .block-title {
+            font-size: 0.65rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.15em;
+            color: var(--accent-gold); opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        /* ── TABLE ── */
+        .chart-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.83rem;
+        }
+
+        .chart-table thead tr {
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .chart-table th {
+            padding: 7px 10px; text-align: left;
+            font-size: 0.62rem; text-transform: uppercase;
+            letter-spacing: 0.1em; color: #555; font-weight: 600;
+        }
+
+        .chart-table th:last-child,
+        .chart-table td:last-child { width: 42px; text-align: center; }
+
+        .chart-table th:nth-child(2),
+        .chart-table td:nth-child(2),
+        .chart-table th:nth-child(3),
+        .chart-table td:nth-child(3),
+        .chart-table th:nth-child(4),
+        .chart-table td:nth-child(4) { text-align: right; }
+
+        .chart-table tbody tr {
+            border-bottom: 1px solid rgba(255,255,255,0.035);
+            transition: background 0.15s;
+        }
+
+        .chart-table tbody tr:last-child { border-bottom: none; }
+        .chart-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+        .chart-table td { padding: 9px 10px; vertical-align: middle; }
+
+        /* Peak number */
+        .peak-num {
+            font-size: 0.88rem; font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .peak-num.p1 { color: var(--accent-gold); }
+
+        /* Title */
+        .t-title { color: rgba(255,255,255,0.75); font-weight: 400; }
+        .t-title.is-one { color: #fff; font-weight: 500; }
+
+        .t-sub {
+            display: block; font-size: 0.68rem; color: rgba(255,255,255,0.25); margin-top: 2px;
+        }
+
+        /* Year / weeks */
+        .t-year  { font-size: 0.75rem; color: rgba(255,255,255,0.3); font-variant-numeric: tabular-nums; }
+        .t-weeks { font-size: 0.73rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+        .t-weeks.has-one { color: rgba(212,168,83,0.6); }
+
+        /* Hide weeks columns on small screens */
+        @media (max-width: 520px) {
+            .chart-tab { font-size: 0.7rem; padding: 7px 6px; }
+            .col-weeks { display: none; }
+            .chart-table td, .chart-table th { padding: 8px 6px; }
+        }
+
+        /* ── FOOTER ── */
+        .charts-footer {
+            margin-top: 32px; padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.7rem; color: #2e2e2e;
+            line-height: 1.7; text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grain"></div>
+    <div class="hero-bg"></div>
+
+    <div class="charts-container">
+
+        <nav>
+            <div class="logo">Timberlake</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="vault.html">Certifications</a></li>
+                <li><a href="tours.html">Box Office</a></li>
+                <li><a href="streams.html">Live Streaming</a></li>
+                <li><a href="awards.html">Awards</a></li>
+                <li><a href="charts.html" class="active">Charts</a></li>
+                <li><a href="game.html">Album Crush</a></li>
+                <li><a href="transform.html">Timbertrix</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+
+        <div class="charts-header">
+            <h1>Chart <span>History</span></h1>
+            <p>Billboard · UK Official Charts</p>
+        </div>
+
+        <div class="stat-pills" id="stat-pills"></div>
+
+        <div class="chart-tabs" id="chart-tabs">
+            <button class="chart-tab active" data-tab="billboard">Billboard (USA)</button>
+            <button class="chart-tab" data-tab="uk">UK Official Charts</button>
+        </div>
+
+        <!-- BILLBOARD -->
+        <div class="chart-section active" id="tab-billboard">
+            <div class="chart-block">
+                <div class="block-title">Hot 100 — Singles</div>
+                <table class="chart-table" id="bb-hot100-table">
+                    <thead><tr>
+                        <th>Single</th>
+                        <th>Year</th>
+                        <th class="col-weeks">Weeks</th>
+                        <th class="col-weeks">Wks #1</th>
+                        <th>Peak</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="chart-block">
+                <div class="block-title">Billboard 200 — Albums</div>
+                <table class="chart-table" id="bb-200-table">
+                    <thead><tr>
+                        <th>Album</th>
+                        <th>Year</th>
+                        <th class="col-weeks">Weeks</th>
+                        <th class="col-weeks">Wks #1</th>
+                        <th>Peak</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- UK -->
+        <div class="chart-section" id="tab-uk">
+            <div class="chart-block">
+                <div class="block-title">UK Singles Chart</div>
+                <table class="chart-table" id="uk-singles-table">
+                    <thead><tr>
+                        <th>Single</th>
+                        <th>Year</th>
+                        <th class="col-weeks">Weeks</th>
+                        <th class="col-weeks">Wks #1</th>
+                        <th>Peak</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="chart-block">
+                <div class="block-title">UK Albums Chart</div>
+                <table class="chart-table" id="uk-albums-table">
+                    <thead><tr>
+                        <th>Album</th>
+                        <th>Year</th>
+                        <th class="col-weeks">Weeks</th>
+                        <th class="col-weeks">Wks #1</th>
+                        <th>Peak</th>
+                    </tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="charts-footer">
+            Sources: Billboard, Official Charts Company (UK). Peak positions reflect highest charting position achieved.
+        </div>
+
+    </div>
+
+    <script src="fab.js"></script>
+    <script>
+    const data = {
+        bbHot100: [
+            { title: "Cry Me a River",               feat: null,                          album: "Justified",                     peak: 3,  woc: 20, wo1: null, year: 2002 },
+            { title: "Rock Your Body",                feat: null,                          album: "Justified",                     peak: 5, woc: 22, wo1: null, year: 2003 },
+            { title: "Señorita",                      feat: null,                          album: "Justified",                     peak: 27, woc: 17, wo1: null, year: 2003 },
+            { title: "SexyBack",                      feat: "ft. Timbaland",               album: "FutureSex/LoveSounds",          peak: 1,  woc: 36, wo1: 7,    year: 2006 },
+            { title: "My Love",                       feat: "ft. T.I.",                    album: "FutureSex/LoveSounds",          peak: 1,  woc: 29, wo1: 3,    year: 2006 },
+            { title: "What Goes Around…Comes Around", feat: null,                          album: "FutureSex/LoveSounds",          peak: 1,  woc: 25, wo1: 1,    year: 2007 },
+            { title: "LoveStoned / I Think She Knows",feat: null,                          album: "FutureSex/LoveSounds",          peak: 17, woc: 20, wo1: null, year: 2007 },
+            { title: "Give It to Me",                 feat: "Timbaland ft. Nelly Furtado", album: "Shock Value",                   peak: 1,  woc: 26, wo1: 2,    year: 2007 },
+            { title: "Until the End of Time",         feat: "ft. Beyoncé",                 album: "FutureSex/LoveSounds (Deluxe)", peak: 17, woc: 25,  wo1: null, year: 2007 },
+            { title: "Carry Out",                     feat: "ft. Timbaland",               album: "Shock Value II",                peak: 11, woc: 26, wo1: null, year: 2010 },
+            { title: "Suit & Tie",                    feat: "ft. Jay-Z",                   album: "The 20/20 Experience",          peak: 3,  woc: 26, wo1: null, year: 2013 },
+            { title: "Mirrors",                       feat: null,                          album: "The 20/20 Experience",          peak: 2,  woc: 42, wo1: null, year: 2013 },
+            { title: "TKO",                           feat: null,                          album: "The 20/20 Experience – 2 of 2", peak: 36, woc: 17, wo1: null, year: 2013 },
+            { title: "Can't Stop the Feeling!",       feat: null,                          album: "Trolls (Soundtrack)",           peak: 1,  woc: 52, wo1: 1,    year: 2016 },
+            { title: "Filthy",                        feat: null,                          album: "Man of the Woods",              peak: 9, woc: 6, wo1: null, year: 2018 },
+            { title: "Supplies",                      feat: null,                          album: "Man of the Woods",              peak: 71, woc: 2,  wo1: null, year: 2018 },
+            { title: "Say Something",                 feat: "ft. Chris Stapleton",         album: "Man of the Woods",              peak: 9, woc: 16, wo1: null, year: 2018 },
+            { title: "Man of the Woods",              feat: null,                          album: "Man of the Woods",              peak: 73, woc: 1,  wo1: null, year: 2018 },
+            { title: "Like I Love You",               feat: null,                                  album: "Justified",                     peak: 11,  woc: 20, wo1: null, year: 2002 },
+            { title: "Signs",                         feat: "Snoop Dogg ft. Charlie Wilson",       album: "R&G (Rhythm & Gangsta)",        peak: 46,  woc: 14, wo1: null, year: 2005 },
+            { title: "Release",                       feat: "Timbaland",                           album: "Shock Value",                   peak: 91,  woc: 1,  wo1: null, year: 2007 },
+            { title: "Summer Love",                   feat: null,                                  album: "FutureSex/LoveSounds",          peak: 6,   woc: 20, wo1: null, year: 2007 },
+            { title: "Ayo Technology",                feat: "50 Cent ft. Timbaland",               album: "Curtis",                        peak: 5,   woc: 20, wo1: null, year: 2007 },
+            { title: "4 Minutes",                     feat: "Madonna ft. Timbaland",               album: "Hard Candy",                    peak: 3,   woc: 20, wo1: null, year: 2008 },
+            { title: "Dead and Gone",                 feat: "T.I.",                                album: "Paper Trail",                   peak: 2,   woc: 29, wo1: null, year: 2009 },
+            { title: "Love Sex Magic",                feat: "Ciara",                               album: "Fantasy Ride",                  peak: 10,  woc: 12, wo1: null, year: 2009 },
+            { title: "Hallelujah",                    feat: "with Matt Morris ft. Charlie Sexton", album: "Hope for Haiti Now",            peak: 13,  woc: 3,  wo1: null, year: 2010 },
+            { title: "Winner",                        feat: "Jamie Foxx ft. T.I.",                 album: "Best Night of My Life",         peak: 28,  woc: 11, wo1: null, year: 2010 },
+            { title: "Pusher Love Girl",              feat: null,                                  album: "The 20/20 Experience",          peak: 64,  woc: 2,  wo1: null, year: 2013 },
+            { title: "Take Back the Night",           feat: null,                                  album: "The 20/20 Experience - 2 of 2", peak: 29,  woc: 13, wo1: null, year: 2013 },
+            { title: "Holy Grail",                    feat: "Jay-Z",                               album: "Magna Carta Holy Grail",        peak: 4,   woc: 27, wo1: null, year: 2013 },
+            { title: "Not a Bad Thing",               feat: null,                                  album: "The 20/20 Experience - 2 of 2", peak: 8,   woc: 22, wo1: null, year: 2014 },
+            { title: "Love Never Felt So Good",       feat: "Michael Jackson",                     album: "Xscape",                        peak: 9,   woc: 20, wo1: null, year: 2014 },
+            { title: "The Other Side",                feat: "SZA",                                 album: "Trolls World Tour",             peak: 61,  woc: 7,  wo1: null, year: 2020 },
+            { title: "Believe",                       feat: "Meek Mill",                           album: "Single",                        peak: 90,  woc: 1,  wo1: null, year: 2020 },
+            { title: "Better Days",                   feat: "Ant Clemons",                         album: "HAPPY 2 BE HERE",               peak: 94,  woc: 1,  wo1: null, year: 2021 },
+            { title: "Sin Fin",                       feat: "Romeo Santos",                        album: "Formula, Vol. 3",               peak: 100, woc: 1,  wo1: null, year: 2022 },
+            { title: "Keep Going Up!",                feat: "Timbaland & Nelly Furtado",           album: "Single",                        peak: 84,  woc: 1,  wo1: null, year: 2023 },
+            { title: "Selfish",                       feat: null,                                  album: "Everything I Thought It Was",   peak: 19,  woc: 13, wo1: null, year: 2024 }
+            ],
+        bb200: [
+            { title: "Justified",                      peak: 2,  woc: 84, wo1: null, year: 2002 },
+            { title: "FutureSex/LoveSounds",           peak: 1,  woc: 106, wo1: 2,    year: 2006 },
+            { title: "The 20/20 Experience",           peak: 1,  woc: 56, wo1: 3,    year: 2013 },
+            { title: "The 20/20 Experience – 2 of 2",  peak: 1,  woc: 66, wo1: 1,    year: 2013 },
+            { title: "Man of the Woods",               peak: 1,  woc: 19, wo1: 1,    year: 2018 },
+            { title: "Everything I Thought It Was",    peak: 4,  woc: 4, wo1: null,    year: 2024 },
+        ],
+        ukSingles: [
+            { title: "Like I Love You",               feat: null,                             album: "Justified",                     peak: 2,  woc: 16, wo1: null, year: 2002 },
+            { title: "Cry Me a River",                feat: null,                             album: "Justified",                     peak: 2,  woc: 18, wo1: null, year: 2003 },
+            { title: "Work It",                       feat: "Nelly ft Justin Timberlake",     album: "Nellyville",                    peak: 7,  woc: 11, wo1: null, year: 2003 },
+            { title: "Rock Your Body",                feat: null,                             album: "Justified",                     peak: 2,  woc: 14, wo1: null, year: 2003 },
+            { title: "Señorita",                      feat: null,                             album: "Justified",                     peak: 13, woc: 8,  wo1: null, year: 2003 },
+            { title: "I'm Lovin' It",                 feat: null,                             album: "Live from London",              peak: 79, woc: 2,  wo1: null, year: 2004 },
+            { title: "Signs",                         feat: "Snoop Dogg/Wilson/Timberlake",   album: "R&G (Rhythm & Gangsta)",        peak: 2,  woc: 19, wo1: null, year: 2005 },
+            { title: "SexyBack",                      feat: null,                             album: "FutureSex/LoveSounds",          peak: 1,  woc: 40, wo1: 1,    year: 2006 },
+            { title: "My Love",                       feat: "ft. T.I.",                       album: "FutureSex/LoveSounds",          peak: 2,  woc: 21, wo1: null, year: 2006 },
+            { title: "What Goes Around Comes Around", feat: null,                             album: "FutureSex/LoveSounds",          peak: 4,  woc: 27, wo1: null, year: 2007 },
+            { title: "Give It to Me",                 feat: "Timbaland ft Nelly Furtado",     album: "Shock Value",                   peak: 1,  woc: 36, wo1: 1,    year: 2007 },
+            { title: "LoveStoned",                    feat: null,                             album: "FutureSex/LoveSounds",          peak: 11, woc: 19, wo1: null, year: 2007 },
+            { title: "Ayo Technology",                feat: "50 Cent/Timberlake/Timbaland",   album: "Curtis",                        peak: 2,  woc: 34, wo1: null, year: 2007 },
+            { title: "Until the End of Time",         feat: "ft. Beyoncé",                    album: "FutureSex/LoveSounds (Deluxe)", peak: 3,  woc: 12, wo1: null, year: 2007 },
+            { title: "4 Minutes",                     feat: "Madonna ft Justin Timberlake",   album: "Hard Candy",                    peak: 1,  woc: 29, wo1: 4,    year: 2008 },
+            { title: "Rehab",                         feat: "Rihanna ft Justin Timberlake",   album: "Good Girl Gone Bad",            peak: 16, woc: 16, wo1: null, year: 2008 },
+            { title: "Dead And Gone",                 feat: "TI ft Justin Timberlake",        album: "Paper Trail",                   peak: 4,  woc: 24, wo1: null, year: 2008 },
+            { title: "Love Sex Magic",                feat: "Ciara ft Justin Timberlake",     album: "Fantasy Ride",                  peak: 5,  woc: 17, wo1: null, year: 2009 },
+            { title: "Hallelujah",                    feat: "Timberlake / Morris / Sexton",   album: "Hope for Haiti Now",            peak: 91, woc: 1,  wo1: null, year: 2010 },
+            { title: "Carry Out",                     feat: "Timbaland ft Justin Timberlake", album: "Shock Value II",                peak: 6,  woc: 19, wo1: null, year: 2010 },
+            { title: "Love Dealer",                   feat: "Esmee Denters ft J Timberlake",  album: "Outta Here",                    peak: 68, woc: 1,  wo1: null, year: 2010 },
+            { title: "Suit & Tie",                    feat: "Justin Timberlake ft Jay Z",     album: "The 20/20 Experience",          peak: 3,  woc: 19, wo1: null, year: 2013 },
+            { title: "Mirrors",                       feat: null,                             album: "The 20/20 Experience",          peak: 1,  woc: 36, wo1: 3,    year: 2013 },
+            { title: "Holy Grail",                    feat: "Jay-Z ft Justin Timberlake",     album: "Magna Carta Holy Grail",        peak: 7,  woc: 20, wo1: null, year: 2013 },
+            { title: "Tunnel Vision",                 feat: null,                             album: "The 20/20 Experience",          peak: 61, woc: 5,  wo1: null, year: 2013 },
+            { title: "Take Back The Night",           feat: null,                             album: "The 20/20 Experience – 2 of 2", peak: 22, woc: 14, wo1: null, year: 2013 },
+            { title: "TKO",                           feat: null,                             album: "The 20/20 Experience – 2 of 2", peak: 58, woc: 2,  wo1: null, year: 2013 },
+            { title: "Not A Bad Thing",               feat: null,                             album: "The 20/20 Experience – 2 of 2", peak: 21, woc: 13, wo1: null, year: 2014 },
+            { title: "Can't Stop the Feeling!",       feat: null,                             album: "Trolls (Soundtrack)",           peak: 2,  woc: 71, wo1: null, year: 2016 },
+            { title: "Filthy",                        feat: null,                             album: "Man of the Woods",              peak: 15, woc: 8,  wo1: null, year: 2018 },
+            { title: "Supplies",                      feat: null,                             album: "Man of the Woods",              peak: 84, woc: 1,  wo1: null, year: 2018 },
+            { title: "Say Something",                 feat: "Timberlake/Stapleton",           album: "Man of the Woods",              peak: 9,  woc: 19, wo1: null, year: 2018 },
+            { title: "Man Of The Woods",              feat: null,                             album: "Man of the Woods",              peak: 91, woc: 1,  wo1: null, year: 2018 },
+            { title: "The Other Side",                feat: "SZA & Justin Timberlake",        album: "Trolls World Tour",             peak: 44, woc: 11, wo1: null, year: 2020 },
+            { title: "Stay With Me",                  feat: "Harris/Timberlake/Halsey",       album: "Funk Wav Bounces Vol. 2",       peak: 10, woc: 11, wo1: null, year: 2022 },
+            { title: "Selfish",                       feat: null,                             album: "Everything I Thought It Was",   peak: 29, woc: 10, wo1: null, year: 2024 },
+        ],
+        ukAlbums: [
+            { title: "Justified",                            peak: 1,  woc: 105, wo1: 7,    year: 2002 },
+            { title: "FutureSex/LoveSounds",                 peak: 1,  woc: 76,  wo1: 1,    year: 2006 },
+            { title: "The 20/20 Experience",                 peak: 1,  woc: 32,  wo1: 3,    year: 2013 },
+            { title: "The 20/20 Experience - The Complete",  peak: 27, woc: 4,   wo1: null, year: 2013 },
+            { title: "The 20/20 Experience - 2 of 2",        peak: 2,  woc: 7,   wo1: null, year: 2013 },
+            { title: "Man of the Woods",                     peak: 2,  woc: 11,  wo1: null, year: 2018 },
+            { title: "Everything I Thought It Was",          peak: 5,  woc: 2,   wo1: null, year: 2024 },
+        ],
+    };
+
+    function peakClass(p) {
+        if (p === 1) return 'p1';
+        if (p <= 3)  return 'p3';
+        if (p <= 10) return 'p10';
+        return 'plo';
+    }
+
+    function renderTable(id, rows) {
+        const tbody = document.querySelector('#' + id + ' tbody');
+        if (!tbody) return;
+        tbody.innerHTML = rows
+            .slice().sort((a, b) => a.peak - b.peak || a.year - b.year)
+            .map(e => {
+                const subParts = [
+                    e.feat  ? `<span class="feat">${e.feat}</span>` : null,
+                    e.album ? `<span class="album">${e.album}</span>` : null,
+                ].filter(Boolean).join('<span style="color:#2a2a2a;margin:0 3px">·</span>');
+
+                return `<tr>
+                    <td>
+                        <span class="t-title${e.peak === 1 ? ' is-one' : ''}">${e.title}</span>
+                        ${subParts ? `<span class="t-sub">${subParts}</span>` : ''}
+                    </td>
+                    <td><span class="t-year">${e.year}</span></td>
+                    <td class="col-weeks"><span class="t-weeks">${e.woc}w</span></td>
+                    <td class="col-weeks"><span class="t-weeks${e.wo1 ? ' has-one' : ''}">${e.wo1 ? e.wo1 + 'w' : '—'}</span></td>
+                    <td><span class="peak-num ${peakClass(e.peak)}">${e.peak}</span></td>
+                </tr>`;
+            }).join('');
+    }
+
+    function renderPills() {
+        const bb1  = data.bbHot100.filter(e => e.peak === 1).length;
+        const uk1  = data.ukSingles.filter(e => e.peak === 1).length;
+        const alb1 = [...data.bb200, ...data.ukAlbums].filter(e => e.peak === 1).length;
+        const pills = [
+            { val: bb1,                   lbl: 'Billboard #1s'   },
+            { val: uk1,                   lbl: 'UK Singles #1s'  },
+            { val: alb1,                  lbl: 'Album #1s'       },
+            { val: data.bbHot100.length,  lbl: 'Hot 100 entries' },
+        ];
+        document.getElementById('stat-pills').innerHTML = pills.map(p =>
+            `<div class="stat-pill"><span class="pill-val">${p.val}</span><span class="pill-lbl">${p.lbl}</span></div>`
+        ).join('');
+    }
+
+    document.getElementById('chart-tabs').addEventListener('click', e => {
+        const btn = e.target.closest('.chart-tab');
+        if (!btn) return;
+        document.querySelectorAll('.chart-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.chart-section').forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+
+    renderPills();
+    renderTable('bb-hot100-table',  data.bbHot100);
+    renderTable('bb-200-table',     data.bb200);
+    renderTable('uk-singles-table', data.ukSingles);
+    renderTable('uk-albums-table',  data.ukAlbums);
+    document.dispatchEvent(new Event('dataReady'));
+    </script>
+</body>
+</html>

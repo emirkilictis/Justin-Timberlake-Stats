@@ -133,16 +133,17 @@
       "id": "sexyback",
       "title": "SexyBack",
       "album_id": "FutureSex/LoveSounds",
-      "pure_sales_us": 4900000,
+      "pure_sales_us": 5000000,
       "official_certifications": {
         "USA": "3x Platinum",
         "UK": "2x Platinum",
         "Brazil": "None",
         "Germany": "1x Platinum",
-        "Australia": "2x Platinum",
+        "Australia": "5x Platinum",
         "Canada": "6x Platinum",
         "Spain": "Gold",
         "New Zealand": "4x Platinum",
+        "Italy": "Gold",
         "World": "None"
       }
     },
@@ -392,13 +393,21 @@
         "UK": "5x Platinum",
         "Brazil": "3x Diamond",
         "Germany": "1x Diamond",
-        "Australia": "9x Platinum",
+        "Australia": "11x Platinum",
         "Canada": "1x Diamond",
         "Denmark": "5x Platinum",
-        "Mexico": "2x Platinum",
+        "Mexico": "4x Platinum",
         "New Zealand": "8x Platinum",
-        "World": "None",
-        "France": "Diamond"
+        "France": "Diamond",
+        "Austria": "Platinum",
+        "Belgium": "4x Platinum",
+        "Italy": "5x Platinum",
+        "Poland": "Diamond",
+        "Portugal": "Platinum",
+        "Spain": "3x Platinum",
+        "Sweden": "8x Platinum",
+        "Switzerland": "2x Platinum",
+        "World": "None"
       },
       "youtubeVideoIds": [
         "ru0K8uYEZWw"

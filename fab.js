@@ -298,6 +298,25 @@
             .leaderboard-album { color: ${c} !important; }
 
             /* ══════════════════════════════════════
+               CHARTS.HTML — Kapsamlı tema
+               ══════════════════════════════════════ */
+            .charts-header h1 span { color: ${c} !important; }
+            .chart-tab.active {
+                background: ${c} !important;
+                border-color: ${c} !important;
+                box-shadow: 0 0 20px ${c}40 !important;
+                color: #000 !important;
+            }
+            table.chart-table th { color: ${c} !important; }
+            .peak-1 { background: ${c} !important; box-shadow: 0 0 14px ${c}60 !important; }
+            .peak-2, .peak-3 { background: ${c}20 !important; color: ${c} !important; border-color: ${c}40 !important; }
+            .chart-block-header .chart-logo { color: ${c} !important; background: ${c}15 !important; border-color: ${c}30 !important; }
+            .hero-card::before { background: ${c} !important; }
+            .hero-card .card-value { color: ${c} !important; }
+            .track-album { color: ${c}80 !important; }
+            .weeks-tag[style*="color:var(--accent-gold)"] { color: ${c} !important; }
+
+            /* ══════════════════════════════════════
                AWARDS.HTML — Kapsamlı tema
                ══════════════════════════════════════ */
             .awards-header h1 span { color: ${c} !important; }

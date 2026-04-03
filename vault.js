@@ -10,7 +10,10 @@ const CERT_MAPPINGS = {
         "album": { "Silver": 60000, "Gold": 100000, "Platinum": 300000 },
         "song": { "Silver": 200000, "Gold": 400000, "Platinum": 600000 }
     },
-    "Brazil": { "Gold": 20000, "Platinum": 40000, "Diamond": 160000 },
+    "Brazil": {
+        "album": { "Gold": 20000, "Platinum": 40000, "Diamond": 160000 },
+        "song":  { "Gold": 30000, "Platinum": 60000, "Diamond": 250000 }
+    },
     "Germany": { 
         "album": { "Gold": 100000, "Platinum": 200000, "Diamond": 750000 },
         "song": { "Gold": 200000, "Platinum": 400000, "Diamond": 1000000 }
@@ -18,20 +21,40 @@ const CERT_MAPPINGS = {
     "Australia": { "Gold": 35000, "Platinum": 70000, "Diamond": 500000 },
     "Canada": { "Gold": 40000, "Platinum": 80000, "Diamond": 800000 },
     "Mexico": { "Gold": 30000, "Platinum": 60000, "Diamond": 300000 },
-    "New Zealand": { "Gold": 7500, "Platinum": 15000, "Diamond": 100000 },
+    "New Zealand": {
+        "album": { "Gold": 7500,  "Platinum": 15000, "Diamond": 100000 },
+        "song":  { "Gold": 15000, "Platinum": 30000, "Diamond": 300000 }
+    },
     "Denmark": { 
         "album": { "Gold": 10000, "Platinum": 20000, "Diamond": 200000 },
         "song": { "Gold": 45000, "Platinum": 90000, "Diamond": 450000 }
     },
     "Poland": { "Gold": 10000, "Platinum": 20000, "Diamond": 100000 },
-    "Spain": { "Gold": 30000, "Platinum": 60000, "Diamond": 600000 },
+    "Spain": {
+        "album": { "Gold": 30000, "Platinum": 60000, "Diamond": 600000 },
+        "song":  { "Gold": 20000, "Platinum": 40000, "Diamond": 400000 }
+    },
     "Italy": { "Gold": 25000, "Platinum": 50000, "Diamond": 500000 },
     "France": { "Gold": 100000, "Platinum": 200000, "Diamond": 600000 },
     "Netherlands": { "Gold": 40000, "Platinum": 80000, "Diamond": 200000 },
     "Switzerland": { "Gold": 15000, "Platinum": 30000, "Diamond": 100000 },
-    "Sweden": { "Gold": 30000, "Platinum": 60000, "Diamond": 150000 },
+    "Sweden": {
+        "album": { "Gold": 30000, "Platinum": 60000, "Diamond": 150000 },
+        "song":  { "Gold": 20000, "Platinum": 40000, "Diamond": 400000 }
+    },
     "Japan": { "Gold": 100000, "Platinum": 250000, "Diamond": 1000000 },
-    "Belgium": { "Gold": 15000, "Platinum": 30000, "Diamond": 150000 },
+    "Belgium": {
+        "album": { "Gold": 15000, "Platinum": 30000, "Diamond": 150000 },
+        "song":  { "Gold": 10000, "Platinum": 20000, "Diamond": 200000 }
+    },
+    "Austria": {
+        "album": { "Gold": 15000, "Platinum": 30000 },
+        "song":  { "Gold": 15000, "Platinum": 30000 }
+    },
+    "Portugal": {
+        "album": { "Gold": 7500, "Platinum": 15000 },
+        "song":  { "Gold": 5000, "Platinum": 10000 }
+    },
     "World": { "Silver": 500000, "Gold": 1000000, "Platinum": 2000000, "Diamond": 10000000 },
     
 };
@@ -40,13 +63,13 @@ const COUNTRIES = ["USA", "UK", "Brazil", "Germany", "Australia", "Canada", "Mex
 
 const ALBUM_COLORS = {
     "Justified": "#5dade2", "FutureSex/LoveSounds": "#e74c3c", "The 20/20 Experience": "#d4a853",
-    "The 20/20 Experience \u2013 2 of 2": "#c0962e",
+    "The 20/20 Experience – 2 of 2": "#c0962e",
     "Man of the Woods": "#e67e22", "Everything I Thought It Was": "#ca510f", "Orphan": "#bdc3c7"
 };
 
 const ALBUM_COVERS = {
     "Justified": "assets/justified.jpg", "FutureSex/LoveSounds": "assets/fsls.jpg", 
-    "The 20/20 Experience": "assets/the20.jpg", "The 20/20 Experience \u2013 2 of 2": "assets/the20pt2.jpg",
+    "The 20/20 Experience": "assets/the20.jpg", "The 20/20 Experience – 2 of 2": "assets/the20pt2.jpg",
     "Man of the Woods": "assets/motw.jpg",
     "Everything I Thought It Was": "assets/eitiw.jpg", "Orphan": null
 };
@@ -191,7 +214,7 @@ function calculateUSALive(item, type = 'song') {
     let effectiveUSShare = US_SHARE;
     const era = type === 'song' ? item.album_id : item.id;
     const pre2016Eras = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience – 2 of 2"];
-    const post2016Orphans = ["Stay With Me", "Better Place", "Selfish", "No Angels", "Drown"];
+    const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Soulmate"];
 
     if (pre2016Eras.includes(era) || (era === "Orphan" && !post2016Orphans.includes(item.title))) {
         effectiveUSShare = 0.27;
@@ -209,7 +232,7 @@ function calculateUSALive(item, type = 'song') {
             const albumData = jtData.albums[item.album_id];
             const albumSpot = liveStreams.albums[item.album_id] || 0;
             if (albumData.streams && albumData.streams.youtube && albumSpot > 0) {
-                const spotShare = globalSpot / albumSpot;
+                const spotShare = albumSpot > 0 ? globalSpot / albumSpot : 0;
                 const ytGlobalTrack = albumData.streams.youtube * spotShare;
                 usVideo = ytGlobalTrack * effectiveUSShare;
             }
@@ -255,7 +278,7 @@ function quantizeRIAAUnits(units) {
     return Math.floor(units / 1000000) * 1000000;
 }
 
-function getBadgeHTML(certStr, isLive = false, isDiamondActive = false, platCount = 0) {
+function getBadgeHTML(certStr, _isLive = false, isDiamondActive = false, platCount = 0) {
     if (!certStr || certStr === "None" || certStr === "") return `<span class="badge badge-none">—</span>`;
     
     let cls = "badge-platinum";
@@ -421,11 +444,6 @@ function renderTables() {
             COUNTRIES.forEach(c => { countryTotals[c] += item.cMap[c] || 0; });
         });
         
-        let countryCells = COUNTRIES.map(c => {
-            let val = countryTotals[c];
-            return `<td class="text-center" style="font-weight:700;color:var(--accent-color);border-top:1px solid rgba(255,255,255,0.1);">${val ? val.toLocaleString() : '—'}</td>`;
-        }).join('');
-        
         // USA gets special treatment (wider cell for official + live)
         let usaCell = `<td class="text-center" style="font-weight:700;color:var(--accent-color);border-top:1px solid rgba(255,255,255,0.1);">${countryTotals.USA ? countryTotals.USA.toLocaleString() : '—'}</td>`;
         let otherCells = COUNTRIES.filter(c => c !== 'USA').map(c => {
@@ -446,7 +464,6 @@ function renderTables() {
     computedData.albums.forEach(a => {
         grandTotal += a.global;
         let usLiveObj = getRiaalEligibility(a.usLive);
-        let color = ALBUM_COLORS[a.id] || "#d4a853";
         let cover = ALBUM_COVERS[a.id];
         let thumb = cover ? `<img src="${cover}" class="w-10 h-10 object-cover rounded shadow-md mr-4 shrink-0 border border-white/10">` 
                           : `<div class="w-10 h-10 rounded shadow-md mr-4 shrink-0" style="background:repeating-radial-gradient(#050505 0,#050505 2px,#111 3px,#111 4px);"></div>`;
@@ -465,12 +482,12 @@ function renderTables() {
                 <td class="text-center">
                     ${getBadgeHTML(usLiveObj.label, false, usLiveObj.isDiamond, usLiveObj.platCount)}
                 </td>
-                <td class="text-center">${getBadgeHTML(a.official_certifications.UK)}</td>
-                <td class="text-center">${getBadgeHTML(a.official_certifications.Brazil)}</td>
-                <td class="text-center">${getBadgeHTML(a.official_certifications.Germany)}</td>
-                <td class="text-center">${getBadgeHTML(a.official_certifications.Australia)}</td>
-                <td class="text-center">${getBadgeHTML(a.official_certifications.Canada)}</td>
-                <td class="text-center">${getBadgeHTML(a.official_certifications.Mexico)}</td>
+                <td class="text-center">${getBadgeHTML(a.official_certifications?.UK)}</td>
+                <td class="text-center">${getBadgeHTML(a.official_certifications?.Brazil)}</td>
+                <td class="text-center">${getBadgeHTML(a.official_certifications?.Germany)}</td>
+                <td class="text-center">${getBadgeHTML(a.official_certifications?.Australia)}</td>
+                <td class="text-center">${getBadgeHTML(a.official_certifications?.Canada)}</td>
+                <td class="text-center">${getBadgeHTML(a.official_certifications?.Mexico)}</td>
                 <td class="text-center" style="font-weight:700;color:var(--accent-color)">${a.cMap.Other > 0 ? a.cMap.Other.toLocaleString() : 'None'}</td>
             </tr>
         `;
@@ -498,12 +515,12 @@ function renderTables() {
                 <td class="text-center">
                     ${getBadgeHTML(usLiveObj.label, false, usLiveObj.isDiamond, usLiveObj.platCount)}
                 </td>
-                <td class="text-center">${getBadgeHTML(s.official_certifications.UK)}</td>
-                <td class="text-center">${getBadgeHTML(s.official_certifications.Brazil)}</td>
-                <td class="text-center">${getBadgeHTML(s.official_certifications.Germany)}</td>
-                <td class="text-center">${getBadgeHTML(s.official_certifications.Australia)}</td>
-                <td class="text-center">${getBadgeHTML(s.official_certifications.Canada)}</td>
-                <td class="text-center">${getBadgeHTML(s.official_certifications.Mexico)}</td>
+                <td class="text-center">${getBadgeHTML(s.official_certifications?.UK)}</td>
+                <td class="text-center">${getBadgeHTML(s.official_certifications?.Brazil)}</td>
+                <td class="text-center">${getBadgeHTML(s.official_certifications?.Germany)}</td>
+                <td class="text-center">${getBadgeHTML(s.official_certifications?.Australia)}</td>
+                <td class="text-center">${getBadgeHTML(s.official_certifications?.Canada)}</td>
+                <td class="text-center">${getBadgeHTML(s.official_certifications?.Mexico)}</td>
                 <td class="text-center" style="font-weight:700;color:var(--accent-color)">${s.cMap.Other > 0 ? s.cMap.Other.toLocaleString() : 'None'}</td>
             </tr>
         `;
@@ -560,7 +577,7 @@ function renderEraSummary() {
     const ERA_ORDER = [
         { id: "Justified",                                  label: "Justified" },
         { id: "FutureSex/LoveSounds",                       label: "FutureSex/LoveSounds" },
-        { id: "The 20/20 Experience",                       label: "The 20/20 Experience (Complete Experience)", merged: "The 20/20 Experience \u2013 2 of 2" },
+        { id: "The 20/20 Experience",                       label: "The 20/20 Experience (Complete Experience)", merged: "The 20/20 Experience – 2 of 2" },
         { id: "Man of the Woods",                           label: "Man of the Woods" },
         { id: "Everything I Thought It Was",                label: "Everything I Thought It Was" }
     ];
@@ -660,7 +677,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     sortVault('albums', 'global', false);
     sortVault('songs', 'global', false);
     
-    document.addEventListener('eraChanged', (e) => {
+    document.addEventListener('eraChanged', (_e) => {
         if (typeof window.currentEra !== 'undefined' && ALBUM_COLORS[window.currentEra]) {
             document.documentElement.style.setProperty('--accent-color', ALBUM_COLORS[window.currentEra]);
         }
