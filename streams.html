@@ -91,7 +91,7 @@
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
             rel="stylesheet">
     </noscript>
-    <link rel="stylesheet" href="style.css?v=1775330844">
+    <link rel="stylesheet" href="style.css?v=1775340877">
     <style>
         /* Sadece bu sayfaya özel dashboard stilleri */
         .analytics-container {
@@ -307,8 +307,8 @@
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js?v=1775330844" defer></script>
-    <script src="song-map.js?v=1775330844" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js?v=1775340877" defer></script>
+    <script src="song-map.js?v=1775340877" defer></script>
 
 </head>
 
@@ -581,9 +581,9 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js?v=1775330844" defer></script>
-    <script src="config.js?v=1775330844" defer></script>
-    <script src="fab.js?v=1775330844" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js?v=1775340877" defer></script>
+    <script src="config.js?v=1775340877" defer></script>
+    <script src="fab.js?v=1775340877" defer></script>
 
     <!-- Firebase Modülü: Firestore'a erişim sağlar ve window'a helper açar -->
     <script type="module">
@@ -592,7 +592,7 @@
 
         if (typeof CONFIG === 'undefined' || !CONFIG.FIREBASE) {
             console.error("config.js yüklenemedi — Firestore devre dışı.");
-            window.dispatchEvent(new Event('firestore-ready')); // streams.js?v=1775330844'in bloke olmaması için
+            window.dispatchEvent(new Event('firestore-ready')); // streams.js?v=1775340877'in bloke olmaması için
             throw new Error("CONFIG missing");
         }
         const app = initializeApp(CONFIG.FIREBASE);
@@ -612,11 +612,11 @@
             }
         };
 
-        // streams.js?v=1775330844'e "Firestore hazır" sinyali gönder
+        // streams.js?v=1775340877'e "Firestore hazır" sinyali gönder
         window.dispatchEvent(new Event('firestore-ready'));
     </script>
 
-    <script src="streams.js?v=1775330844" defer></script>
+    <script src="streams.js?v=1775340877" defer></script>
 
 <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
     <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
