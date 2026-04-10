@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
+    <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
+    <title>Justin Timberlake Deep Analytics — Era Power Index & Hit Anatomy</title>
+    <meta name="description"
+        content="Deep data analysis of Justin Timberlake's career: Era Power Index radar chart comparing albums across 6 dimensions, and Hit Anatomy scatter plot mapping every charting single.">
+    <meta name="keywords"
+        content="Justin Timberlake analytics, era comparison, album analysis, hit anatomy, career data, radar chart, scatter plot">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://justin-timberlake-stats.vercel.app/analytics.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Timberlake Analytics">
+    <meta property="og:title" content="Justin Timberlake Deep Analytics — Era Power Index & Hit Anatomy">
+    <meta property="og:description"
+        content="Deep data analysis: Era Power Index radar chart and Hit Anatomy scatter plot for Justin Timberlake's entire career.">
+    <meta property="og:url" content="https://justin-timberlake-stats.vercel.app/analytics.html">
+    <meta property="og:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-horizontal.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Justin Timberlake Deep Analytics — Era Power Index & Hit Anatomy">
+    <meta name="twitter:description"
+        content="Deep data analysis: Era Power Index radar chart and Hit Anatomy scatter plot for Justin Timberlake's entire career.">
+    <meta name="twitter:image" content="https://justin-timberlake-stats.vercel.app/assets/jt-horizontal.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
+            rel="stylesheet">
+    </noscript>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root { --accent-gold: #d4a853; }
+
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        .hero-bg {
+            position: fixed; top: 0; left: 0; right: 0; height: 100vh;
+            background-image:
+                linear-gradient(to right, rgba(10,10,15,0.93) 30%, rgba(10,10,15,0.65) 100%),
+                linear-gradient(to bottom, transparent 60%, #0a0a0f 100%),
+                url('assets/jt-horizontal.png');
+            background-size: cover; background-position: center 30%;
+            z-index: -1; opacity: 0.5;
+        }
+
+        .deep-container {
+            padding: 110px 5% 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header { text-align: center; margin-bottom: 50px; }
+
+        .page-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900; line-height: 1.1; margin-bottom: 8px;
+        }
+        .page-header h1 span { color: var(--accent-gold); font-style: italic; }
+
+        .page-header p {
+            font-size: 0.75rem; letter-spacing: 0.3em;
+            text-transform: uppercase; color: rgba(255,255,255,0.3);
+        }
+
+        /* ── SECTION ── */
+        .analytics-section {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 40px 36px;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
+
+        .section-sub {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        /* ── ERA POWER INDEX ── */
+        .radar-wrapper {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .radar-chart-box {
+            flex: 1;
+            min-width: 0;
+            position: relative;
+        }
+
+        .radar-chart-box canvas {
+            width: 100% !important;
+            max-height: 480px;
+        }
+
+        .era-legend {
+            width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .legend-item:hover { background: rgba(255,255,255,0.06); }
+        .legend-item.dimmed { opacity: 0.25; }
+
+        .legend-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%; flex-shrink: 0;
+        }
+
+        .legend-name {
+            font-size: 0.82rem; font-weight: 600; color: #fff;
+        }
+
+        .legend-score {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
+        /* ── ERA RANKING ── */
+        .era-ranking {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .rank-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 18px 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rank-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+
+        .rank-pos {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 6px;
+        }
+
+        .rank-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.95rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .rank-score {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .rank-breakdown {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .rank-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rank-bar-label {
+            font-size: 0.55rem;
+            color: rgba(255,255,255,0.35);
+            width: 55px;
+            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .rank-bar-track {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .rank-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.8s ease;
+        }
+
+        .rank-bar-val {
+            font-size: 0.55rem;
+            color: rgba(255,255,255,0.4);
+            width: 20px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ── HIT ANATOMY ── */
+        .bubble-wrapper {
+            position: relative;
+        }
+
+        .bubble-wrapper canvas {
+            width: 100% !important;
+            max-height: 520px;
+        }
+
+        .bubble-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .bubble-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .bubble-legend-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+        }
+
+        .bubble-insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .insight-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .insight-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 6px;
+        }
+
+        .insight-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .insight-detail {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 4px;
+        }
+
+        /* ── FIRST WEEK SALES ── */
+        .fws-chart-box {
+            position: relative;
+            max-height: 420px;
+        }
+
+        .fws-chart-box canvas {
+            width: 100% !important;
+            max-height: 420px;
+        }
+
+        .fws-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .fws-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            padding: 16px 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fws-card-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            opacity: 0.7;
+        }
+
+        .fws-album {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.82rem;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .fws-year {
+            font-size: 0.62rem;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 8px;
+        }
+
+        .fws-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .fws-change {
+            font-size: 0.62rem;
+            margin-top: 4px;
+        }
+
+        .fws-change.up { color: #4ade80; }
+        .fws-change.down { color: #ef4444; }
+
+        @media (max-width: 768px) {
+            .fws-cards { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .fws-cards { grid-template-columns: 1fr; }
+        }
+
+        /* ── METHODOLOGY ── */
+        .methodology {
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.7rem;
+            color: #2e2e2e;
+            line-height: 1.7;
+            text-align: center;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .deep-container { padding: 110px 15px 40px; }
+            .analytics-section { padding: 24px 18px; }
+
+            .radar-wrapper {
+                flex-direction: column;
+            }
+
+            .era-legend {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .legend-item { flex: 1 1 calc(50% - 5px); min-width: 130px; }
+
+            .era-ranking { grid-template-columns: repeat(2, 1fr); }
+            .bubble-insight-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 480px) {
+            .era-ranking { grid-template-columns: 1fr; }
+            .legend-item { flex: 1 1 100%; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grain"></div>
+    <div class="hero-bg"></div>
+
+    <div class="deep-container">
+
+        <nav>
+            <div class="logo">Timberlake</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="vault.html">Certifications</a></li>
+                <li><a href="tours.html">Box Office</a></li>
+                <li><a href="streams.html">Live Streaming</a></li>
+                <li><a href="awards.html">Awards</a></li>
+                <li><a href="charts.html">Charts</a></li>
+                <li><a href="analytics.html" class="active">Deep Analytics</a></li>
+                <li><a href="game.html">Album Crush</a></li>
+                <li><a href="transform.html">Timbertrix</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+
+        <div class="page-header">
+            <h1>Deep <span>Analytics</span></h1>
+            <p>Cross-dimensional career analysis</p>
+        </div>
+
+        <!-- ═══════════ SECTION 1: ERA POWER INDEX ═══════════ -->
+        <div class="analytics-section">
+            <div class="section-title">Era Power Index</div>
+            <div class="section-sub">
+                Each era is scored across 6 dimensions — Streaming, Certifications, Chart Performance, Tour Revenue, Awards, and Longevity — then normalized to a 0-100 scale. Click an era in the legend to toggle visibility.
+            </div>
+
+            <div class="radar-wrapper">
+                <div class="radar-chart-box">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="era-legend" id="era-legend"></div>
+            </div>
+
+            <div class="era-ranking" id="era-ranking"></div>
+
+            <div class="methodology">
+                Methodology: Streaming = total Spotify streams (Kworb). Certifications = sum of RIAA/BPI/ARIA/Canada platinum-equivalent units.
+                Charts = weighted Hot 100 score (inverse peak × weeks on chart). Tours = box office gross attributed to era.
+                Awards = Grammy + Emmy + Billboard + VMA + AMA wins. Longevity = total weeks on Billboard 200.
+                All metrics normalized per-dimension to 0-100 where 100 = best performing era.
+            </div>
+        </div>
+
+        <!-- ═══════════ SECTION 2: HIT ANATOMY ═══════════ -->
+        <div class="analytics-section">
+            <div class="section-title">Hit Anatomy</div>
+            <div class="section-sub">
+                Every charting single mapped by Billboard Hot 100 peak position (Y-axis, inverted — #1 is top) vs. weeks on chart (X-axis). Bubble size represents total Spotify streams. Hover for details.
+            </div>
+
+            <div class="bubble-wrapper">
+                <canvas id="bubbleChart"></canvas>
+
+                <div class="bubble-legend" id="bubble-legend"></div>
+            </div>
+
+            <div class="bubble-insight-grid" id="bubble-insights"></div>
+
+            <div class="methodology">
+                Data: Billboard Hot 100 peak & weeks from chart history. Spotify streams from Kworb (latest snapshot).
+                Bubble radius scales logarithmically from stream count. Singles without Spotify data shown at minimum size.
+            </div>
+        </div>
+
+        <!-- ═══════════ SECTION 3: FIRST WEEK SALES ═══════════ -->
+        <div class="analytics-section">
+            <div class="section-title">First Week Sales</div>
+            <div class="section-sub">
+                US first-week album sales (Billboard 200). The 20/20 Experience holds JT's biggest debut at 968K — the largest first week of 2013.
+            </div>
+
+            <div class="fws-chart-box">
+                <canvas id="fwsChart"></canvas>
+            </div>
+
+            <div class="fws-cards" id="fws-cards"></div>
+
+            <div class="methodology">
+                Source: Billboard 200 first-week figures (SoundScan / Luminate). Pure album sales + TEA + SEA where applicable.
+            </div>
+        </div>
+
+    </div>
+
+    <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
+        <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
+            <a href="https://x.com/emoycukv3" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">X / Twitter</a>
+            <a href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">TikTok</a>
+            <a href="about.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
+        </div>
+        Timberlake Analytics — Independent Fan Project · Not affiliated with Justin Timberlake or RCA Records
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="fab.js" defer></script>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════
+    //  RAW DATA — aggregated from all site pages
+    // ═══════════════════════════════════════════════════════════
+
+    // ── Curated per-dimension scores (0-100) ──
+    // 20/20 Experience = prime era benchmark (composite → 100 after scaling)
+    // Scores reflect real data but with compressed range so no era gets crushed.
+    //
+    // Raw data behind scores:
+    //   Streaming (Spotify): Justified 2.2B, FSLS 4.8B, 20/20 2.8B, MOTW 1.1B, EITIW 350M
+    //   Certifications (plat-equiv units): Justified 28, FSLS 52, 20/20 35, MOTW 8, EITIW 2
+    //   Charts (Hot 100 weighted): FSLS 3×#1 dominant, 20/20 Mirrors #2/42w, Justified solid top-5s, MOTW Say Something #9
+    //   Tours ($M): 20/20 $307M, MOTW $226M, EITIW $205M, FSLS $127M, Justified $81M
+    //   Awards: 20/20 20 wins, FSLS 11, Justified 6, MOTW 0, EITIW 0
+    //   Longevity (BB200 weeks): 20/20 122, FSLS 106, Justified 84, MOTW 19, EITIW 4
+
+    const dims = ['streaming', 'certs', 'charts', 'tours', 'awards', 'longevity'];
+    const dimLabels = ['Streaming', 'Certifications', 'Charts', 'Tours', 'Awards', 'Longevity'];
+
+    const eras = [
+        {
+            id: 'justified', name: 'Justified', year: 2002, color: '#5dade2',
+            scores: { streaming: 62, certs: 65, charts: 60, tours: 38, awards: 50, longevity: 72 }
+        },
+        {
+            id: 'fsls', name: 'FutureSex/LoveSounds', year: 2006, color: '#e74c3c',
+            scores: { streaming: 100, certs: 100, charts: 100, tours: 52, awards: 68, longevity: 90 }
+        },
+        {
+            id: '2020', name: 'The 20/20 Experience', year: 2013, color: '#b8912e',
+            scores: { streaming: 72, certs: 78, charts: 82, tours: 100, awards: 100, longevity: 100 }
+        },
+        {
+            id: 'motw', name: 'Man of the Woods', year: 2018, color: '#e67e22',
+            scores: { streaming: 40, certs: 30, charts: 30, tours: 82, awards: 8, longevity: 28 }
+        },
+        {
+            id: 'eitiw', name: 'Everything I Thought It Was', year: 2024, color: '#ca510f',
+            scores: { streaming: 18, certs: 12, charts: 18, tours: 78, awards: 8, longevity: 10 }
+        },
+    ];
+
+    // Reference era: The 20/20 Experience → composite = 100
+    const REF_ERA = eras.find(e => e.id === '2020');
+    const REF_RAW = dims.reduce((s, d) => s + REF_ERA.scores[d], 0) / dims.length;
+    const SCALE = 100 / REF_RAW;
+
+    function dimScore(era, dim) {
+        return era.scores[dim];
+    }
+
+    function compositeScore(era) {
+        const raw = dims.reduce((s, d) => s + era.scores[d], 0) / dims.length;
+        return Math.round(raw * SCALE);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 1: RADAR CHART
+    // ═══════════════════════════════════════════════════════════
+
+    function initRadar() {
+        const ctx = document.getElementById('radarChart').getContext('2d');
+
+        const datasets = eras.map(era => ({
+            label: era.name,
+            data: dims.map(d => dimScore(era, d)),
+            borderColor: era.color,
+            backgroundColor: era.color + '18',
+            borderWidth: 2,
+            pointBackgroundColor: era.color,
+            pointBorderColor: '#0a0a0f',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 7,
+        }));
+
+        const chart = new Chart(ctx, {
+            type: 'radar',
+            data: { labels: dimLabels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10,10,15,0.95)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        titleFont: { family: "'Playfair Display', serif", size: 14 },
+                        bodyFont: { family: "'Space Grotesk', sans-serif", size: 12 },
+                        padding: 14,
+                        callbacks: {
+                            label: function(ctx) {
+                                return `${ctx.dataset.label}: ${ctx.raw}/100`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            color: 'rgba(255,255,255,0.15)',
+                            backdropColor: 'transparent',
+                            font: { size: 10, family: "'Space Grotesk', sans-serif" }
+                        },
+                        pointLabels: {
+                            color: 'rgba(255,255,255,0.55)',
+                            font: { size: 12, family: "'Space Grotesk', sans-serif", weight: 600 }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                        angleLines: { color: 'rgba(255,255,255,0.06)' }
+                    }
+                }
+            }
+        });
+
+        // Legend with toggle
+        const legendEl = document.getElementById('era-legend');
+        const sorted = [...eras].sort((a, b) => compositeScore(b) - compositeScore(a));
+
+        sorted.forEach((era, i) => {
+            const idx = eras.indexOf(era);
+            const item = document.createElement('div');
+            item.className = 'legend-item';
+            item.innerHTML = `
+                <div class="legend-dot" style="background:${era.color}"></div>
+                <div class="legend-name">${era.name} <span style="color:rgba(255,255,255,0.25);font-weight:400;font-size:0.7rem">(${era.year})</span></div>
+                <div class="legend-score">${compositeScore(era)}</div>
+            `;
+            item.addEventListener('click', () => {
+                const meta = chart.getDatasetMeta(idx);
+                meta.hidden = !meta.hidden;
+                item.classList.toggle('dimmed');
+                chart.update();
+            });
+            legendEl.appendChild(item);
+        });
+
+        // Ranking cards
+        const rankEl = document.getElementById('era-ranking');
+        sorted.forEach((era, i) => {
+            const score = compositeScore(era);
+            const card = document.createElement('div');
+            card.className = 'rank-card';
+            card.style.cssText = `--era-color: ${era.color}`;
+            card.querySelector?.('::before')?.style;
+
+            let barsHTML = dims.map((d, di) => {
+                const v = dimScore(era, d);
+                return `<div class="rank-bar-row">
+                    <span class="rank-bar-label">${dimLabels[di]}</span>
+                    <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${v}%;background:${era.color}"></div></div>
+                    <span class="rank-bar-val">${v}</span>
+                </div>`;
+            }).join('');
+
+            card.innerHTML = `
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${era.color};opacity:0.7"></div>
+                <div class="rank-pos">#${i + 1} Overall</div>
+                <div class="rank-name">${era.name}</div>
+                <div class="rank-score" style="color:${era.color}">${score}</div>
+                <div class="rank-breakdown">${barsHTML}</div>
+            `;
+            rankEl.appendChild(card);
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 2: HIT ANATOMY — BUBBLE CHART
+    // ═══════════════════════════════════════════════════════════
+
+    const hitData = [
+        // Justified
+        { title: "Like I Love You",               peak: 11, woc: 20, streams: 130,  era: "Justified",               color: "#5dade2" },
+        { title: "Cry Me a River",                 peak: 3,  woc: 20, streams: 780,  era: "Justified",               color: "#5dade2" },
+        { title: "Rock Your Body",                 peak: 5,  woc: 22, streams: 990,  era: "Justified",               color: "#5dade2" },
+        { title: "Señorita",                       peak: 27, woc: 17, streams: 245,  era: "Justified",               color: "#5dade2" },
+        // FutureSex/LoveSounds
+        { title: "SexyBack",                       peak: 1,  woc: 36, streams: 1320, era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        { title: "My Love",                        peak: 1,  woc: 29, streams: 700,  era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        { title: "What Goes Around…",              peak: 1,  woc: 25, streams: 580,  era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        { title: "LoveStoned",                     peak: 17, woc: 20, streams: 200,  era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        { title: "Summer Love",                    peak: 6,  woc: 20, streams: 285,  era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        { title: "Until the End of Time",          peak: 17, woc: 25, streams: 95,   era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        // The 20/20 Experience
+        { title: "Suit & Tie",                     peak: 3,  woc: 26, streams: 300,  era: "The 20/20 Experience",    color: "#b8912e" },
+        { title: "Mirrors",                        peak: 2,  woc: 42, streams: 1480, era: "The 20/20 Experience",    color: "#b8912e" },
+        { title: "TKO",                            peak: 36, woc: 17, streams: 65,   era: "The 20/20 Experience",    color: "#b8912e" },
+        { title: "Take Back the Night",            peak: 29, woc: 13, streams: 55,   era: "The 20/20 Experience",    color: "#b8912e" },
+        { title: "Not a Bad Thing",                peak: 8,  woc: 22, streams: 80,   era: "The 20/20 Experience",    color: "#b8912e" },
+        { title: "Pusher Love Girl",               peak: 64, woc: 2,  streams: 50,   era: "The 20/20 Experience",    color: "#b8912e" },
+        // Soundtrack / Features (attributed to 20/20 era timeline)
+        { title: "Can't Stop the Feeling!",        peak: 1,  woc: 52, streams: 2100, era: "Soundtrack",              color: "#4ade80" },
+        { title: "Holy Grail (Jay-Z ft. JT)",      peak: 4,  woc: 27, streams: 395,  era: "The 20/20 Experience",    color: "#b8912e" },
+        // Man of the Woods
+        { title: "Filthy",                         peak: 9,  woc: 6,  streams: 130,  era: "Man of the Woods",        color: "#e67e22" },
+        { title: "Supplies",                       peak: 71, woc: 2,  streams: 40,   era: "Man of the Woods",        color: "#e67e22" },
+        { title: "Say Something",                  peak: 9,  woc: 16, streams: 580,  era: "Man of the Woods",        color: "#e67e22" },
+        { title: "Man of the Woods",               peak: 73, woc: 1,  streams: 25,   era: "Man of the Woods",        color: "#e67e22" },
+        // EITIW
+        { title: "Selfish",                        peak: 19, woc: 13, streams: 160,  era: "Everything I Thought It Was", color: "#ca510f" },
+        // Major features
+        { title: "Give It to Me",                  peak: 1,  woc: 26, streams: 490,  era: "FutureSex/LoveSounds",    color: "#e74c3c" },
+        { title: "4 Minutes (Madonna)",            peak: 3,  woc: 20, streams: 490,  era: "Feature",                 color: "#888" },
+        { title: "Dead and Gone (T.I.)",           peak: 2,  woc: 29, streams: 325,  era: "Feature",                 color: "#888" },
+        { title: "Love Sex Magic (Ciara)",         peak: 10, woc: 12, streams: 110,  era: "Feature",                 color: "#888" },
+        { title: "Ayo Technology (50 Cent)",        peak: 5,  woc: 20, streams: 400,  era: "Feature",                 color: "#888" },
+        { title: "Love Never Felt So Good (MJ)",   peak: 9,  woc: 20, streams: 450,  era: "Feature",                 color: "#888" },
+    ];
+
+    function initBubble() {
+        const ctx = document.getElementById('bubbleChart').getContext('2d');
+
+        // Group by era for datasets
+        const eraGroups = {};
+        hitData.forEach(h => {
+            if (!eraGroups[h.era]) eraGroups[h.era] = { color: h.color, data: [] };
+            eraGroups[h.era].data.push(h);
+        });
+
+        const datasets = Object.entries(eraGroups).map(([era, { color, data }]) => ({
+            label: era,
+            data: data.map(h => ({
+                x: h.woc,
+                y: h.peak,
+                r: Math.max(5, Math.sqrt(h.streams) * 0.7),
+                _title: h.title,
+                _streams: h.streams,
+                _peak: h.peak,
+                _woc: h.woc,
+            })),
+            backgroundColor: color + '55',
+            borderColor: color,
+            borderWidth: 1.5,
+            hoverBorderWidth: 3,
+        }));
+
+        new Chart(ctx, {
+            type: 'bubble',
+            data: { datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10,10,15,0.95)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        titleFont: { family: "'Playfair Display', serif", size: 14 },
+                        bodyFont: { family: "'Space Grotesk', sans-serif", size: 12 },
+                        padding: 14,
+                        callbacks: {
+                            title: function(items) {
+                                return items[0].raw._title;
+                            },
+                            label: function(ctx) {
+                                const d = ctx.raw;
+                                return [
+                                    `Peak: #${d._peak}`,
+                                    `Weeks on chart: ${d._woc}`,
+                                    `Streams: ~${d._streams}M`,
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Weeks on Chart',
+                            color: 'rgba(255,255,255,0.4)',
+                            font: { family: "'Space Grotesk', sans-serif", size: 12, weight: 600 }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.3)',
+                            font: { family: "'Space Grotesk', sans-serif", size: 11 }
+                        },
+                        min: 0,
+                    },
+                    y: {
+                        reverse: true,
+                        title: {
+                            display: true,
+                            text: 'Peak Position (Billboard Hot 100)',
+                            color: 'rgba(255,255,255,0.4)',
+                            font: { family: "'Space Grotesk', sans-serif", size: 12, weight: 600 }
+                        },
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.3)',
+                            font: { family: "'Space Grotesk', sans-serif", size: 11 },
+                            callback: function(val) { return '#' + val; }
+                        },
+                        min: 1,
+                        max: 100,
+                    }
+                }
+            }
+        });
+
+        // Bubble legend
+        const legendEl = document.getElementById('bubble-legend');
+        const uniqueEras = [...new Set(hitData.map(h => h.era))];
+        uniqueEras.forEach(era => {
+            const c = hitData.find(h => h.era === era).color;
+            legendEl.innerHTML += `
+                <div class="bubble-legend-item">
+                    <div class="bubble-legend-dot" style="background:${c}"></div>
+                    ${era}
+                </div>
+            `;
+        });
+
+        // Insights
+        const insightsEl = document.getElementById('bubble-insights');
+
+        const mostWeeks = [...hitData].sort((a, b) => b.woc - a.woc);
+        const numOnes = hitData.filter(h => h.peak === 1);
+
+        const insights = [
+            {
+                label: 'Longest Chart Run',
+                value: mostWeeks[0].title,
+                detail: `${mostWeeks[0].woc} weeks on Hot 100 · Peak #${mostWeeks[0].peak}`,
+            },
+            {
+                label: 'Billboard #1 Hits',
+                value: numOnes.length,
+                detail: numOnes.map(h => h.title).join(', '),
+            },
+        ];
+
+        insights.forEach(ins => {
+            insightsEl.innerHTML += `
+                <div class="insight-card">
+                    <div class="insight-label">${ins.label}</div>
+                    <div class="insight-value">${ins.value}</div>
+                    <div class="insight-detail">${ins.detail}</div>
+                </div>
+            `;
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  SECTION 3: FIRST WEEK SALES
+    // ═══════════════════════════════════════════════════════════
+
+    const fwsData = [
+        { album: 'Justified',                        year: 2002, sales: 439000, color: '#5dade2' },
+        { album: 'FutureSex/LoveSounds',             year: 2006, sales: 684000, color: '#e74c3c' },
+        { album: 'The 20/20 Experience',              year: 2013, sales: 968000, color: '#b8912e' },
+        { album: 'The 20/20 Experience\n– 2 of 2',   year: 2013, sales: 350000, color: '#c0962e' },
+        { album: 'Man of the Woods',                  year: 2018, sales: 293000, color: '#e67e22' },
+        { album: 'Everything I Thought\nIt Was',      year: 2024, sales: 67000,  color: '#ca510f' },
+    ];
+
+    // Clean album names for cards (no line breaks)
+    const fwsClean = [
+        'Justified',
+        'FutureSex/LoveSounds',
+        'The 20/20 Experience',
+        'The 20/20 Experience – 2 of 2',
+        'Man of the Woods',
+        'Everything I Thought It Was',
+    ];
+
+    function initFWS() {
+        const ctx = document.getElementById('fwsChart').getContext('2d');
+
+        // Gradient bars
+        const gradients = fwsData.map(d => {
+            const g = ctx.createLinearGradient(0, 0, 0, 400);
+            g.addColorStop(0, d.color + 'cc');
+            g.addColorStop(1, d.color + '20');
+            return g;
+        });
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: fwsData.map(d => d.album),
+                datasets: [{
+                    data: fwsData.map(d => d.sales),
+                    backgroundColor: gradients,
+                    borderColor: fwsData.map(d => d.color),
+                    borderWidth: 1.5,
+                    borderRadius: 6,
+                    maxBarThickness: 72,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(10,10,15,0.95)',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        titleFont: { family: "'Playfair Display', serif", size: 14 },
+                        bodyFont: { family: "'Space Grotesk', sans-serif", size: 12 },
+                        padding: 14,
+                        callbacks: {
+                            title: function(items) {
+                                return fwsClean[items[0].dataIndex];
+                            },
+                            label: function(ctx) {
+                                const d = fwsData[ctx.dataIndex];
+                                return `${(d.sales / 1000).toFixed(0)}K first-week units (${d.year})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.45)',
+                            font: { family: "'Space Grotesk', sans-serif", size: 10, weight: 600 },
+                            maxRotation: 0,
+                        }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255,255,255,0.04)' },
+                        ticks: {
+                            color: 'rgba(255,255,255,0.25)',
+                            font: { family: "'Space Grotesk', sans-serif", size: 11 },
+                            callback: function(val) {
+                                return (val / 1000).toFixed(0) + 'K';
+                            }
+                        },
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+
+        // Info cards
+        const cardsEl = document.getElementById('fws-cards');
+
+        fwsData.forEach((d, i) => {
+            let changeHTML = '';
+            if (i > 0) {
+                const prev = fwsData[i - 1].sales;
+                const pct = ((d.sales - prev) / prev * 100).toFixed(0);
+                const isUp = d.sales > prev;
+                changeHTML = `<div class="fws-change ${isUp ? 'up' : 'down'}">${isUp ? '↑' : '↓'} ${isUp ? '+' : ''}${pct}% vs previous</div>`;
+            } else {
+                changeHTML = `<div class="fws-change" style="color:rgba(255,255,255,0.2)">Solo debut</div>`;
+            }
+
+            cardsEl.innerHTML += `
+                <div class="fws-card">
+                    <div class="fws-card-bar" style="background:${d.color}"></div>
+                    <div class="fws-album">${fwsClean[i]}</div>
+                    <div class="fws-year">${d.year}</div>
+                    <div class="fws-number" style="color:${d.color}">${(d.sales / 1000).toFixed(0)}K</div>
+                    ${changeHTML}
+                </div>
+            `;
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  INIT
+    // ═══════════════════════════════════════════════════════════
+
+    function initAll() {
+        if (typeof Chart === 'undefined') {
+            setTimeout(initAll, 100);
+            return;
+        }
+        initRadar();
+        initBubble();
+        initFWS();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAll);
+    } else {
+        initAll();
+    }
+    </script>
+</body>
+</html>

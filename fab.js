@@ -342,6 +342,21 @@
                                   linear-gradient(to bottom, transparent 60%, #0a0a0f 100%),
                                   url('${era.cover}') !important;
             }
+
+            /* ══════════════════════════════════════
+               ANALYTICS.HTML — Deep Analytics tema
+               ══════════════════════════════════════ */
+            .page-header h1 span { color: ${c} !important; }
+            .section-title { color: ${c} !important; }
+            .legend-score { color: ${c} !important; }
+            .insight-value { color: ${c} !important; }
+            .rank-score { color: ${c} !important; }
+            .rank-bar-label { color: ${c}60 !important; }
+            .analytics-section { border-color: ${c}18 !important; }
+            .legend-item:hover { border-color: ${c}40 !important; }
+            .insight-card { border-color: ${c}18 !important; }
+            .rank-card { border-color: ${c}18 !important; }
+            .fws-card { border-color: ${c}18 !important; }
         `;
 
         document.dispatchEvent(new CustomEvent('eraChanged', { detail: { album: albumName, color: c } }));
