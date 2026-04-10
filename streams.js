@@ -634,38 +634,30 @@ async function initStreamsDashboard() {
             const valueEl  = document.getElementById(valueId);
             const statusEl = document.getElementById(statusId);
             if (!valueEl) return;
+
+            const dailyEst = Math.round(_jtTotalDaily * days);
+            const maxReasonable = _jtTotalDaily * days * 2;
+
             if (snapshot && snapshot.career_total) {
-                // Tutarlı karşılaştırma: her iki tarafı da track toplamından hesapla
-                const liveTrackSum = liveStats.tracks.reduce((s, t) => s + t.total, 0);
-                const snapTrackSum = snapshot.tracks
-                    ? Object.values(snapshot.tracks).reduce((s, t) => s + t.total, 0)
-                    : null;
-
-                const delta = snapTrackSum
-                    ? liveTrackSum - snapTrackSum
-                    : liveStats.TotalSpotify - snapshot.career_total;
-
-                if (delta > 0) {
-                    const maxReasonable = Math.max(_jtTotalDaily, 1_000_000) * days * 4;
-                    if (delta > maxReasonable) {
-                        valueEl.textContent = 'Snapshot data invalid';
-                        valueEl.classList.remove('loading');
-                        if (statusEl) {
-                            statusEl.textContent = `Snapshot: ${snapshot.date} — delta mismatch (${(delta / 1_000_000).toFixed(0)}M, expected ≤${(maxReasonable / 1_000_000).toFixed(0)}M)`;
-                            statusEl.style.color = '#f87171';
-                        }
-                        return;
-                    }
+                const delta = liveStats.TotalSpotify - snapshot.career_total;
+                if (delta > 0 && delta <= maxReasonable) {
+                    // Snapshot delta makul — gerçek veriyi göster
                     valueEl.textContent = '+' + delta.toLocaleString('en-US');
                     valueEl.classList.remove('loading');
                     if (statusEl) { statusEl.textContent = 'Snapshot: ' + snapshot.date; statusEl.classList.add('ok'); }
                 } else {
-                    valueEl.textContent = 'Snapshot older than live';
-                    if (statusEl) statusEl.textContent = 'Data sync pending';
+                    // Snapshot delta tutarsız — daily rate'ten hesapla
+                    valueEl.textContent = '+' + dailyEst.toLocaleString('en-US');
+                    valueEl.classList.remove('loading');
+                    valueEl.style.color = '#d4a853';
+                    if (statusEl) { statusEl.textContent = `Based on ${_jtTotalDaily.toLocaleString('en-US')}/day avg`; statusEl.classList.add('ok'); }
                 }
             } else {
-                valueEl.textContent = 'No ' + label + ' snapshot yet';
-                if (statusEl) statusEl.textContent = 'Run the first snapshot to populate';
+                // Snapshot yok — daily rate'ten hesapla
+                valueEl.textContent = '+' + dailyEst.toLocaleString('en-US');
+                valueEl.classList.remove('loading');
+                valueEl.style.color = '#d4a853';
+                if (statusEl) { statusEl.textContent = `Based on ${_jtTotalDaily.toLocaleString('en-US')}/day avg`; statusEl.classList.add('ok'); }
             }
         }
 
