@@ -7,7 +7,7 @@ const CONFIG = {
     SPOTIFY: {
         CLIENT_ID: "7b662fc2913a4597905633ea6a350b42",
         CLIENT_SECRET: "4761ac8b9e4d4e159a430075c998410d",
-        ARTIST_ID: "31TPClRtHm23RisEFWsPIA"
+        ARTIST_ID: "31TPClRtHm23RisEBtV3X7"
     },
     
     FIREBASE: {
