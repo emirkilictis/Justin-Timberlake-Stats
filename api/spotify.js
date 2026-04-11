@@ -49,13 +49,13 @@ async function scrapeOpenPage() {
     });
     const html = await res.text();
 
-    // Method 1: initial-state base64 blob
-    const initMatch = html.match(/<script id="initial-state"[^>]*>([A-Za-z0-9+/=\s]+)<\/script>/s);
+    // Method 1: initialState base64 blob (camelCase ID)
+    const initMatch = html.match(/<script id="initialState"[^>]*>([A-Za-z0-9+/=\s]+)<\/script>/s);
     if (initMatch) {
         try {
             const decoded = Buffer.from(initMatch[1].trim(), 'base64').toString('utf-8');
-            // Try broad search for monthlyListeners in the decoded JSON
-            const mlMatch = decoded.match(/"monthlyListeners"\s*:\s*(\d+)/);
+            // Broad search for monthlyListeners in decoded blob
+            const mlMatch = decoded.match(/monthlyListeners["\s:]+(\d{3,})/);
             if (mlMatch) return parseInt(mlMatch[1]);
         } catch (_) { /* continue */ }
     }
