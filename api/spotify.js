@@ -40,33 +40,45 @@ async function getMonthlyListeners() {
 }
 
 async function scrapeOpenPage() {
-    const res = await fetch(`https://open.spotify.com/artist/${ARTIST_ID}`, {
-        headers: {
-            'User-Agent':      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-            'Accept':          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-        }
-    });
-    const html = await res.text();
+    // Try multiple URL patterns — Spotify redirects differently by region
+    const urls = [
+        `https://open.spotify.com/artist/${ARTIST_ID}`,
+        `https://open.spotify.com/intl-en/artist/${ARTIST_ID}`,
+    ];
 
-    // Method 1: initialState base64 blob (camelCase ID)
-    const initMatch = html.match(/<script id="initialState"[^>]*>([A-Za-z0-9+/=\s]+)<\/script>/s);
-    if (initMatch) {
+    for (const url of urls) {
         try {
-            const decoded = Buffer.from(initMatch[1].trim(), 'base64').toString('utf-8');
-            // Broad search for monthlyListeners in decoded blob
-            const mlMatch = decoded.match(/monthlyListeners["\s:]+(\d{3,})/);
-            if (mlMatch) return parseInt(mlMatch[1]);
-        } catch (_) { /* continue */ }
+            const res = await fetch(url, {
+                headers: {
+                    'User-Agent':      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+                    'Accept':          'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Sec-Fetch-Site':  'none',
+                    'Sec-Fetch-Mode':  'navigate',
+                },
+                redirect: 'follow',
+            });
+            const html = await res.text();
+
+            // Method 1: initialState base64 blob (camelCase ID)
+            const initMatch = html.match(/<script id="initialState"[^>]*>([A-Za-z0-9+/=\s]+)<\/script>/s);
+            if (initMatch) {
+                try {
+                    const decoded = Buffer.from(initMatch[1].trim(), 'base64').toString('utf-8');
+                    const mlMatch = decoded.match(/monthlyListeners["\s:]+(\d{3,})/);
+                    if (mlMatch) return parseInt(mlMatch[1]);
+                } catch (_) { /* continue */ }
+            }
+
+            // Method 2: direct JSON field anywhere in page
+            const m1 = html.match(/"monthlyListeners"\s*:\s*(\d+)/);
+            if (m1) return parseInt(m1[1]);
+
+            // Method 3: plain-text pattern
+            const m2 = html.match(/([\d,]+)\s*monthly\s*listeners/i);
+            if (m2) return parseInt(m2[1].replace(/,/g, ''));
+        } catch (_) { /* try next URL */ }
     }
-
-    // Method 2: direct JSON field anywhere in page
-    const m1 = html.match(/"monthlyListeners"\s*:\s*(\d+)/);
-    if (m1) return parseInt(m1[1]);
-
-    // Method 3: plain-text pattern
-    const m2 = html.match(/([\d,]+)\s*monthly\s*listeners/i);
-    if (m2) return parseInt(m2[1].replace(/,/g, ''));
 
     return null;
 }
@@ -141,6 +153,40 @@ module.exports = async function handler(req, res) {
             ).then(r => r.json());
 
             res.status(200).json(data);
+
+        } else if (action === 'debug-ml') {
+            // Temporary debug endpoint — remove after fixing
+            const url = `https://open.spotify.com/artist/${ARTIST_ID}`;
+            const pageRes = await fetch(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+                    'Accept': 'text/html',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-Mode': 'navigate',
+                },
+                redirect: 'follow',
+            });
+            const html = await pageRes.text();
+            const hasInitialState = /<script id="initialState"/.test(html);
+            const scriptTags = (html.match(/<script[^>]*id="[^"]*"[^>]*>/g) || []);
+            let decodedSnippet = null;
+            if (hasInitialState) {
+                const m = html.match(/<script id="initialState"[^>]*>([A-Za-z0-9+/=\s]+)<\/script>/s);
+                if (m) {
+                    const decoded = Buffer.from(m[1].trim(), 'base64').toString('utf-8');
+                    const idx = decoded.toLowerCase().indexOf('monthlylistener');
+                    decodedSnippet = idx >= 0 ? decoded.slice(Math.max(0, idx - 30), idx + 80) : 'monthlyListeners NOT in decoded blob';
+                }
+            }
+
+            res.status(200).json({
+                pageStatus: pageRes.status,
+                pageSize: html.length,
+                hasInitialState,
+                scriptTags,
+                decodedSnippet,
+            });
 
         } else {
             res.status(400).json({ error: 'Unknown action. Use: artist | top-tracks' });
