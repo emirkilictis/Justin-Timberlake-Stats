@@ -968,6 +968,8 @@ const _countryCache = {};
 let   _activeMarket = 'US';
 
 async function loadCountryTracks(market) {
+    market = market.toUpperCase().slice(0, 2);
+    if (!/^[A-Z]{2}$/.test(market)) return;
     _activeMarket = market;
 
     // Update tab highlights
@@ -989,6 +991,8 @@ async function loadCountryTracks(market) {
     try {
         const data   = await SpotifyAPI.getTopTracks(market);
         const tracks = data.tracks ?? [];
+        // Sort by popularity descending
+        tracks.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
         _countryCache[market] = tracks;
         if (_activeMarket === market) renderCountryTracks(tracks, container);
     } catch (e) {
@@ -1000,13 +1004,15 @@ async function loadCountryTracks(market) {
 
 function renderCountryTracks(tracks, container) {
     if (!tracks.length) {
-        container.innerHTML = '<div style="text-align:center;color:#555;padding:28px;">No data.</div>';
+        container.innerHTML = '<div style="text-align:center;color:#555;padding:28px;">No data for this market.</div>';
         return;
     }
 
     container.innerHTML = tracks.map((t, i) => {
         const popularity = t.popularity ?? 0;
+        const pctText    = popularity + '%';
         const barWidth   = popularity + '%';
+        const barColor   = popularity >= 80 ? '#1DB954' : popularity >= 60 ? '#d4a853' : '#555';
         const mins  = Math.floor((t.duration_ms || 0) / 60000);
         const secs  = String(Math.floor(((t.duration_ms || 0) % 60000) / 1000)).padStart(2, '0');
         const cover = t.album?.images?.[2]?.url || t.album?.images?.[0]?.url || '';
@@ -1015,15 +1021,18 @@ function renderCountryTracks(tracks, container) {
         return `
         <div class="country-track-row">
             <div style="width:22px;text-align:right;font-size:0.75rem;color:#444;flex-shrink:0;">${i + 1}</div>
-            ${cover ? `<img src="${cover}" width="36" height="36" style="border-radius:4px;flex-shrink:0;" alt="">` : '<div style="width:36px;height:36px;background:rgba(255,255,255,0.04);border-radius:4px;flex-shrink:0;"></div>'}
+            ${cover ? `<img src="${cover}" width="36" height="36" style="border-radius:4px;flex-shrink:0;" alt="" loading="lazy">` : '<div style="width:36px;height:36px;background:rgba(255,255,255,0.04);border-radius:4px;flex-shrink:0;"></div>'}
             <div style="flex:1;min-width:0;">
                 <div style="font-size:0.82rem;color:rgba(255,255,255,0.8);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.name}${explicit}</div>
                 <div style="font-size:0.68rem;color:#444;margin-top:2px;">${t.album?.name ?? ''}</div>
             </div>
-            <div style="width:120px;flex-shrink:0;">
-                <div style="font-size:0.65rem;color:#3a3a3a;margin-bottom:3px;">Popularity ${popularity}</div>
+            <div style="width:130px;flex-shrink:0;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+                    <span style="font-size:0.65rem;color:#3a3a3a;">Popularity</span>
+                    <span style="font-size:0.72rem;font-weight:700;color:${barColor};">${pctText}</span>
+                </div>
                 <div style="height:3px;background:rgba(255,255,255,0.05);border-radius:2px;">
-                    <div style="height:3px;width:${barWidth};background:#1DB954;border-radius:2px;"></div>
+                    <div style="height:3px;width:${barWidth};background:${barColor};border-radius:2px;transition:width 0.3s;"></div>
                 </div>
             </div>
             <div style="width:38px;text-align:right;font-size:0.75rem;color:#444;flex-shrink:0;">${mins}:${secs}</div>
@@ -1032,10 +1041,25 @@ function renderCountryTracks(tracks, container) {
 }
 
 function attachCountryTabHandlers() {
+    // Tab buttons
     document.getElementById('country-tabs')?.addEventListener('click', e => {
         const btn = e.target.closest('.ctry-btn');
         if (btn) loadCountryTracks(btn.dataset.market);
     });
+
+    // Country search input
+    const searchInput = document.getElementById('country-search');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                const code = searchInput.value.trim().toUpperCase();
+                if (/^[A-Z]{2}$/.test(code)) {
+                    loadCountryTracks(code);
+                    searchInput.value = '';
+                }
+            }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
