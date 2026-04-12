@@ -106,6 +106,13 @@ function getYTDDaysElapsed() {
     return Math.max(1, Math.round((now - start) / (1000 * 60 * 60 * 24)));
 }
 
+function formatCompact(n) {
+    if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (n >= 1_000_000)     return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (n >= 1_000)         return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
+    return n.toString();
+}
+
 function animateValue(obj, start, end, duration, prefix = "") {
     if (!obj || isNaN(end)) return;
     let startTimestamp = null;
@@ -949,7 +956,7 @@ async function loadSpotifyArtistData() {
         const followers  = artist.followers?.total ?? 0;
         const popularity = artist.popularity ?? 0;
 
-        if (monthly && monthlyEl)   animateValue(monthlyEl, 0, monthly, 1800);
+        if (monthly && monthlyEl)   monthlyEl.textContent = formatCompact(monthly);
         else if (monthlyEl)         monthlyEl.textContent = '—';
 
         if (followersEl)  followersEl.textContent = followers.toLocaleString('en-US');
