@@ -225,6 +225,40 @@ async function init() {
         if (kworbRes && kworbRes.ok) {
             const html = await kworbRes.text();
             const all  = parseKworb(html);
+
+            // Merge extra tracks fallback
+            const hasRadioEdit = all.some(t => t.title.toLowerCase().includes('not a bad thing') && t.title.toLowerCase().includes('radio edit'));
+            if (!hasRadioEdit) {
+                const baselineDate = '2026-05-24';
+                const baselineTotal = 118_417_347;
+                const dailyGrowth = 10_000;
+                const days = Math.max(0, Math.round(
+                    (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+                ));
+                const radioStreams = baselineTotal + days * dailyGrowth;
+                all.push({
+                    title: 'Not A Bad Thing - Radio Edit',
+                    total: radioStreams,
+                    daily: dailyGrowth
+                });
+            }
+
+            const has4Min = all.some(t => t.title.toLowerCase().includes('4 minutes') && t.title.toLowerCase().includes('justin timberlake') && t.title.toLowerCase().includes('and timbaland'));
+            if (!has4Min) {
+                const baselineDate = '2026-04-23';
+                const baselineTotal = 102_400_000;
+                const dailyGrowth = 120_000;
+                const days = Math.max(0, Math.round(
+                    (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+                ));
+                const fourMinStreams = baselineTotal + days * dailyGrowth;
+                all.push({
+                    title: '4 Minutes (feat. Justin Timberlake and Timbaland)',
+                    total: fourMinStreams,
+                    daily: dailyGrowth
+                });
+            }
+
             tracks     = getAlbumTracks(all, albumId);
         }
 

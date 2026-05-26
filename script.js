@@ -75,11 +75,11 @@ async function mergeExtraTracks(liveStats) {
     const ok = await waitForFirestore(3000);
     let total4Min = 0;
     let totalRadioEdit = 0;
-    let matchCount4Min = 0;
-    let matchCountRadioEdit = 0;
 
     if (ok && typeof window.getHistoricalSnapshot === 'function') {
         for (let daysBack = 0; daysBack < 30; daysBack++) {
+            let temp4Min = 0;
+            let tempRadio = 0;
             const d = new Date();
             d.setUTCDate(d.getUTCDate() - daysBack);
             const dateStr = d.toISOString().split('T')[0];
@@ -87,14 +87,18 @@ async function mergeExtraTracks(liveStats) {
             if (!snap || !snap.tracks) continue;
             
             for (const [title, vals] of Object.entries(snap.tracks)) {
-                if (is4MinTrack(title) && total4Min === 0) {
-                    total4Min += Number(vals.total) || 0;
-                    matchCount4Min++;
+                if (is4MinTrack(title)) {
+                    temp4Min += Number(vals.total) || 0;
                 }
-                if (isRadioEditTrack(title) && totalRadioEdit === 0) {
-                    totalRadioEdit += Number(vals.total) || 0;
-                    matchCountRadioEdit++;
+                if (isRadioEditTrack(title)) {
+                    tempRadio += Number(vals.total) || 0;
                 }
+            }
+            if (temp4Min > 0 && total4Min === 0) {
+                total4Min = temp4Min;
+            }
+            if (tempRadio > 0 && totalRadioEdit === 0) {
+                totalRadioEdit = tempRadio;
             }
             if (total4Min > 0 && totalRadioEdit > 0) break;
         }

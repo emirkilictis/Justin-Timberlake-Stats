@@ -131,6 +131,39 @@ async function fetchLiveStreams() {
                 }
             }
         });
+
+        // Merge extra tracks fallback
+        const radioTitle = 'Not A Bad Thing - Radio Edit';
+        const radioLower = radioTitle.toLowerCase();
+        if (!liveStreams.tracks[radioLower]) {
+            const baselineDate = '2026-05-24';
+            const baselineTotal = 118_417_347;
+            const dailyGrowth = 10_000;
+            const days = Math.max(0, Math.round(
+                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+            ));
+            const radioStreams = baselineTotal + days * dailyGrowth;
+            liveStreams.tracks[radioLower] = radioStreams;
+            
+            const albumName = "The 20/20 Experience – 2 of 2";
+            liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + radioStreams;
+        }
+
+        const fourMinTitle = '4 Minutes (feat. Justin Timberlake and Timbaland)';
+        const fourMinLower = fourMinTitle.toLowerCase();
+        if (!liveStreams.tracks[fourMinLower]) {
+            const baselineDate = '2026-04-23';
+            const baselineTotal = 102_400_000;
+            const dailyGrowth = 120_000;
+            const days = Math.max(0, Math.round(
+                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+            ));
+            const fourMinStreams = baselineTotal + days * dailyGrowth;
+            liveStreams.tracks[fourMinLower] = fourMinStreams;
+            
+            const albumName = "Orphan";
+            liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + fourMinStreams;
+        }
     } catch (e) {
         console.error("Failed to fetch Kworb live streams:", e);
     }
