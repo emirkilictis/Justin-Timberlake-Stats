@@ -171,12 +171,15 @@ async function fetchLiveStreams() {
 
 function getTrackSpotify(title) {
     const tLower = title.toLowerCase();
+    let sum = 0;
+    let found = false;
     for (let k in liveStreams.tracks) {
         if (k.includes(tLower) || tLower.includes(k)) {
-            return liveStreams.tracks[k];
+            sum += liveStreams.tracks[k];
+            found = true;
         }
     }
-    return 0; // Default if not found
+    return found ? sum : 0;
 }
 
 async function fetchRealYouTubeViews(ids) {
