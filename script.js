@@ -14,7 +14,7 @@ const songToAlbumMap = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_
 
 function waitForFirestore(timeoutMs = 5000) {
     return new Promise(resolve => {
-        if (typeof window.getHistoricalSnapshot === 'function') { resolve(true); return; }
+        if (typeof window.getLatestSnapshot === 'function') { resolve(true); return; }
         const timer = setTimeout(() => resolve(false), timeoutMs);
         window.addEventListener('firestore-ready', () => { clearTimeout(timer); resolve(true); }, { once: true });
     });
@@ -76,16 +76,11 @@ async function mergeExtraTracks(liveStats) {
     let total4Min = 0;
     let totalRadioEdit = 0;
 
-    if (ok && typeof window.getHistoricalSnapshot === 'function') {
-        for (let daysBack = 0; daysBack < 30; daysBack++) {
+    if (ok && typeof window.getLatestSnapshot === 'function') {
+        const snap = await window.getLatestSnapshot();
+        if (snap && snap.tracks) {
             let temp4Min = 0;
             let tempRadio = 0;
-            const d = new Date();
-            d.setUTCDate(d.getUTCDate() - daysBack);
-            const dateStr = d.toISOString().split('T')[0];
-            const snap = await window.getHistoricalSnapshot(dateStr);
-            if (!snap || !snap.tracks) continue;
-            
             for (const [title, vals] of Object.entries(snap.tracks)) {
                 if (is4MinTrack(title)) {
                     temp4Min += Number(vals.total) || 0;
@@ -94,13 +89,8 @@ async function mergeExtraTracks(liveStats) {
                     tempRadio += Number(vals.total) || 0;
                 }
             }
-            if (temp4Min > 0 && total4Min === 0) {
-                total4Min = temp4Min;
-            }
-            if (tempRadio > 0 && totalRadioEdit === 0) {
-                totalRadioEdit = tempRadio;
-            }
-            if (total4Min > 0 && totalRadioEdit > 0) break;
+            total4Min = temp4Min;
+            totalRadioEdit = tempRadio;
         }
     }
 

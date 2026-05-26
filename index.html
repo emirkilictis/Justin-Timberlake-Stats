@@ -171,7 +171,7 @@
             rel="stylesheet">
     </noscript>
 
-    <link rel="stylesheet" href="style.css?v=1779805497">
+    <link rel="stylesheet" href="style.css?v=1779805618">
 </head>
 
 <body>
@@ -468,15 +468,15 @@
 
     </section>
 
-    <script src="config.js?v=1779805497" defer></script>
-    <script src="song-map.js?v=1779805497" defer></script>
-    <script src="fab.js?v=1779805497" defer></script>
+    <script src="config.js?v=1779805618" defer></script>
+    <script src="song-map.js?v=1779805618" defer></script>
+    <script src="fab.js?v=1779805618" defer></script>
 
     <script type="module">
         // 1. İhtiyacımız olan tüm Firebase v12 modüllerini (Sayaç için doc, setDoc, increment dahil) içe aktarıyoruz
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, setDoc, increment, getDoc, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
         // 2. config.js yüklenmediyse erken çık
         if (typeof CONFIG === 'undefined' || !CONFIG.FIREBASE) {
@@ -621,11 +621,25 @@
                 return null;
             }
         };
+
+        window.getLatestSnapshot = async function() {
+            try {
+                const q = query(collection(db, "daily_snapshots"), orderBy("recorded_at", "desc"), limit(1));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    return snap.docs[0].data();
+                }
+                return null;
+            } catch(e) {
+                console.warn("Firestore latest snapshot okuma hatası:", e.message);
+                return null;
+            }
+        };
         window.dispatchEvent(new Event('firestore-ready'));
 
     </script>
 
-    <script src="script.js?v=1779805497" defer></script>
+    <script src="script.js?v=1779805618" defer></script>
 
     <!-- ── GALLERY ──────────────────────────────────────────── -->
     <section id="gallery" style="padding: 80px 5%; background: #050505;">
@@ -664,7 +678,7 @@
         </div>
     </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js?v=1779805497"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js?v=1779805618"></script>
     <script>
         const GALLERY_PHOTOS = [
             'assets/random%20pics/IMG_7431.JPG', 'assets/random%20pics/IMG_7432.JPG',
