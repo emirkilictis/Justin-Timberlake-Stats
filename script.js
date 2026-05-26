@@ -32,11 +32,16 @@ function getTodayUTC() {
 //   "...and Timbaland) - Peter Saves New York Edit"               ~1.5M
 //   "...and Timbaland) - Junkie XL Remix Edit"                    ~1.0M
 // "&" versiyonlarını filtre dışı bırakıyoruz (zaten JT total'ında).
-function isExtraTrackTitle(title) {
+function is4MinTrack(title) {
     const lc = title.toLowerCase();
     return lc.includes('4 minutes') &&
            lc.includes('justin timberlake') &&
            lc.includes('and timbaland'); // "&" versiyonu "& Timbaland" içerir, eşleşmez
+}
+
+function isRadioEditTrack(title) {
+    const lc = title.toLowerCase();
+    return lc.includes('not a bad thing') && lc.includes('radio edit');
 }
 
 // Fallback: Firestore'da bulamazsa son bilinen baseline + tahmini günlük büyüme.
@@ -46,6 +51,12 @@ const FALLBACK_4MIN = {
     dailyGrowth: 120_000
 };
 
+const FALLBACK_RADIO_EDIT = {
+    baselineDate: '2026-05-24',
+    baselineTotal: 118_417_347,
+    dailyGrowth: 10_000
+};
+
 function getEstimated4MinTotal() {
     const days = Math.max(0, Math.round(
         (Date.now() - new Date(FALLBACK_4MIN.baselineDate + 'T00:00:00Z').getTime()) / 86400000
@@ -53,10 +64,19 @@ function getEstimated4MinTotal() {
     return FALLBACK_4MIN.baselineTotal + days * FALLBACK_4MIN.dailyGrowth;
 }
 
+function getEstimatedRadioEditTotal() {
+    const days = Math.max(0, Math.round(
+        (Date.now() - new Date(FALLBACK_RADIO_EDIT.baselineDate + 'T00:00:00Z').getTime()) / 86400000
+    ));
+    return FALLBACK_RADIO_EDIT.baselineTotal + days * FALLBACK_RADIO_EDIT.dailyGrowth;
+}
+
 async function mergeExtraTracks(liveStats) {
     const ok = await waitForFirestore(3000);
-    let total = 0;
-    let matchCount = 0;
+    let total4Min = 0;
+    let totalRadioEdit = 0;
+    let matchCount4Min = 0;
+    let matchCountRadioEdit = 0;
 
     if (ok && typeof window.getHistoricalSnapshot === 'function') {
         for (let daysBack = 0; daysBack < 30; daysBack++) {
@@ -65,26 +85,31 @@ async function mergeExtraTracks(liveStats) {
             const dateStr = d.toISOString().split('T')[0];
             const snap = await window.getHistoricalSnapshot(dateStr);
             if (!snap || !snap.tracks) continue;
-            let snapTotal = 0, snapCount = 0;
+            
             for (const [title, vals] of Object.entries(snap.tracks)) {
-                if (!isExtraTrackTitle(title)) continue;
-                snapTotal += Number(vals.total) || 0;
-                snapCount++;
+                if (is4MinTrack(title) && total4Min === 0) {
+                    total4Min += Number(vals.total) || 0;
+                    matchCount4Min++;
+                }
+                if (isRadioEditTrack(title) && totalRadioEdit === 0) {
+                    totalRadioEdit += Number(vals.total) || 0;
+                    matchCountRadioEdit++;
+                }
             }
-            if (snapTotal > 0) {
-                total = snapTotal;
-                matchCount = snapCount;
-                break;
-            }
+            if (total4Min > 0 && totalRadioEdit > 0) break;
         }
     }
 
-    const fromFirestore = total > 0;
-    if (total <= 0) total = getEstimated4MinTotal();
+    const fromFirestore4Min = total4Min > 0;
+    const fromFirestoreRadio = totalRadioEdit > 0;
+    if (total4Min <= 0) total4Min = getEstimated4MinTotal();
+    if (totalRadioEdit <= 0) totalRadioEdit = getEstimatedRadioEditTotal();
 
-    liveStats.TotalSpotify += total;
-    liveStats['Orphan'] += total;
-    console.log(`[mergeExtraTracks] +${total.toLocaleString('en-US')} (${fromFirestore ? `firestore: ${matchCount} tracks` : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
+    liveStats.TotalSpotify += (total4Min + totalRadioEdit);
+    liveStats['Orphan'] += total4Min;
+    // Note: in script.js, Part 2 is merged into "The 20/20 Experience"
+    liveStats['The 20/20 Experience'] += totalRadioEdit;
+    console.log(`[mergeExtraTracks] +${total4Min.toLocaleString('en-US')} 4Min (${fromFirestore4Min ? 'firestore' : 'fallback'}), +${totalRadioEdit.toLocaleString('en-US')} RadioEdit (${fromFirestoreRadio ? 'firestore' : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
 }
 
 // --- 3. AKILLI PARSER ---

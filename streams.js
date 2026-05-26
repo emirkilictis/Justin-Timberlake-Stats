@@ -724,7 +724,8 @@ async function initStreamsDashboard() {
         // daily-snapshot.js Madonna gibi diger artist sayfalarindan cekip yaziyor;
         // canli parser (analyzeKworbData) JT'nin sayfasina bakiyor, onlari goremez.
         const liveTitles = new Set(liveStats.tracks.map(t => t.title.toLowerCase()));
-        let extraTrackTotal = 0;
+        let has4Min = false;
+        let hasRadioEdit = false;
         if (snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
                 if (liveTitles.has(title.toLowerCase())) continue;
@@ -735,7 +736,10 @@ async function initStreamsDashboard() {
                 liveStats.TotalDaily   += daily;
                 const lc = title.toLowerCase();
                 if (lc.includes('4 minutes') && lc.includes('and timbaland')) {
-                    extraTrackTotal += total;
+                    has4Min = true;
+                }
+                if (lc.includes('not a bad thing') && lc.includes('radio edit')) {
+                    hasRadioEdit = true;
                 }
                 let matched = false;
                 for (const key in songToAlbumMap) {
@@ -756,9 +760,7 @@ async function initStreamsDashboard() {
             }
         }
         // Fallback: Firestore'da "4 Minutes ... and Timbaland" varyantlari yoksa
-        // (daily-snapshot.js fail veya henuz yeni baslik formati ile yazilmadi)
-        // hardcoded estimate: 4 versiyon toplami baseline + tahmini günlük büyüme
-        if (extraTrackTotal === 0) {
+        if (!has4Min) {
             const baselineDate = '2026-04-23';
             const baselineTotal = 102_400_000;  // 97.9M + 1.9M + 1.5M + 1.0M
             const dailyGrowth = 120_000;
@@ -776,6 +778,34 @@ async function initStreamsDashboard() {
             liveStats['Orphan'].total += fbTotal;
             liveStats['Orphan'].daily += dailyGrowth;
             console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for 4 Minutes (no Firestore data)`);
+        }
+
+        // Fallback: Firestore'da "Not A Bad Thing - Radio Edit" varyantlari yoksa
+        if (!hasRadioEdit) {
+            const baselineDate = '2026-05-24';
+            const baselineTotal = 118_417_347;
+            const dailyGrowth = 10_000;
+            const days = Math.max(0, Math.round(
+                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+            ));
+            const fbTotal = baselineTotal + days * dailyGrowth;
+            liveStats.tracks.push({
+                title: 'Not A Bad Thing - Radio Edit',
+                total: fbTotal,
+                daily: dailyGrowth
+            });
+            liveStats.TotalSpotify += fbTotal;
+            liveStats.TotalDaily   += dailyGrowth;
+            
+            const albName = "The 20/20 Experience \u2013 2 of 2";
+            if (liveStats[albName]) {
+                liveStats[albName].total += fbTotal;
+                liveStats[albName].daily += dailyGrowth;
+            } else {
+                liveStats['Orphan'].total += fbTotal;
+                liveStats['Orphan'].daily += dailyGrowth;
+            }
+            console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for Not A Bad Thing - Radio Edit (no Firestore data)`);
         }
 
         // TOP SECTION — animasyonu artik dogru deger ile baslat (extra track'ler merge edildi)

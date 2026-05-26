@@ -222,6 +222,46 @@ async function fetchExtraTracks() {
     return results;
 }
 
+async function fetchRadioEditStreams() {
+    const trackTitle = 'Not A Bad Thing - Radio Edit';
+    const baselineDate = '2026-05-24';
+    const baselineTotal = 118417347;
+    const dailyGrowth = 10000;
+
+    if (process.env.DATABASE_URL) {
+        try {
+            console.log(`[Neon DB] "Not A Bad Thing - Radio Edit" stream verisi Neon'dan çekiliyor...`);
+            const { Pool } = require('pg');
+            const pool = new Pool({
+                connectionString: process.env.DATABASE_URL,
+                ssl: { rejectUnauthorized: false }
+            });
+            const dbRes = await pool.query(
+                `SELECT cumulative, daily_gain FROM daily_streams_canonical 
+                 WHERE canonical_id = '1JmPASoql4lnXimD5ICqRP' 
+                 ORDER BY recorded_date DESC LIMIT 1`
+            );
+            await pool.end();
+
+            if (dbRes.rows && dbRes.rows.length > 0) {
+                const total = parseInt(dbRes.rows[0].cumulative, 10) || baselineTotal;
+                const daily = parseInt(dbRes.rows[0].daily_gain, 10) || dailyGrowth;
+                console.log(`[Neon DB] ✓ "Not A Bad Thing - Radio Edit" total: ${total.toLocaleString('en-US')} daily: ${daily.toLocaleString('en-US')}`);
+                return { title: trackTitle, total, daily };
+            }
+        } catch (err) {
+            console.warn(`[Neon DB] Sorgulama hatası (fallback kullanılacak): ${err.message}`);
+        }
+    }
+
+    const days = Math.max(0, Math.round(
+        (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+    ));
+    const total = baselineTotal + days * dailyGrowth;
+    console.log(`[Estimate] ✓ "Not A Bad Thing - Radio Edit" total: ${total.toLocaleString('en-US')} daily: ${dailyGrowth.toLocaleString('en-US')} (fallback)`);
+    return { title: trackTitle, total, daily: dailyGrowth };
+}
+
 // ── Ana Fonksiyon ───────────────────────────────────────────────
 async function fetchAndSnapshot() {
     // Sunucu tarafında CORS yok — direkt Kworb URL kullan.
@@ -232,9 +272,10 @@ async function fetchAndSnapshot() {
     console.log(`[${new Date().toISOString()}] Kworb'dan veri çekiliyor...`);
     console.log(`URL: ${targetUrl.substring(0, 60)}...`);
 
-    const [res, extraTracks] = await Promise.all([
+    const [res, extraTracks, radioEditTrack] = await Promise.all([
         fetch(targetUrl, { timeout: 30000, headers: FETCH_HEADERS }),
-        fetchExtraTracks()
+        fetchExtraTracks(),
+        fetchRadioEditStreams()
     ]);
     if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     const html = await res.text();
@@ -252,12 +293,28 @@ async function fetchAndSnapshot() {
     }
 
     // Extra track'leri ana listeye ekle (JT sayfasında yoksa)
-    for (const t of extraTracks) {
+    const combinedExtraTracks = [...extraTracks, radioEditTrack];
+    for (const t of combinedExtraTracks) {
         const alreadyPresent = stats.tracks.some(x => x.title.toLowerCase() === t.title.toLowerCase());
         if (!alreadyPresent) {
             stats.tracks.push(t);
-            stats['Orphan'].total += t.total;
-            stats['Orphan'].daily += t.daily;
+            
+            let matched = false;
+            for (const key in songToAlbumMap) {
+                if (t.title.toLowerCase().includes(key.toLowerCase())) {
+                    const albName = songToAlbumMap[key];
+                    if (stats[albName]) {
+                        stats[albName].total += t.total;
+                        stats[albName].daily += t.daily;
+                    }
+                    matched = true;
+                    break;
+                }
+            }
+            if (!matched) {
+                stats['Orphan'].total += t.total;
+                stats['Orphan'].daily += t.daily;
+            }
             stats.TotalSpotify += t.total;
             console.log(`[Extra] "${t.title}" ana listeye eklendi`);
         } else {
