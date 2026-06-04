@@ -19,7 +19,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YTD_BASELINE_DATE = `${CURRENT_YEAR}-01-01`;
 const YTD_2026_BASELINE = {
     date: YTD_BASELINE_DATE,
-    career_total: 16_687_312_167,
+    career_total: 16_804_299_514,
     tracks: {
         "CAN'T STOP THE FEELING! (from":  1_997_165_198,
         "FEELING! - Film Version":           136_996_989,
@@ -49,6 +49,7 @@ const YTD_2026_BASELINE = {
         "Like I Love You":                   130_249_781,
         "Filthy":                            126_475_446,
         "Better Place":                      121_159_121,
+        "Not A Bad Thing - Radio Edit":      116_987_347
     }
 };
 
@@ -82,9 +83,22 @@ const albumCovers = {
 // --- 2. YARDIMCI FONKSİYONLAR ---
 
 function getTrackYTDBaseline(liveTitle) {
-    const lower = liveTitle.toLowerCase();
+    const lower = liveTitle.toLowerCase().trim();
+    // Try exact match first
     for (const key in YTD_2026_BASELINE.tracks) {
-        if (lower.includes(key.toLowerCase())) {
+        if (key.toLowerCase().trim() === lower) {
+            return YTD_2026_BASELINE.tracks[key];
+        }
+    }
+    // Try fuzzy match, checking longer keys first to ensure specific matches win
+    const keys = Object.keys(YTD_2026_BASELINE.tracks).sort((a, b) => b.length - a.length);
+    for (const key of keys) {
+        const keyLower = key.toLowerCase().trim();
+        if (lower.includes(keyLower)) {
+            // Special rule for '4 minutes'
+            if (keyLower === '4 minutes' && lower !== '4 minutes') {
+                continue;
+            }
             return YTD_2026_BASELINE.tracks[key];
         }
     }
@@ -128,6 +142,76 @@ function getTrueDailyAverage(dailyStreams) {
     const dataDay = today === 0 ? 6 : today - 1;
     const dayWeights = { 0: 0.85, 1: 0.90, 2: 0.95, 3: 1.00, 4: 1.05, 5: 1.15, 6: 1.10 };
     return dailyStreams / dayWeights[dataDay];
+}
+
+function getCleanSnapshotDelta(liveStats, snapshot, days) {
+    if (!snapshot) return null;
+    let cleanDelta = 0;
+    
+    if (snapshot.tracks && Object.keys(snapshot.tracks).length > 0) {
+        liveStats.tracks.forEach(track => {
+            const trackTitleLower = track.title.toLowerCase().trim();
+            let snapTrack = snapshot.tracks[track.title];
+            if (!snapTrack) {
+                const foundKey = Object.keys(snapshot.tracks).find(k => k.toLowerCase().trim() === trackTitleLower);
+                if (foundKey) {
+                    snapTrack = snapshot.tracks[foundKey];
+                }
+            }
+            
+            if (snapTrack && typeof snapTrack.total === 'number') {
+                const trackDelta = track.total - snapTrack.total;
+                cleanDelta += Math.max(0, trackDelta);
+            } else {
+                // If it is NOT in the snapshot, estimate its growth to avoid 118M jumps
+                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                cleanDelta += Math.max(0, Math.round(dailyEst * days));
+            }
+        });
+        return cleanDelta;
+    }
+    
+    // Fallback: If snapshot has no track data, use career total delta, but cap it to something reasonable
+    const rawDelta = liveStats.TotalSpotify - (snapshot.career_total || 0);
+    const maxReasonable = (liveStats.TotalDaily || 3000000) * days * 2;
+    if (rawDelta > 0 && rawDelta <= maxReasonable) {
+        return rawDelta;
+    }
+    return Math.round((liveStats.TotalDaily || 3000000) * days);
+}
+
+function getCleanYTDDelta(liveStats) {
+    let cleanDelta = 0;
+    const ytdDays = getYTDDaysElapsed();
+    
+    liveStats.tracks.forEach(track => {
+        const baseline = getTrackYTDBaseline(track.title);
+        if (baseline !== null) {
+            cleanDelta += Math.max(0, track.total - baseline);
+        } else {
+            // Track was not in the baseline.
+            // If it is a new release in CURRENT_YEAR, we assume it had 0 streams on Jan 1.
+            let isNewRelease = false;
+            const lowerTitle = track.title.toLowerCase();
+            for (let key in songToAlbumMap) {
+                if (lowerTitle.includes(key.toLowerCase())) {
+                    const albName = songToAlbumMap[key];
+                    if (albumMetData[albName] && albumMetData[albName].year === CURRENT_YEAR) {
+                        isNewRelease = true;
+                    }
+                    break;
+                }
+            }
+            if (isNewRelease) {
+                cleanDelta += track.total;
+            } else {
+                // Otherwise, it's an old song newly tracked, so we estimate its YTD growth
+                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                cleanDelta += Math.max(0, Math.round(dailyEst * ytdDays));
+            }
+        }
+    });
+    return cleanDelta;
 }
 
 function getUTCDateString(daysAgo = 0) {
@@ -218,9 +302,8 @@ function renderEOYProjection(liveStats, snap7, snap30) {
     const progressBar = document.getElementById('eoy-progress-bar');
 
     const careerTotal = liveStats.TotalSpotify;
-    const ytdBaseline = YTD_2026_BASELINE.career_total;
     const ytdDays     = getYTDDaysElapsed();
-    const ytdDelta    = careerTotal - ytdBaseline;
+    const ytdDelta    = getCleanYTDDelta(liveStats);
 
     // Year progress
     const now      = new Date();
@@ -232,10 +315,10 @@ function renderEOYProjection(liveStats, snap7, snap30) {
 
     // Compute weighted projected daily rate
     const ytdAvg    = ytdDays > 0 ? ytdDelta / ytdDays : 0;
-    const monthlyAvg = (snap30 && careerTotal > snap30.career_total)
-        ? (careerTotal - snap30.career_total) / 30 : null;
-    const weeklyAvg  = (snap7  && careerTotal > snap7.career_total)
-        ? (careerTotal - snap7.career_total)  / 7  : null;
+    const cleanWeeklyDelta = getCleanSnapshotDelta(liveStats, snap7, 7);
+    const cleanMonthlyDelta = getCleanSnapshotDelta(liveStats, snap30, 30);
+    const weeklyAvg  = cleanWeeklyDelta !== null ? cleanWeeklyDelta / 7 : null;
+    const monthlyAvg = cleanMonthlyDelta !== null ? cleanMonthlyDelta / 30 : null;
 
     let projectedDaily, confidence, confNote;
     if (ytdAvg > 0 && monthlyAvg !== null && weeklyAvg !== null) {
@@ -820,22 +903,12 @@ async function initStreamsDashboard() {
             if (!valueEl) return;
 
             const dailyEst = Math.round(_jtTotalDaily * days);
-            const maxReasonable = _jtTotalDaily * days * 2;
+            const cleanDelta = getCleanSnapshotDelta(liveStats, snapshot, days);
 
-            if (snapshot && snapshot.career_total) {
-                const delta = liveStats.TotalSpotify - snapshot.career_total;
-                if (delta > 0 && delta <= maxReasonable) {
-                    // Snapshot delta makul — gerçek veriyi göster
-                    valueEl.textContent = '+' + delta.toLocaleString('en-US');
-                    valueEl.classList.remove('loading');
-                    if (statusEl) { statusEl.textContent = 'Snapshot: ' + snapshot.date; statusEl.classList.add('ok'); }
-                } else {
-                    // Snapshot delta tutarsız — daily rate'ten hesapla
-                    valueEl.textContent = '+' + dailyEst.toLocaleString('en-US');
-                    valueEl.classList.remove('loading');
-                    valueEl.style.color = '#d4a853';
-                    if (statusEl) { statusEl.textContent = `Based on ${_jtTotalDaily.toLocaleString('en-US')}/day avg`; statusEl.classList.add('ok'); }
-                }
+            if (cleanDelta !== null) {
+                valueEl.textContent = '+' + cleanDelta.toLocaleString('en-US');
+                valueEl.classList.remove('loading');
+                if (statusEl) { statusEl.textContent = 'Snapshot: ' + snapshot.date; statusEl.classList.add('ok'); }
             } else {
                 // Snapshot yok — daily rate'ten hesapla
                 valueEl.textContent = '+' + dailyEst.toLocaleString('en-US');
@@ -851,7 +924,7 @@ async function initStreamsDashboard() {
         // YTD: statik baseline
         const ytdEl     = document.getElementById('jt-ytd-growth');
         const ytdStatus = document.getElementById('snapytd-status');
-        const ytdDelta  = liveStats.TotalSpotify - YTD_2026_BASELINE.career_total;
+        const ytdDelta  = getCleanYTDDelta(liveStats);
         const ytdDays   = getYTDDaysElapsed();
         if (ytdEl) { ytdEl.textContent = '+' + ytdDelta.toLocaleString('en-US'); ytdEl.classList.remove('loading'); }
         if (ytdStatus) {
