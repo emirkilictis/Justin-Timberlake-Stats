@@ -439,6 +439,57 @@ function analyzeKworbData(htmlInput) {
     return stats;
 }
 
+// ── NEON KAYNAĞI (Kworb yerine) ───────────────────────────────
+// /api/streams (Neon) JSON'undan, analyzeKworbData ile AYNI şekilli liveStats üretir.
+// Era gruplaması song-map.js (songToAlbumMap) ile title üzerinden yapılır — Neon'un ham
+// Spotify albüm adı kullanılmaz, böylece era-mapping tek kaynakta (song-map) kalır.
+// NOT: TotalSpotify burada per-track toplamı (Neon primary=JT ≈ 14.9B). Headline'daki
+// resmi artist toplamı (~18.1B, appears-on kredileri dahil) ayrıca header'dan set edilir.
+function buildLiveStatsFromApi(api) {
+    const stats = {
+        TotalSpotify: api && api.totalSpotify ? api.totalSpotify : 0,
+        TotalDaily:   api && api.totalDaily   ? api.totalDaily   : 0,
+        "Justified": { total: 0, daily: 0 },
+        "FutureSex/LoveSounds": { total: 0, daily: 0 },
+        "The 20/20 Experience": { total: 0, daily: 0 },
+        "The 20/20 Experience – 2 of 2": { total: 0, daily: 0 },
+        "Man of the Woods": { total: 0, daily: 0 },
+        "Everything I Thought It Was": { total: 0, daily: 0 },
+        "Orphan": { total: 0, daily: 0 },
+        tracks: []
+    };
+    (api && api.tracks ? api.tracks : []).forEach(t => {
+        const title    = t.title || '';
+        const valTotal = Number(t.total) || 0;
+        const valDaily = Number(t.daily) || 0;
+        stats.tracks.push({ title, total: valTotal, daily: valDaily });
+
+        const lowerTitle = title.toLowerCase();
+        let matched = false;
+        for (let key in songToAlbumMap) {
+            if (lowerTitle.includes(key.toLowerCase())) {
+                const albName = songToAlbumMap[key];
+                if (stats[albName]) { stats[albName].total += valTotal; stats[albName].daily += valDaily; }
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) { stats["Orphan"].total += valTotal; stats["Orphan"].daily += valDaily; }
+    });
+    return stats;
+}
+
+// Kworb header'ından resmi artist toplam playcount'unu (~18.1B) çeker — sadece headline için.
+// Neon primary=JT bunu kapsamadığı (appears-on kredileri) için tek-sayı kaynağı olarak kalıyor.
+function extractKworbHeaderTotal(htmlInput) {
+    try {
+        const doc = new DOMParser().parseFromString(htmlInput, 'text/html');
+        const tds = doc.querySelectorAll('table');
+        const firstTds = tds.length > 0 ? tds[0].querySelectorAll('td') : [];
+        return firstTds[1] ? (parseInt(firstTds[1].textContent.replace(/,/g, ''), 10) || 0) : 0;
+    } catch (e) { return 0; }
+}
+
 // --- 4. TABLE RENDERERS ---
 
 function renderTracksTable() {
@@ -777,9 +828,38 @@ document.addEventListener('eraChanged', () => {
 async function initStreamsDashboard() {
     try {
         // ── ADIM A: Canlı veriyi çek ─────────────────────────────────
-        const res = await fetch(MY_DYNAMIC_API);
-        const html = await res.text();
-        const liveStats = analyzeKworbData(html);
+        // Per-track / album / projeksiyon: Neon (/api/streams). Başarısız olursa (örn. Vercel'de
+        // DATABASE_URL henüz tanımlı değilse) güvenli şekilde Kworb'a düşeriz → sıfır kesinti + rollback.
+        let liveStats = null;
+        try {
+            const apiRes  = await fetch('/api/streams');
+            const apiData = await apiRes.json();
+            if (apiData && Array.isArray(apiData.tracks) && apiData.tracks.length > 0) {
+                liveStats = buildLiveStatsFromApi(apiData);
+            } else {
+                console.warn('[streams.js] /api/streams boş döndü, Kworb fallback:', apiData && apiData.error);
+            }
+        } catch (e) {
+            console.warn('[streams.js] /api/streams hatası, Kworb fallback:', e.message);
+        }
+
+        if (!liveStats) {
+            const res = await fetch(MY_DYNAMIC_API);
+            const html = await res.text();
+            liveStats = analyzeKworbData(html);
+        }
+
+        // Headline kariyer toplamı: resmi artist total (~18.1B, appears-on dahil) Kworb
+        // header'ından. Neon primary=JT toplamı (~14.9B) bunu kapsamadığı için, daha büyük
+        // olan resmi rakamı headline'a yazıyoruz; album/track breakdown Neon'da kalıyor.
+        try {
+            const kworbRes  = await fetch(MY_DYNAMIC_API);
+            const kworbHtml = await kworbRes.text();
+            const headerTotal = extractKworbHeaderTotal(kworbHtml);
+            if (headerTotal > liveStats.TotalSpotify) liveStats.TotalSpotify = headerTotal;
+        } catch (e) {
+            console.warn('[streams.js] Kworb header total alınamadı, mevcut toplam kullanılıyor:', e.message);
+        }
 
         const jtTotalCareer  = document.getElementById('jt-total-career');
         const jtDailyCareer  = document.getElementById('jt-daily-career');
