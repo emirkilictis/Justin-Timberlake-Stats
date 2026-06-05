@@ -1,5 +1,8 @@
 {
   "name": "jt-fan-site",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  }
 }
