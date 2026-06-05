@@ -144,6 +144,12 @@ function getTrueDailyAverage(dailyStreams) {
     return dailyStreams / dayWeights[dataDay];
 }
 
+// Bir track snapshot'ta YOKKEN büyümesini tahmin ederken kullanılan günlük tavan.
+// Hiçbir JT parçası gerçekte günde ~600k'yı geçmez (CSTF ~541k). Bu tavan, Neon/Kworb'dan
+// gelen tek seferlik zehirli `daily` değerlerinin (çok günlük boşluk, count düzeltmesi,
+// estimate↔gerçek geçişi) yıl sonu projeksiyonunu milyarlara fırlatmasını engeller.
+const MAX_TRACK_DAILY_EST = 1_000_000;
+
 function getCleanSnapshotDelta(liveStats, snapshot, days) {
     if (!snapshot) return null;
     let cleanDelta = 0;
@@ -164,7 +170,7 @@ function getCleanSnapshotDelta(liveStats, snapshot, days) {
                 cleanDelta += Math.max(0, trackDelta);
             } else {
                 // If it is NOT in the snapshot, estimate its growth to avoid 118M jumps
-                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), MAX_TRACK_DAILY_EST);
                 cleanDelta += Math.max(0, Math.round(dailyEst * days));
             }
         });
@@ -206,7 +212,7 @@ function getCleanYTDDelta(liveStats) {
                 cleanDelta += track.total;
             } else {
                 // Otherwise, it's an old song newly tracked, so we estimate its YTD growth
-                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), MAX_TRACK_DAILY_EST);
                 cleanDelta += Math.max(0, Math.round(dailyEst * ytdDays));
             }
         }
@@ -842,6 +848,14 @@ async function initStreamsDashboard() {
                 }
             }
         }
+        // Canlı + snapshot birleştikten sonra KESİN kontrol: track herhangi bir kaynaktan
+        // (canlı Kworb ya da Firestore snapshot) geldiyse fallback enjeksiyonuna gerek yok.
+        // Yukarıdaki döngü liveTitles'taki track'lerde `continue` ettiği için bu bayrakları
+        // kaçırıyordu → track canlı/snapshot'ta varken fallback ikinci kez ~118M enjekte
+        // edip career total'i ve projeksiyonu bozuyordu. Tüm merge edilmiş listeyi tarıyoruz.
+        has4Min      = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('4 minutes') && lc.includes('and timbaland'); });
+        hasRadioEdit = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('not a bad thing') && lc.includes('radio edit'); });
+
         // Fallback: Firestore'da "4 Minutes ... and Timbaland" varyantlari yoksa
         if (!has4Min) {
             const baselineDate = '2026-04-23';
