@@ -337,10 +337,19 @@
                 }
                 
                 if (snapTrack && typeof snapTrack.total === 'number') {
-                    const trackDelta = track.total - snapTrack.total;
-                    cleanDelta += Math.max(0, trackDelta);
-                } else {
+                    let trackDelta = track.total - snapTrack.total;
+                    if (trackDelta < 0) trackDelta = 0;
+
                     const dailyEst = getTrueDailyAverage(track.daily || 0);
+                    const expectedGrowth = dailyEst * days;
+                    const maxReasonable = Math.max(2_000_000 * (days / 7), expectedGrowth * 3);
+
+                    if (trackDelta > maxReasonable) {
+                        trackDelta = expectedGrowth;
+                    }
+                    cleanDelta += Math.round(trackDelta);
+                } else {
+                    const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), 1_000_000);
                     cleanDelta += Math.max(0, Math.round(dailyEst * days));
                 }
             });
@@ -362,7 +371,17 @@
         liveStats.tracks.forEach(track => {
             const baseline = getTrackYTDBaseline(track.title);
             if (baseline !== null) {
-                cleanDelta += Math.max(0, track.total - baseline);
+                let trackDelta = track.total - baseline;
+                if (trackDelta < 0) trackDelta = 0;
+
+                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                const expectedGrowth = dailyEst * ytdDays;
+                const maxReasonable = Math.max(5_000_000 * (ytdDays / 7), expectedGrowth * 3);
+
+                if (trackDelta > maxReasonable) {
+                    trackDelta = expectedGrowth;
+                }
+                cleanDelta += Math.round(trackDelta);
             } else {
                 let isNewRelease = false;
                 const lowerTitle = track.title.toLowerCase();
@@ -378,7 +397,7 @@
                 if (isNewRelease) {
                     cleanDelta += track.total;
                 } else {
-                    const dailyEst = getTrueDailyAverage(track.daily || 0);
+                    const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), 1_000_000);
                     cleanDelta += Math.max(0, Math.round(dailyEst * ytdDays));
                 }
             }
@@ -836,6 +855,29 @@
             const delta = getCleanSnapshotDelta(liveStats, snapshot, 7);
             expect(delta).toBeLessThan(15_000_000);
             expect(delta).toBeGreaterThan(14_000_000);
+        });
+
+        it('ignores anomalous jump when an existing track has a placeholder value in snapshot', () => {
+            const liveStats = {
+                TotalSpotify: 17_118_000_000,
+                TotalDaily: 3_010_000,
+                tracks: [
+                    { title: "Mirrors", total: 1_420_000_000, daily: 1_000_000 },
+                    { title: "SexyBack", total: 1_300_000_000, daily: 1_000_000 },
+                    { title: "Give It To Me", total: 520_000_000, daily: 50_000 }
+                ]
+            };
+            const snapshot = {
+                career_total: 16_986_000_000,
+                tracks: {
+                    "Mirrors": { total: 1_413_000_000 },
+                    "SexyBack": { total: 1_293_000_000 },
+                    "Give It To Me": { total: 26_900_000 }
+                }
+            };
+            const delta = getCleanSnapshotDelta(liveStats, snapshot, 7);
+            expect(delta).toBeLessThan(15_000_000);
+            expect(delta).toBeGreaterThan(14_300_000);
         });
     });
 

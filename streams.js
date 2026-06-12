@@ -124,6 +124,25 @@ function formatCompact(n) {
     return Number(n || 0).toLocaleString('en-US');
 }
 
+function formatMilestone(target, daysLeft) {
+    const targetText = target >= 1_000_000_000
+        ? (target / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B'
+        : (target / 1_000_000).toFixed(0) + 'M';
+    
+    if (daysLeft === null || isNaN(daysLeft) || daysLeft <= 0) {
+        return `<span style="color:#555;">N/A</span>`;
+    }
+    
+    let timeText;
+    if (daysLeft > 365) {
+        const yrs = (daysLeft / 365).toFixed(1);
+        timeText = `in ${yrs}y`;
+    } else {
+        timeText = `in ${daysLeft}d`;
+    }
+    return `<span style="font-weight:600;color:#d4a853;">${targetText}</span> <span style="font-size:0.75rem;color:#aaa;">(${timeText})</span>`;
+}
+
 function animateValue(obj, start, end, duration, prefix = "") {
     if (!obj || isNaN(end)) return;
     let startTimestamp = null;
@@ -166,8 +185,18 @@ function getCleanSnapshotDelta(liveStats, snapshot, days) {
             }
             
             if (snapTrack && typeof snapTrack.total === 'number') {
-                const trackDelta = track.total - snapTrack.total;
-                cleanDelta += Math.max(0, trackDelta);
+                let trackDelta = track.total - snapTrack.total;
+                if (trackDelta < 0) trackDelta = 0;
+
+                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                const expectedGrowth = dailyEst * days;
+                const maxReasonable = Math.max(2_000_000 * (days / 7), expectedGrowth * 3);
+
+                if (trackDelta > maxReasonable) {
+                    console.warn(`[Snapshot Anomaly] Track: "${track.title}", Delta: ${trackDelta}, Max Reasonable: ${maxReasonable}. Estimating growth: ${expectedGrowth}`);
+                    trackDelta = expectedGrowth;
+                }
+                cleanDelta += Math.round(trackDelta);
             } else {
                 // If it is NOT in the snapshot, estimate its growth to avoid 118M jumps
                 const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), MAX_TRACK_DAILY_EST);
@@ -193,7 +222,18 @@ function getCleanYTDDelta(liveStats) {
     liveStats.tracks.forEach(track => {
         const baseline = getTrackYTDBaseline(track.title);
         if (baseline !== null) {
-            cleanDelta += Math.max(0, track.total - baseline);
+            let trackDelta = track.total - baseline;
+            if (trackDelta < 0) trackDelta = 0;
+
+            const dailyEst = getTrueDailyAverage(track.daily || 0);
+            const expectedGrowth = dailyEst * ytdDays;
+            const maxReasonable = Math.max(5_000_000 * (ytdDays / 7), expectedGrowth * 3);
+
+            if (trackDelta > maxReasonable) {
+                console.warn(`[YTD Anomaly] Track: "${track.title}", Delta: ${trackDelta}, Max Reasonable: ${maxReasonable}. Estimating YTD growth: ${expectedGrowth}`);
+                trackDelta = expectedGrowth;
+            }
+            cleanDelta += Math.round(trackDelta);
         } else {
             // Track was not in the baseline.
             // If it is a new release in CURRENT_YEAR, we assume it had 0 streams on Jan 1.
@@ -255,35 +295,76 @@ function calculateImprovedMilestone(track, snap7, snap30) {
     const ytdDays     = getYTDDaysElapsed();
 
     let projectedDaily, confidence;
+    const dailyEst = getTrueDailyAverage(track.daily || 0);
 
-    if (hist7 && hist30 && track.total > hist7.total && track.total > hist30.total) {
-        const realWeeklyAvg  = (track.total - hist7.total)  / 7;
-        const realMonthlyAvg = (track.total - hist30.total) / 30;
-        if (ytdBaseline && track.total > ytdBaseline && ytdDays > 30) {
-            const ytdAvg = (track.total - ytdBaseline) / ytdDays;
+    let realWeeklyAvg = null;
+    if (hist7 && track.total > hist7.total) {
+        let delta = track.total - hist7.total;
+        const expected = dailyEst * 7;
+        const cap = Math.max(2_000_000, expected * 3);
+        if (delta > cap) {
+            delta = expected;
+        }
+        realWeeklyAvg = delta / 7;
+    }
+
+    let realMonthlyAvg = null;
+    if (hist30 && track.total > hist30.total) {
+        let delta = track.total - hist30.total;
+        const expected = dailyEst * 30;
+        const cap = Math.max(5_000_000, expected * 3);
+        if (delta > cap) {
+            delta = expected;
+        }
+        realMonthlyAvg = delta / 30;
+    }
+
+    let ytdAvg = null;
+    if (ytdBaseline && track.total > ytdBaseline) {
+        let delta = track.total - ytdBaseline;
+        const expected = dailyEst * ytdDays;
+        const cap = Math.max(10_000_000, expected * 3);
+        if (delta > cap) {
+            delta = expected;
+        }
+        ytdAvg = delta / ytdDays;
+    }
+
+    if (realWeeklyAvg !== null && realMonthlyAvg !== null) {
+        if (ytdAvg !== null && ytdDays > 30) {
             projectedDaily = realWeeklyAvg * 0.5 + realMonthlyAvg * 0.3 + ytdAvg * 0.2;
         } else {
             projectedDaily = realWeeklyAvg * 0.6 + realMonthlyAvg * 0.4;
         }
         confidence = "high";
-    } else if (hist7 && track.total > hist7.total) {
-        projectedDaily = (track.total - hist7.total) / 7;
+    } else if (realWeeklyAvg !== null) {
+        projectedDaily = realWeeklyAvg;
         confidence = "medium";
-    } else if (ytdBaseline && track.total > ytdBaseline) {
-        projectedDaily = (track.total - ytdBaseline) / ytdDays;
+    } else if (ytdAvg !== null) {
+        projectedDaily = ytdAvg;
         confidence = "medium";
     } else {
-        projectedDaily = getTrueDailyAverage(track.daily);
+        projectedDaily = dailyEst;
         confidence = "low";
+    }
+
+    if (projectedDaily <= 0 && track.daily > 0) {
+        projectedDaily = dailyEst;
     }
 
     let nextMilestone;
     if (track.total >= 1000000000) {
-        nextMilestone = Math.ceil(track.total / 1000000000) * 1000000000;
-        if (nextMilestone === track.total) nextMilestone += 1000000000;
+        nextMilestone = Math.ceil(track.total / 100000000) * 100000000;
+        if (nextMilestone === track.total) nextMilestone += 100000000;
+    } else if (track.total >= 100000000) {
+        nextMilestone = Math.ceil(track.total / 100000000) * 100000000;
+        if (nextMilestone === track.total) nextMilestone += 100000000;
+    } else if (track.total >= 10000000) {
+        nextMilestone = Math.ceil(track.total / 10000000) * 10000000;
+        if (nextMilestone === track.total) nextMilestone += 10000000;
     } else {
-        nextMilestone = Math.ceil(track.total / 500000000) * 500000000;
-        if (nextMilestone === track.total) nextMilestone += 500000000;
+        nextMilestone = Math.ceil(track.total / 1000000) * 1000000;
+        if (nextMilestone === track.total) nextMilestone += 1000000;
     }
 
     const remaining = nextMilestone - track.total;
@@ -505,6 +586,12 @@ function renderTracksTable() {
             case 'real7d': return dir * ((a.real7d  ?? -Infinity) - (b.real7d  ?? -Infinity));
             case 'real30d':return dir * ((a.real30d ?? -Infinity) - (b.real30d ?? -Infinity));
             case 'ytd':    return dir * ((a.ytd     ?? -Infinity) - (b.ytd     ?? -Infinity));
+            case 'eoy':    return dir * (a.eoyProjected - b.eoyProjected);
+            case 'milestone': {
+                const da = a.milestone.daysLeft === null ? Infinity : a.milestone.daysLeft;
+                const db = b.milestone.daysLeft === null ? Infinity : b.milestone.daysLeft;
+                return dir * (da - db);
+            }
             default: return 0;
         }
     });
@@ -548,6 +635,9 @@ function renderTracksTable() {
             ytdCell = `<td style="color:#555;">—</td>`;
         }
 
+        const eoyCell = `<td style="color:#d4a853;font-weight:600;">~${formatCompact(track.eoyProjected)}</td>`;
+        const milestoneCell = `<td>${formatMilestone(track.milestone.target, track.milestone.daysLeft)}</td>`;
+
         const tr = document.createElement('tr');
         
         let displayTitle = track.title;
@@ -559,7 +649,7 @@ function renderTracksTable() {
             <td>${displayTitle}</td>
             <td>${fmtNum(track.total)}</td>
             <td class="positive-trend">${fmtDelta(track.daily)}</td>
-            ${real7Cell}${real30Cell}${ytdCell}
+            ${real7Cell}${real30Cell}${ytdCell}${eoyCell}${milestoneCell}
         `;
         tbody.appendChild(tr);
     });
@@ -598,6 +688,12 @@ function renderAlbumsTable() {
             case 'daily':  return dir * (a.daily - b.daily);
             case 'real7d': return dir * ((a.real7d ?? -Infinity) - (b.real7d ?? -Infinity));
             case 'pct':    return dir * (a.pctDaily - b.pctDaily);
+            case 'eoy':    return dir * (a.eoyProjected - b.eoyProjected);
+            case 'milestone': {
+                const da = a.daysToMilestone === null ? Infinity : a.daysToMilestone;
+                const db = b.daysToMilestone === null ? Infinity : b.daysToMilestone;
+                return dir * (da - db);
+            }
             default: return 0;
         }
     });
@@ -616,8 +712,12 @@ function renderAlbumsTable() {
         if (album.real7d !== null) {
             weekly7Cell = `<td class="positive-trend" style="vertical-align:middle;">${fmtDelta(album.real7d)}</td>`;
         } else {
-            weekly7Cell = `<td style="vertical-align:middle;color:#555;">—</td>`;
+            weekly7Cell = `<td style="vertical-align:middle;color:#555;">—</td>
+            `;
         }
+
+        const eoyCell = `<td style="color:#d4a853;font-weight:600;vertical-align:middle;">~${formatCompact(album.eoyProjected)}</td>`;
+        const milestoneCell = `<td style="vertical-align:middle;">${formatMilestone(album.nextMilestone, album.daysToMilestone)}</td>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -632,11 +732,13 @@ function renderAlbumsTable() {
                     </div>
                 </div>
             </td>
-            <td style="vertical-align:middle;">${album.year}</td>
+            <td style="vertical-align:middle;text-align:center;">${album.year}</td>
             <td style="vertical-align:middle;">${fmtNum(album.total)}</td>
             <td class="positive-trend" style="vertical-align:middle;">${fmtDelta(album.daily)}</td>
             ${weekly7Cell}
             <td style="vertical-align:middle;color:${barColor};font-weight:700;">${album.pctDaily.toFixed(1)}%</td>
+            ${eoyCell}
+            ${milestoneCell}
         `;
         tbody.appendChild(tr);
     });
@@ -831,11 +933,13 @@ async function initStreamsDashboard() {
         // Per-track / album / projeksiyon: Neon (/api/streams). Başarısız olursa (örn. Vercel'de
         // DATABASE_URL henüz tanımlı değilse) güvenli şekilde Kworb'a düşeriz → sıfır kesinti + rollback.
         let liveStats = null;
+        let usedNeon = false;
         try {
             const apiRes  = await fetch('/api/streams');
             const apiData = await apiRes.json();
             if (apiData && Array.isArray(apiData.tracks) && apiData.tracks.length > 0) {
                 liveStats = buildLiveStatsFromApi(apiData);
+                usedNeon = true;
             } else {
                 console.warn('[streams.js] /api/streams boş döndü, Kworb fallback:', apiData && apiData.error);
             }
@@ -892,10 +996,16 @@ async function initStreamsDashboard() {
         // Kworb'da JT credit'i kalkan track'leri Firestore'dan merge et.
         // daily-snapshot.js Madonna gibi diger artist sayfalarindan cekip yaziyor;
         // canli parser (analyzeKworbData) JT'nin sayfasina bakiyor, onlari goremez.
+        //
+        // ÖNEMLİ: Bu merge SADECE Kworb fallback yolunda çalışır. Neon (/api/streams) zaten
+        // 240+ track'le kapsamlı; Firestore snapshot'ları ise hâlâ Kworb-tabanlı (Faz 6'ya kadar)
+        // ve title yazımları Neon'dan farklı (noktalama/case) → exact-match tutmayıp DUPLICATE
+        // ekleniyor, album/total şişiyordu. Neon modunda 4 Minutes boşluğunu aşağıdaki fallback
+        // bloğu zaten dolduruyor, dolayısıyla merge'e gerek yok.
         const liveTitles = new Set(liveStats.tracks.map(t => t.title.toLowerCase()));
         let has4Min = false;
         let hasRadioEdit = false;
-        if (snapToday && snapToday.tracks) {
+        if (!usedNeon && snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
                 if (liveTitles.has(title.toLowerCase())) continue;
                 const total = Number(vals.total) || 0;
@@ -1026,25 +1136,6 @@ async function initStreamsDashboard() {
             ytdStatus.classList.add('ok');
         }
 
-        // ── ADIM D: Album verisi oluştur ──────────────────────────────
-        _albumsData = allAlbums.map(id => {
-            const album = liveStats[id];
-            const pctDaily = _jtTotalDaily > 0 ? (album.daily / _jtTotalDaily) * 100 : 0;
-            const hist7Album = getAlbumFromSnapshot(id, snap7);
-            const real7d = (hist7Album && album.total > hist7Album.total)
-                ? album.total - hist7Album.total
-                : null;
-            return {
-                id,
-                year: albumMetData[id].year,
-                total: album.total,
-                daily: album.daily,
-                real7d,
-                pctDaily
-            };
-        });
-        renderAlbumsTable();
-
         // ── ADIM E: Track verisi oluştur ──────────────────────────────
         _tracksData = liveStats.tracks.map(track => {
             const hist7Track  = getTrackFromSnapshot(track.title, snap7);
@@ -1071,9 +1162,77 @@ async function initStreamsDashboard() {
                 ? track.total - ytdBaseline
                 : null;
 
-            return { title: track.title, total: track.total, daily: track.daily, real7d, real7dEst, real30d, real30dEst, ytd };
+            const milestone = calculateImprovedMilestone(track, snap7, snap30);
+            const now = new Date();
+            const yearEnd = new Date(CURRENT_YEAR, 11, 31, 23, 59, 59);
+            const daysLeft = Math.max(0, Math.ceil((yearEnd - now) / 86400000));
+            const eoyProjected = track.total + milestone.projectedDaily * daysLeft;
+
+            return { 
+                title: track.title, 
+                total: track.total, 
+                daily: track.daily, 
+                real7d, 
+                real7dEst, 
+                real30d, 
+                real30dEst, 
+                ytd, 
+                eoyProjected, 
+                milestone 
+            };
         });
         renderTracksTable();
+
+        // ── ADIM D: Album verisi oluştur ──────────────────────────────
+        _albumsData = allAlbums.map(id => {
+            const album = liveStats[id];
+            const pctDaily = _jtTotalDaily > 0 ? (album.daily / _jtTotalDaily) * 100 : 0;
+            const hist7Album = getAlbumFromSnapshot(id, snap7);
+            const real7d = (hist7Album && album.total > hist7Album.total)
+                ? album.total - hist7Album.total
+                : null;
+
+            // Find all tracks belonging to this album
+            const albumTracks = _tracksData.filter(t => {
+                const lowerTitle = t.title.toLowerCase();
+                for (const key in songToAlbumMap) {
+                    if (lowerTitle.includes(key.toLowerCase())) {
+                        return songToAlbumMap[key] === id;
+                    }
+                }
+                return id === 'Orphan'; // fallback to orphan if no other album matched
+            });
+
+            // Sum up track projections
+            const eoyProjected = albumTracks.reduce((sum, t) => sum + t.eoyProjected, 0);
+            const albumProjectedDaily = albumTracks.reduce((sum, t) => sum + t.milestone.projectedDaily, 0);
+
+            // Calculate milestone target and days left
+            let nextMilestone;
+            if (album.total >= 1000000000) {
+                nextMilestone = Math.ceil(album.total / 500000000) * 500000000;
+                if (nextMilestone === album.total) nextMilestone += 500000000;
+            } else {
+                nextMilestone = Math.ceil(album.total / 100000000) * 100000000;
+                if (nextMilestone === album.total) nextMilestone += 100000000;
+            }
+            const remaining = nextMilestone - album.total;
+            const daysToMilestone = albumProjectedDaily > 0 ? Math.ceil(remaining / albumProjectedDaily) : null;
+
+            return {
+                id,
+                year: albumMetData[id].year,
+                total: album.total,
+                daily: album.daily,
+                real7d,
+                pctDaily,
+                eoyProjected,
+                albumProjectedDaily,
+                nextMilestone,
+                daysToMilestone
+            };
+        });
+        renderAlbumsTable();
 
         // ── ADIM F: Sort handler'larını bağla ─────────────────────────
         attachSortHandlers();
