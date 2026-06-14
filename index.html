@@ -52,7 +52,7 @@
           "@type": "MusicGroup",
           "@id": "https://justin-timberlake-stats.vercel.app/#justintimberlake",
           "name": "Justin Timberlake",
-          "description": "Justin Timberlake is one of the best-selling music artists of all time. His record label reports 117 million records sold worldwide (total records — albums and singles combined, not album sales); total certified units across RIAA, BPI, ARIA and 60+ certifying bodies exceed 170 million when including streaming equivalents. He has over 17 billion Spotify streams and 10 Grammy Awards.",
+          "description": "Justin Timberlake is one of the best-selling music artists of all time. His record label reports 117 million records sold worldwide (total records — albums and singles combined, not album sales); total certified + streaming-eligible units across RIAA, BPI, ARIA and 60+ certifying bodies reach approximately 180 million when including streaming equivalents. He has over 17 billion Spotify streams and 10 Grammy Awards.",
           "genre": ["Pop", "R&B", "Dance", "Neo soul"],
           "foundingLocation": {
             "@type": "Place",
@@ -123,7 +123,7 @@
               "name": "How many records has Justin Timberlake sold?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Justin Timberlake's record label reports 117 million records sold worldwide (physical and digital — albums and singles combined, not album sales). When including streaming equivalents counted by modern certification standards from RIAA, BPI, ARIA and 60+ certifying bodies, total certified units exceed 170 million. His best-selling album is FutureSex/LoveSounds with over 10 million pure copies sold (20 million+ album-equivalent units)."
+                "text": "Justin Timberlake's record label reports 117 million records sold worldwide (physical and digital — albums and singles combined, not album sales). When including streaming equivalents counted by modern certification standards from RIAA, BPI, ARIA and 60+ certifying bodies, total certified + streaming-eligible units reach approximately 180 million. His best-selling album is FutureSex/LoveSounds with over 10 million pure copies sold (20 million+ album-equivalent units)."
               }
             },
             {
@@ -171,7 +171,7 @@
             rel="stylesheet">
     </noscript>
 
-    <link rel="stylesheet" href="style.css?v=1781390902">
+    <link rel="stylesheet" href="style.css?v=1781453437">
 </head>
 
 <body>
@@ -331,6 +331,18 @@
                 </div>
 
                 <div class="stat-group">
+                    <div class="stat-label">Total AOD Streams</div>
+                    <div class="stat-value" id="aod-total">0</div>
+                    <div class="stat-sub">Estimated Audio On Demand</div>
+                </div>
+
+                <div class="stat-group">
+                    <div class="stat-label">Total YouTube Views</div>
+                    <div class="stat-value" id="youtube-total">0</div>
+                    <div class="stat-sub">Across official uploads</div>
+                </div>
+
+                <div class="stat-group">
                     <div class="stat-label">Best Selling Era</div>
                     <div class="stat-value" id="best-era-name" style="font-size: 1.8rem;">---</div>
                     <div class="stat-sub" id="best-era-val">Calculating...</div>
@@ -468,9 +480,9 @@
 
     </section>
 
-    <script src="config.js?v=1781390902" defer></script>
-    <script src="song-map.js?v=1781390902" defer></script>
-    <script src="fab.js?v=1781390902" defer></script>
+    <script src="config.js?v=1781453437" defer></script>
+    <script src="song-map.js?v=1781453437" defer></script>
+    <script src="fab.js?v=1781453437" defer></script>
 
     <script type="module">
         // 1. İhtiyacımız olan tüm Firebase v12 modüllerini (Sayaç için doc, setDoc, increment dahil) içe aktarıyoruz
@@ -639,7 +651,7 @@
 
     </script>
 
-    <script src="script.js?v=1781390902" defer></script>
+    <script src="script.js?v=1781453437" defer></script>
 
     <!-- ── GALLERY ──────────────────────────────────────────── -->
     <section id="gallery" style="padding: 80px 5%; background: #050505;">
@@ -678,7 +690,7 @@
         </div>
     </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js?v=1781390902"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js?v=1781453437"></script>
     <script>
         const GALLERY_PHOTOS = [
             'assets/random%20pics/IMG_7431.JPG', 'assets/random%20pics/IMG_7432.JPG',
@@ -765,7 +777,7 @@
   <h2>Justin Timberlake Records Sold &amp; Career Statistics</h2>
   <p>Justin Timberlake is one of the best-selling music artists of all time.
   His record label reports <strong>117 million records sold</strong> worldwide (physical + digital records — albums and singles combined, no streaming). This 117 million figure is total records sold, not album sales.
-  Across all certifying bodies (RIAA, BPI, ARIA, and 60+ others), his total reaches over <strong>170 million certified units</strong> — a figure that includes streaming equivalents counted by modern certification standards.
+  Across all certifying bodies (RIAA, BPI, ARIA, and 60+ others), his total reaches approximately <strong>180 million certified + streaming-eligible units</strong> — a figure that combines official certifications with US streaming-eligible units calculated from live Spotify and YouTube data.
   This site's real-time Equivalent Album Sales (EAS) calculation, which combines physical sales, digital sales, and Spotify/YouTube streaming equivalents using industry-standard formulas, currently shows <strong id="ai-eas-value">—</strong> EAS.</p>
   <h3>Album Sales</h3>
   <ul>
