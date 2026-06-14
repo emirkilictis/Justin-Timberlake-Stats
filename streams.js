@@ -520,57 +520,6 @@ function analyzeKworbData(htmlInput) {
     return stats;
 }
 
-// ── NEON KAYNAĞI (Kworb yerine) ───────────────────────────────
-// /api/streams (Neon) JSON'undan, analyzeKworbData ile AYNI şekilli liveStats üretir.
-// Era gruplaması song-map.js (songToAlbumMap) ile title üzerinden yapılır — Neon'un ham
-// Spotify albüm adı kullanılmaz, böylece era-mapping tek kaynakta (song-map) kalır.
-// NOT: TotalSpotify burada per-track toplamı (Neon primary=JT ≈ 14.9B). Headline'daki
-// resmi artist toplamı (~18.1B, appears-on kredileri dahil) ayrıca header'dan set edilir.
-function buildLiveStatsFromApi(api) {
-    const stats = {
-        TotalSpotify: api && api.totalSpotify ? api.totalSpotify : 0,
-        TotalDaily:   api && api.totalDaily   ? api.totalDaily   : 0,
-        "Justified": { total: 0, daily: 0 },
-        "FutureSex/LoveSounds": { total: 0, daily: 0 },
-        "The 20/20 Experience": { total: 0, daily: 0 },
-        "The 20/20 Experience – 2 of 2": { total: 0, daily: 0 },
-        "Man of the Woods": { total: 0, daily: 0 },
-        "Everything I Thought It Was": { total: 0, daily: 0 },
-        "Orphan": { total: 0, daily: 0 },
-        tracks: []
-    };
-    (api && api.tracks ? api.tracks : []).forEach(t => {
-        const title    = t.title || '';
-        const valTotal = Number(t.total) || 0;
-        const valDaily = Number(t.daily) || 0;
-        stats.tracks.push({ title, total: valTotal, daily: valDaily });
-
-        const lowerTitle = title.toLowerCase();
-        let matched = false;
-        for (let key in songToAlbumMap) {
-            if (lowerTitle.includes(key.toLowerCase())) {
-                const albName = songToAlbumMap[key];
-                if (stats[albName]) { stats[albName].total += valTotal; stats[albName].daily += valDaily; }
-                matched = true;
-                break;
-            }
-        }
-        if (!matched) { stats["Orphan"].total += valTotal; stats["Orphan"].daily += valDaily; }
-    });
-    return stats;
-}
-
-// Kworb header'ından resmi artist toplam playcount'unu (~18.1B) çeker — sadece headline için.
-// Neon primary=JT bunu kapsamadığı (appears-on kredileri) için tek-sayı kaynağı olarak kalıyor.
-function extractKworbHeaderTotal(htmlInput) {
-    try {
-        const doc = new DOMParser().parseFromString(htmlInput, 'text/html');
-        const tds = doc.querySelectorAll('table');
-        const firstTds = tds.length > 0 ? tds[0].querySelectorAll('td') : [];
-        return firstTds[1] ? (parseInt(firstTds[1].textContent.replace(/,/g, ''), 10) || 0) : 0;
-    } catch (e) { return 0; }
-}
-
 // --- 4. TABLE RENDERERS ---
 
 function renderTracksTable() {
@@ -930,40 +879,9 @@ document.addEventListener('eraChanged', () => {
 async function initStreamsDashboard() {
     try {
         // ── ADIM A: Canlı veriyi çek ─────────────────────────────────
-        // Per-track / album / projeksiyon: Neon (/api/streams). Başarısız olursa (örn. Vercel'de
-        // DATABASE_URL henüz tanımlı değilse) güvenli şekilde Kworb'a düşeriz → sıfır kesinti + rollback.
-        let liveStats = null;
-        let usedNeon = false;
-        try {
-            const apiRes  = await fetch('/api/streams');
-            const apiData = await apiRes.json();
-            if (apiData && Array.isArray(apiData.tracks) && apiData.tracks.length > 0) {
-                liveStats = buildLiveStatsFromApi(apiData);
-                usedNeon = true;
-            } else {
-                console.warn('[streams.js] /api/streams boş döndü, Kworb fallback:', apiData && apiData.error);
-            }
-        } catch (e) {
-            console.warn('[streams.js] /api/streams hatası, Kworb fallback:', e.message);
-        }
-
-        if (!liveStats) {
-            const res = await fetch(MY_DYNAMIC_API);
-            const html = await res.text();
-            liveStats = analyzeKworbData(html);
-        }
-
-        // Headline kariyer toplamı: resmi artist total (~18.1B, appears-on dahil) Kworb
-        // header'ından. Neon primary=JT toplamı (~14.9B) bunu kapsamadığı için, daha büyük
-        // olan resmi rakamı headline'a yazıyoruz; album/track breakdown Neon'da kalıyor.
-        try {
-            const kworbRes  = await fetch(MY_DYNAMIC_API);
-            const kworbHtml = await kworbRes.text();
-            const headerTotal = extractKworbHeaderTotal(kworbHtml);
-            if (headerTotal > liveStats.TotalSpotify) liveStats.TotalSpotify = headerTotal;
-        } catch (e) {
-            console.warn('[streams.js] Kworb header total alınamadı, mevcut toplam kullanılıyor:', e.message);
-        }
+        const res = await fetch(MY_DYNAMIC_API);
+        const html = await res.text();
+        const liveStats = analyzeKworbData(html);
 
         const jtTotalCareer  = document.getElementById('jt-total-career');
         const jtDailyCareer  = document.getElementById('jt-daily-career');
@@ -996,16 +914,10 @@ async function initStreamsDashboard() {
         // Kworb'da JT credit'i kalkan track'leri Firestore'dan merge et.
         // daily-snapshot.js Madonna gibi diger artist sayfalarindan cekip yaziyor;
         // canli parser (analyzeKworbData) JT'nin sayfasina bakiyor, onlari goremez.
-        //
-        // ÖNEMLİ: Bu merge SADECE Kworb fallback yolunda çalışır. Neon (/api/streams) zaten
-        // 240+ track'le kapsamlı; Firestore snapshot'ları ise hâlâ Kworb-tabanlı (Faz 6'ya kadar)
-        // ve title yazımları Neon'dan farklı (noktalama/case) → exact-match tutmayıp DUPLICATE
-        // ekleniyor, album/total şişiyordu. Neon modunda 4 Minutes boşluğunu aşağıdaki fallback
-        // bloğu zaten dolduruyor, dolayısıyla merge'e gerek yok.
         const liveTitles = new Set(liveStats.tracks.map(t => t.title.toLowerCase()));
         let has4Min = false;
         let hasRadioEdit = false;
-        if (!usedNeon && snapToday && snapToday.tracks) {
+        if (snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
                 if (liveTitles.has(title.toLowerCase())) continue;
                 const total = Number(vals.total) || 0;
@@ -1071,7 +983,7 @@ async function initStreamsDashboard() {
         if (!hasRadioEdit) {
             const baselineDate = '2026-05-24';
             const baselineTotal = 118_417_347;
-            const dailyGrowth = 10_000;
+            const dailyGrowth = 1_500;
             const days = Math.max(0, Math.round(
                 (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
             ));
@@ -1339,7 +1251,44 @@ async function initStreamsDashboard() {
             });
         }
 
-        // ── ADIM I: Trend Line Chart ──────────────────────────────────
+        // ── ADIM I: AOD + YouTube hero cards ─────────────────────────
+        const ARTIST_RATIO = 1.82;
+        const totalAOD = Math.round(liveStats.TotalSpotify * ARTIST_RATIO);
+        const aodEl = document.getElementById('jt-total-aod');
+        if (aodEl) aodEl.textContent = (totalAOD / 1e9).toFixed(2) + 'B';
+
+        // YouTube — data.json album-level + vault.json song-level ID'lerini BİRLEŞTİR, /api/youtube'a gönder.
+        // ÖNEMLİ: Homepage (script.js getCombinedYtIds) ikisini de birleştiriyor; aynı toplamı
+        // vermesi için burada da vault.json song-level ID'lerini dahil ediyoruz (yoksa ~1B fark çıkıyor).
+        // Non-blocking: dashboard render'ını bekletmesin, gelince hero card'ı güncellesin.
+        (async () => {
+            try {
+                const [dataJson, vaultJson] = await Promise.all([
+                    fetch('data.json').then(r => r.json()),
+                    fetch('data/vault.json').then(r => r.json()).catch(() => ({ songs: [] }))
+                ]);
+                const allIds = new Set();
+                for (const alb of Object.values(dataJson.albums)) {
+                    const ids = (alb.streams && alb.streams.youtubeVideoIds) || [];
+                    ids.forEach(id => allIds.add(id));
+                }
+                for (const s of (vaultJson.songs || [])) {
+                    const ids = (s.streams && s.streams.youtubeVideoIds) || s.youtubeVideoIds || [];
+                    ids.forEach(id => allIds.add(id));
+                }
+                if (allIds.size > 0) {
+                    const ytRes = await fetch(`/api/youtube?ids=${[...allIds].join(',')}`);
+                    const ytData = await ytRes.json();
+                    const ytTotal = ytData.views || 0;
+                    const ytEl = document.getElementById('jt-total-youtube');
+                    if (ytEl) ytEl.textContent = (ytTotal / 1e9).toFixed(2) + 'B';
+                }
+            } catch (e) {
+                console.warn('[streams.js] YouTube views fetch failed:', e.message);
+            }
+        })();
+
+        // ── ADIM J: Trend Line Chart ──────────────────────────────────
         buildTrendChart(trendSnapshots, liveStats.TotalSpotify);
 
     } catch (e) {

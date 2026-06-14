@@ -74,8 +74,20 @@ module.exports = async (req, res) => {
             };
         });
 
-        const totalSpotify = tracks.reduce((s, t) => s + t.total, 0);
-        const totalDaily   = tracks.reduce((s, t) => s + t.daily, 0);
+        // Tekilleştirme: canonical-linking boşlukları yüzünden bazı şarkılar aynı BAŞLIKLA
+        // birden çok canonical_id altında dönebiliyor (örn. albüm + single release). Aynı
+        // başlığı en yüksek cumulative ile tek satıra indir (006 view'inin MAX mantığıyla
+        // tutarlı) → çift satır + çift-sayım engellenir.
+        const byTitle = new Map();
+        for (const t of tracks) {
+            const key = (t.title || '').toLowerCase().trim();
+            const existing = byTitle.get(key);
+            if (!existing || t.total > existing.total) byTitle.set(key, t);
+        }
+        const dedupedTracks = [...byTitle.values()].sort((a, b) => b.total - a.total);
+
+        const totalSpotify = dedupedTracks.reduce((s, t) => s + t.total, 0);
+        const totalDaily   = dedupedTracks.reduce((s, t) => s + t.daily, 0);
 
         // 6 saat CDN cache; arkada yenilenirken bayat veriyi servis et.
         res.setHeader('Cache-Control', 's-maxage=21600, stale-while-revalidate=86400');
@@ -84,8 +96,8 @@ module.exports = async (req, res) => {
             stale: asOf ? (Date.now() - new Date(asOf + 'T00:00:00Z').getTime()) > 3 * 86400000 : true,
             totalSpotify,
             totalDaily,
-            count: tracks.length,
-            tracks,
+            count: dedupedTracks.length,
+            tracks: dedupedTracks,
         });
     } catch (e) {
         res.status(500).json({ error: e.message });

@@ -225,12 +225,6 @@ function getCombinedYtIds(albumName, albumData) {
 
 async function fetchAllData() {
     try {
-        // data.json'u her zaman çek (local, hızlı)
-        const dataRes = await fetch('data.json');
-        jtData = await dataRes.json();
-        // Vault song-level YT IDs'lerini de yükle (paralel olabilir ama kucuk dosya)
-        await loadVaultSongYtIds();
-
         // Cache kontrol: 1 saatten tazeyse hemen göster
         let cachedKworb = null;
         try {
@@ -242,6 +236,15 @@ async function fetchAllData() {
                 }
             }
         } catch (_) {}
+
+        // data.json + vault.json + (cache yoksa) Kworb'u PARALEL başlat — sıralı beklemek yerine.
+        const dataPromise  = fetch('data.json').then(r => r.json());
+        const vaultPromise = loadVaultSongYtIds();
+        const kworbPromise = cachedKworb ? null : fetch(MY_DYNAMIC_API).then(r => r.text());
+
+        // data.json + vault.json paralel bekle
+        jtData = await dataPromise;
+        await vaultPromise;
 
         // mergedStats: YouTube güncelleme callback'i için doğru (merge edilmiş) stats'ı tutar
         let mergedStats = null;
@@ -263,9 +266,8 @@ async function fetchAllData() {
                 mergedStats = fresh;
             }).catch(() => {});
         } else {
-            // Cache yok, API'yi bekle
-            const kworbRes = await fetch(MY_DYNAMIC_API);
-            const htmlText = await kworbRes.text();
+            // Cache yok — paralel başlatılan Kworb fetch'ini bekle
+            const htmlText = await kworbPromise;
             const liveStats = smartParseKworb(htmlText);
             try { localStorage.setItem('jt_kworb_cache', JSON.stringify({ ts: Date.now(), data: liveStats })); } catch (_) {}
             await mergeExtraTracks(liveStats);
@@ -279,7 +281,14 @@ async function fetchAllData() {
 
         // Arka planda YouTube'u çek, gelince EAS'ı güncelle
         // mergedStats kullan — localStorage'daki değil, 96M extra track'i içeren doğru stats
-        if (YOUTUBE_API_KEY) {
+        //
+        // İKİ AYRI HESAP:
+        //  (1) Per-album: her albümün streams.youtube'u (EAS/CSPC hesabı için gerekli).
+        //  (2) Headline toplam: TÜM video ID'lerinin GLOBAL DEDUPLICATED tek çekimi.
+        //      Per-album toplamı, aynı video birden fazla albümde geçince MÜKERRER sayıp
+        //      ~1B şişiriyordu (streams.html ile uyuşmuyordu). Global unique set bunu çözer.
+        Promise.all([
+            // (1) per-album
             Promise.all(Object.keys(jtData.albums).map(async albumName => {
                 const ids = getCombinedYtIds(albumName, jtData.albums[albumName]);
                 if (ids.length > 0) {
@@ -287,11 +296,23 @@ async function fetchAllData() {
                     if (live > 0) jtData.albums[albumName].streams.youtube = live;
                     console.log(`[YT] ${albumName}: ${ids.length} videos → ${live.toLocaleString('en-US')} views`);
                 }
-            })).then(() => {
-                if (mergedStats) updateCareerOverview(mergedStats);
-                console.log("YouTube verileri güncellendi.");
-            }).catch(() => {});
-        }
+            })),
+            // (2) global deduplicated headline toplamı
+            (async () => {
+                const globalIds = new Set();
+                Object.keys(jtData.albums).forEach(albumName => {
+                    getCombinedYtIds(albumName, jtData.albums[albumName]).forEach(id => globalIds.add(id));
+                });
+                if (globalIds.size > 0) {
+                    const total = await fetchRealYouTubeViews([...globalIds]);
+                    if (total > 0) jtData._youtubeTotalDedup = total;
+                    console.log(`[YT headline] ${globalIds.size} unique videos → ${total.toLocaleString('en-US')} views`);
+                }
+            })()
+        ]).then(() => {
+            if (mergedStats) updateCareerOverview(mergedStats);
+            console.log("YouTube verileri güncellendi.");
+        }).catch(() => {});
 
     } catch (e) {
         console.error("Hata:", e);
@@ -303,7 +324,7 @@ async function fetchAllData() {
 // --- GLOBAL TABLO DEĞİŞKENLERİ ---
 let easTableData = [];
 let currentEasSort = { key: 'total', asc: false };
-let careerSnapshot = { totalEAS: 0, totalSpotify: 0, bestEra: { name: '', eas: 0 } };
+let careerSnapshot = { totalEAS: 0, totalSpotify: 0, totalAOD: 0, totalYoutube: 0, bestEra: { name: '', eas: 0 } };
 
 window.resetToCareer = function () {
     const s = careerSnapshot;
@@ -312,6 +333,8 @@ window.resetToCareer = function () {
     if (title) title.textContent = 'Career Totals';
     animateValue(document.getElementById('eas-total'), 0, s.totalEAS, 600);
     animateValue(document.getElementById('spotify-total'), 0, s.totalSpotify, 600);
+    animateValue(document.getElementById('aod-total'), 0, s.totalAOD, 600);
+    animateValue(document.getElementById('youtube-total'), 0, s.totalYoutube, 600);
     const bestEraNameEl = document.getElementById('best-era-name');
     const bestEraValEl = document.getElementById('best-era-val');
     if (bestEraNameEl) bestEraNameEl.textContent = s.bestEra.name;
@@ -323,12 +346,15 @@ window.resetToCareer = function () {
 function updateCareerOverview(liveStats) {
     let careerTotalEAS = 0;
     let bestEra = { name: "", eas: 0 };
+    let totalYoutube = 0;
+    let totalAOD = Math.round(liveStats.TotalSpotify * ARTIST_RATIO);
     easTableData = []; // Tablo verisini her güncellemede sıfırla
 
     Object.keys(jtData.albums).forEach(id => {
         const albumData = jtData.albums[id];
         const stats = calculateRealCSPC(albumData);
         careerTotalEAS += stats.totalEAS;
+        totalYoutube += (albumData.streams.youtube || 0);
 
         if (stats.totalEAS > bestEra.eas) {
             bestEra = { name: id, eas: stats.totalEAS };
@@ -361,7 +387,13 @@ function updateCareerOverview(liveStats) {
     if (bestEra.name === "The 20/20 Experience \u2013 2 of 2") bestEra.name = "The 20/20 Experience (Complete Experience)";
     if (bestEra.name === "The 20/20 Experience") bestEra.name = "The 20/20 Experience (Complete Experience)";
 
-    careerSnapshot = { totalEAS: careerTotalEAS, totalSpotify: liveStats.TotalSpotify, bestEra };
+    // Headline YouTube: global deduplicated değer varsa onu kullan (per-album toplamı
+    // mükerrer video ID'lerini saydığı için şişik olabiliyor; streams.html ile tutarlılık).
+    const headlineYoutube = (jtData._youtubeTotalDedup && jtData._youtubeTotalDedup > 0)
+        ? jtData._youtubeTotalDedup
+        : totalYoutube;
+
+    careerSnapshot = { totalEAS: careerTotalEAS, totalSpotify: liveStats.TotalSpotify, totalAOD, totalYoutube: headlineYoutube, bestEra };
 
     // AI crawler için statik veri bölümünü güncelle
     const aiEasEl = document.getElementById('ai-eas-value');
@@ -369,6 +401,8 @@ function updateCareerOverview(liveStats) {
 
     animateValue(document.getElementById('eas-total'), 0, careerTotalEAS, 600);
     animateValue(document.getElementById('spotify-total'), 0, liveStats.TotalSpotify, 600);
+    animateValue(document.getElementById('aod-total'), 0, totalAOD, 600);
+    animateValue(document.getElementById('youtube-total'), 0, headlineYoutube, 600);
 
     const bestEraNameEl = document.getElementById('best-era-name');
     const bestEraValEl = document.getElementById('best-era-val');
@@ -401,6 +435,8 @@ async function playAlbum(albumName) {
     document.querySelector('.cspc-title').textContent = albumName + " Era";
     animateValue(document.getElementById('eas-total'), 0, stats.totalEAS, 1000);
     animateValue(document.getElementById('spotify-total'), 0, stats.spotifyStreams, 1000);
+    animateValue(document.getElementById('aod-total'), 0, Math.round(stats.spotifyStreams * ARTIST_RATIO), 1000);
+    animateValue(document.getElementById('youtube-total'), 0, albumData.streams.youtube || 0, 1000);
 
     // "View Deep Analytics" butonunu seçili albüme yönlendir
     const btn = document.getElementById('deep-analytics-btn');
@@ -429,11 +465,11 @@ async function playAlbum(albumName) {
 
 // YouTube API
 async function fetchRealYouTubeViews(ids) {
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(',')}&key=${YOUTUBE_API_KEY}`;
+    const url = `/api/youtube?ids=${ids.join(',')}`;
     try {
         const res = await fetch(url);
         const data = await res.json();
-        return data.items.reduce((sum, item) => sum + parseInt(item.statistics.viewCount), 0);
+        return data.views || 0;
     } catch (e) { return 0; }
 }
 

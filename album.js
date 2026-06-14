@@ -4,11 +4,11 @@ const MY_API          = typeof CONFIG !== 'undefined' ? CONFIG.MY_DYNAMIC_API  :
 const YT_API_KEY      = typeof CONFIG !== 'undefined' ? CONFIG.YOUTUBE_API_KEY : '';
 
 async function fetchYouTubeViews(ids) {
-    if (!YT_API_KEY || !ids || ids.length === 0) return 0;
+    if (!ids || ids.length === 0) return 0;
     try {
-        const res  = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(',')}&key=${YT_API_KEY}`);
+        const res  = await fetch(`/api/youtube?ids=${ids.join(',')}`);
         const data = await res.json();
-        return (data.items || []).reduce((sum, item) => sum + parseInt(item.statistics.viewCount || 0), 0);
+        return data.views || 0;
     } catch { return 0; }
 }
 

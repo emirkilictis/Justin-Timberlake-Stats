@@ -11,8 +11,11 @@
       "digitalSinglesEAS": 1290000,
       "streams": {
           "spotify": 0,
-          "youtube": 1068000000,
-          "youtubeVideoIds": ["FQ3slUz7Jo8", "TSVHoHyErBQ", "nJHYDkvRB2Y", "7EJbFg_LxjY", "hsWrBme4cG8"]
+          "youtubeVideoIds": [
+            "FQ3slUz7Jo8", "TSVHoHyErBQ", "nJHYDkvRB2Y", "7EJbFg_LxjY", "hsWrBme4cG8",
+            "DksSPZTZES0", "-IHcp8Pl_X4",
+            "p_mHGwm_TYw"
+          ]
       }
     },
     "FutureSex/LoveSounds": {
@@ -22,8 +25,14 @@
       "digitalSinglesEAS": 5250000,
       "streams": {
           "spotify": 0,
-          "youtube": 1050000000,
-          "youtubeVideoIds": ["QUuKvHHt8Sk", "xjpe7EGyiw8", "zMaNfqfsMtE", "SB2E3BhEbc0", "bxBiTm7vtCs", "3LmSjmcUNh8", "gfWQ1r6IQrY", "FTqzLbK85pI"]
+          "youtubeVideoIds": [
+            "QUuKvHHt8Sk", "xjpe7EGyiw8", "zMaNfqfsMtE", "SB2E3BhEbc0", "bxBiTm7vtCs", "3LmSjmcUNh8", "gfWQ1r6IQrY", "FTqzLbK85pI",
+            "3gOHvDP_vCs", "TOrnUquxtwA",
+            "-oqXwnXjgDE", "nuOqS_jYdpI", "IC8qPpnD0uE", "JbxAmx7sAyE",
+            "2z2NsE8ZfEs",
+            "RgoiSJ23cSc", "5RDSkR8_AQ0", "aAQZPBwz2CI",
+            "seBqMu8CCtg", "TplEakRFx0M"
+          ]
       }
     },
     "The 20/20 Experience": {
@@ -33,8 +42,15 @@
       "digitalSinglesEAS": 2700000,
       "streams": {
           "spotify": 0,
-          "youtube": 1930000000,
-          "youtubeVideoIds": ["07FYdnEawAQ", "U41KPUfOSFk", "cJzRZ0T5ewc", "KReoTOZK9W8", "7tWvTW16atE", "59nAgJZ5IoE"]
+          "youtubeVideoIds": [
+            "07FYdnEawAQ", "U41KPUfOSFk", "cJzRZ0T5ewc", "KReoTOZK9W8", "7tWvTW16atE", "59nAgJZ5IoE",
+            "uuZE_IRwLNI", "IsUsVbTj2AY",
+            "0umrvtA_pNc", "-WCnpZruNoo",
+            "DEzREJbln-o", "tFMFnZyWIW4",
+            "FyXtoTLLcDk", "SJW3JRm6BTs", "MFN-iKwMrIQ",
+            "Vjty080jy60", "Y8ygKnBtKAk", "eAeteudJ5g0",
+            "4kc5_pfNHGk"
+          ]
       }
     },
     "Man of the Woods": {
@@ -44,8 +60,15 @@
       "digitalSinglesEAS": 150000,
       "streams": {
           "spotify": 0,
-          "youtube": 604000000,
-          "youtubeVideoIds": ["baj6llvgpWA", "M4vnmgZLA8s"]
+          "youtubeVideoIds": [
+            "baj6llvgpWA", "M4vnmgZLA8s",
+            "gA-NDZb29I4", "8MPbR6Cbwi4",
+            "2HBJpnMKSm4", "1Iw340-lV64", "tMkwQFlAhMA",
+            "7bDFD_WcU9I",
+            "DJ7lTFQAOz0", "v6xUgawDQB0",
+            "6sixT068YsQ", "oGLzeAC3ssU", "Z5Ylu4tRgk8", "bVU-MmJZFFA",
+            "NxJ7O0CGzO8"
+          ]
       }
     },
 
@@ -56,8 +79,15 @@
       "digitalSinglesEAS": 5000,
       "streams": {
           "spotify": 0,
-          "youtube": 68000000,
-          "youtubeVideoIds": ["je0roKRn3nY", "hAnePKLB1EY", "g-n0AkzFjjQ"]
+          "youtubeVideoIds": [
+            "je0roKRn3nY", "hAnePKLB1EY", "g-n0AkzFjjQ",
+            "tSXZ8hervyY",
+            "yB5MFBTXl-s", "ygYhtb9Rgyc", "oa-B0Rgop5s", "hPG3x_g2Hro",
+            "sw3zusSPsw8", "db_DCw845xc", "zHHhLLlrEco",
+            "F-mPV7kmdAU", "B1mQ7v2yaWw", "5M1-eaP0XAQ", "6LStoMyRmBI",
+            "a_vQaOARTC8", "1scEMOiSjCI", "02N_R-PRizk",
+            "CB0x_7e2BoU"
+          ]
       }
     },
 
@@ -68,8 +98,14 @@
       "digitalSinglesEAS": 7650000,
       "streams": {
           "spotify": 0,
-          "youtube": 2300000000,
-          "youtubeVideoIds": ["ru0K8uYEZWw", "la0-5QFLr14", "C5RrNaCfUXE", "v8P_go_vj00", "k8iqN8hOvQA"]
+          "youtubeVideoIds": [
+            "ru0K8uYEZWw", "la0-5QFLr14", "C5RrNaCfUXE", "v8P_go_vj00", "k8iqN8hOvQA", "WpYeekQkAdc", "rJYcmq__nDM", "F0B7HDiY-10", "eMQuofsOOzo", "Ii7aOjjJAxw", "k8rpVEzU9do",
+            "dmk0u5j4cxk", "U1ePoiXxJPE", "jZkaxAjOH6o", "OB4VMLgKkV8", "saqEIocK0xc", "DSCZC4DKQwM", "p5RobDomh5U",
+            "4onPsBIPUbY",
+            "4WITkm-FFKo",
+            "6mEx9FtuN0k", "NRdHsuuXxfk",
+            "oG08ukJPtR8", "raB8z_tXq7A"
+          ]
       }
     }
   }

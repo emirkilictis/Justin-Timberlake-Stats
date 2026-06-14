@@ -7,3 +7,10 @@ Thumbs.db
 
 # Node
 node_modules/
+
+# Local dev server (pushlanmaz)
+localdev.js
+assets/jt-video.mp4
+
+# Claude agent worktrees (lokal)
+.claude/worktrees/

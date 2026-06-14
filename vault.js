@@ -138,7 +138,7 @@ async function fetchLiveStreams() {
         if (!liveStreams.tracks[radioLower]) {
             const baselineDate = '2026-05-24';
             const baselineTotal = 118_417_347;
-            const dailyGrowth = 10_000;
+            const dailyGrowth = 1_500;
             const days = Math.max(0, Math.round(
                 (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
             ));

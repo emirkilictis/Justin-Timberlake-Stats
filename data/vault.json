@@ -611,7 +611,10 @@
         "Canada": "None",
         "New Zealand": "1x Platinum",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "F0B7HDiY-10"
+      ]
     },
     {
       "id": "stay_with_me",
@@ -626,7 +629,10 @@
         "Australia": "None",
         "Canada": "None",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "eMQuofsOOzo"
+      ]
     },
     {
       "id": "better_place",
@@ -641,7 +647,11 @@
         "Australia": "None",
         "Canada": "1x Platinum",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "Ii7aOjjJAxw",
+        "k8rpVEzU9do"
+      ]
     },
     {
       "id": "where_is_the_love",
@@ -657,7 +667,10 @@
         "Canada": "Gold",
         "New Zealand": "5x Platinum",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "WpYeekQkAdc"
+      ]
     },
     {
       "id": "rehab",
@@ -673,7 +686,10 @@
         "Canada": "None",
         "World": "None"
       },
-      "streams": {}
+      "streams": {},
+      "youtubeVideoIds": [
+        "rJYcmq__nDM"
+      ]
     }
   ],
   "albums": [
