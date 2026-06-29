@@ -182,6 +182,44 @@ function getTrackSpotify(title) {
     return found ? sum : 0;
 }
 
+// Sertifikaya SAYILMAYAN video ID'leri. Bunlar Total YouTube gösteriminde (script.js,
+// streams.js) sayılmaya devam eder; sadece RIAA ünite hesabından (calculateUSALive)
+// çıkarılır. RIAA single/album sertifikası şarkının resmi audio/video on-demand
+// stream'lerini sayar; canlı performans, behind-the-scenes, making-of, "first listen",
+// trailer/teaser, fan videoları bu kapsamda DEĞİL.
+const CERT_EXCLUDED_VIDEO_IDS = new Set([
+    "-WCnpZruNoo", // Mirrors (Live on SNL)
+    "0umrvtA_pNc", // Suit & Tie (Live on SNL)
+    "1Iw340-lV64", // Say Something (Live From Jimmy Fallon)
+    "2HBJpnMKSm4", // Supplies (Live From Jimmy Fallon)
+    "2z2NsE8ZfEs", // Making Of SexyBack
+    "4WITkm-FFKo", // Better Days (2021 Inauguration Performance)
+    "4onPsBIPUbY", // Rock Your Body & CSTF (Eurovision 2016 live)
+    "6sixT068YsQ", // Man of the Woods (Behind The Album)
+    "7bDFD_WcU9I", // Say Something / Midnight Summer Jam (Live BRITs 2018)
+    "DJ7lTFQAOz0", // Filthy (Super Bowl LII Halftime Performance)
+    "DSCZC4DKQwM", // CSTF (Anna Kendrick First Listen)
+    "Z5Ylu4tRgk8", // Filthy (Behind The Song)
+    "OB4VMLgKkV8", // CSTF (Kunal Nayyar First Listen)
+    "JbxAmx7sAyE", // What Goes Around (Official Trailer)
+    "U1ePoiXxJPE", // CSTF (James Corden First Listen)
+    "bVU-MmJZFFA", // MAN OF THE WOODS (Behind The Album)
+    "dmk0u5j4cxk", // CSTF (Official Video Teaser)
+    "eAeteudJ5g0", // Not A Bad Thing (Fan Video)
+    "jZkaxAjOH6o", // CSTF (Ron Funches First Listen)
+    "oGLzeAC3ssU", // The Man of the Woods (Behind The Tour)
+    "p5RobDomh5U", // CSTF (First Listen)
+    "saqEIocK0xc", // CSTF (Icona Pop First Listen)
+    "tMkwQFlAhMA", // Say Something (First Take)
+    "v6xUgawDQB0", // Pepsi Super Bowl LII Halftime Show (Live)
+    "Ii7aOjjJAxw", // *NSYNC scene from Trolls Band Together (film klibi)
+    "F0B7HDiY-10", // IVE - After LIKE (JT ile alakasız, yanlış maplenmiş)
+]);
+
+function filterCertVideoIds(ids) {
+    return (ids || []).filter(id => !CERT_EXCLUDED_VIDEO_IDS.has(id));
+}
+
 async function fetchRealYouTubeViews(ids) {
     const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(',')}&key=${YOUTUBE_API_KEY}`;
     try {
@@ -706,18 +744,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([fetchVaultData(), fetchLiveStreams()]);
     
     if (YOUTUBE_API_KEY && jtData) {
-        // Fetch album-level YouTube views
+        // Fetch album-level YouTube views — SADECE sertifikaya sayılan videolar.
+        // (Total YouTube gösterimi script.js/streams.js'te tam listeyle hesaplanır.)
         await Promise.all(Object.keys(jtData.albums).map(async id => {
-            const ids = jtData.albums[id].streams.youtubeVideoIds;
-            if (ids && ids.length > 0) {
+            const ids = filterCertVideoIds(jtData.albums[id].streams.youtubeVideoIds);
+            if (ids.length > 0) {
                 const live = await fetchRealYouTubeViews(ids);
                 if (live > 0) jtData.albums[id].streams.youtube = live;
             }
         }));
         // Fetch per-song YouTube views (e.g. orphan tracks with individual video IDs)
         await Promise.all(vaultData.songs.map(async song => {
-            if (song.youtubeVideoIds && song.youtubeVideoIds.length > 0) {
-                const live = await fetchRealYouTubeViews(song.youtubeVideoIds);
+            const rawIds = (song.streams && song.streams.youtubeVideoIds) || song.youtubeVideoIds;
+            const ids = filterCertVideoIds(rawIds);
+            if (ids.length > 0) {
+                const live = await fetchRealYouTubeViews(ids);
                 if (live > 0) liveStreams.songs[song.id] = live;
             }
         }));
