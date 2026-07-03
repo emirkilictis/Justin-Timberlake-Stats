@@ -266,7 +266,7 @@ function getUTCDateString(daysAgo = 0) {
     return d.toISOString().split('T')[0];
 }
 
-function waitForFirestore(timeoutMs = 6000) {
+function waitForFirestore(timeoutMs = 3000) {
     return new Promise(resolve => {
         if (typeof window.getHistoricalSnapshot === 'function') { resolve(true); return; }
         const timer = setTimeout(() => resolve(false), timeoutMs);
@@ -409,11 +409,11 @@ function renderEOYProjection(liveStats, snap7, snap30) {
 
     let projectedDaily, confidence, confNote;
     if (ytdAvg > 0 && monthlyAvg !== null && weeklyAvg !== null) {
-        projectedDaily = ytdAvg * 0.5 + monthlyAvg * 0.4 + weeklyAvg * 0.1;
+        projectedDaily = weeklyAvg * 0.35 + monthlyAvg * 0.45 + ytdAvg * 0.20;
         confidence = "high";
         confNote = "YTD + 30d + 7d";
     } else if (ytdAvg > 0 && monthlyAvg !== null) {
-        projectedDaily = ytdAvg * 0.6 + monthlyAvg * 0.4;
+        projectedDaily = monthlyAvg * 0.65 + ytdAvg * 0.35;
         confidence = "medium";
         confNote = "YTD + 30d";
     } else if (ytdAvg > 0) {
@@ -878,8 +878,11 @@ document.addEventListener('eraChanged', () => {
 
 async function initStreamsDashboard() {
     try {
-        // ── ADIM A: Canlı veriyi çek ─────────────────────────────────
-        const res = await fetch(MY_DYNAMIC_API);
+        // ── ADIM A+B: Kworb fetch ve Firestore init paralel başlat ───
+        const [res, firestoreOk] = await Promise.all([
+            fetch(MY_DYNAMIC_API),
+            waitForFirestore()
+        ]);
         const html = await res.text();
         const liveStats = analyzeKworbData(html);
 
@@ -890,15 +893,14 @@ async function initStreamsDashboard() {
         const allAlbums = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience \u2013 2 of 2", "Man of the Woods", "Everything I Thought It Was", "Orphan"];
 
         // ── ADIM B: Firestore — snap7, snap30 ve trend verileri ──────
-        const firestoreOk = await waitForFirestore();
         let snap7  = null;
         let snap30 = null;
         let snapToday = null;
         let trendSnapshots = [];
 
         if (firestoreOk) {
-            // snap7 + snap30 + bugün + son 30 günün snapshot'larını paralel çek
-            const trendDays = Array.from({ length: 30 }, (_, i) => i + 1); // 1..30 gün öncesi
+            // Trend chart için sparse key points (33→13 okuma)
+            const trendDays = [2, 3, 5, 7, 10, 14, 18, 21, 25, 30];
             const [s7, s30, sToday, ...trendResults] = await Promise.all([
                 window.getHistoricalSnapshot(getUTCDateString(7)),
                 window.getHistoricalSnapshot(getUTCDateString(30)),
@@ -1359,10 +1361,7 @@ window.generateShareCard = function() {
     wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
 
-window.downloadCard = function() {
-    const card = document.getElementById('share-card');
-    if (!card || typeof html2canvas === 'undefined') return;
-
+function _runHtml2Canvas(card) {
     html2canvas(card, {
         backgroundColor: '#0a0a0a',
         scale: 2,
@@ -1374,6 +1373,16 @@ window.downloadCard = function() {
         link.href = canvas.toDataURL('image/png');
         link.click();
     });
+}
+
+window.downloadCard = function() {
+    const card = document.getElementById('share-card');
+    if (!card) return;
+    if (typeof html2canvas !== 'undefined') { _runHtml2Canvas(card); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    s.onload = () => _runHtml2Canvas(card);
+    document.head.appendChild(s);
 };
 
 window.tweetStats = function() {
