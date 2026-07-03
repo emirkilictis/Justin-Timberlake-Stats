@@ -195,11 +195,100 @@
         .t-weeks { font-size: 0.72rem; color: rgba(255,255,255,0.2); white-space: nowrap; }
         .t-weeks.has-one { color: rgba(212,168,83,0.5); }
 
-        /* Hide weeks columns on small screens */
+        /* ── CONTROLS: search + sort ── */
+        .chart-controls {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            align-items: center; margin-bottom: 22px;
+        }
+
+        #chart-search {
+            flex: 1 1 180px; min-width: 0;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 9px; padding: 9px 14px;
+            color: rgba(255,255,255,0.75);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem; outline: none;
+            transition: border-color 0.2s;
+        }
+        #chart-search:focus { border-color: rgba(212,168,83,0.4); }
+
+        .sort-bar {
+            display: flex; gap: 6px; align-items: center;
+            flex-wrap: nowrap; overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            max-width: 100%;
+        }
+        .sort-bar::-webkit-scrollbar { display: none; }
+
+        .sort-lbl {
+            font-size: 0.62rem; color: #444;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            flex-shrink: 0;
+        }
+
+        .sort-chip {
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 100px;
+            padding: 7px 13px; min-height: 32px;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.72rem; font-weight: 600;
+            cursor: pointer; white-space: nowrap;
+            transition: color 0.15s, border-color 0.15s, background 0.15s;
+        }
+        .sort-chip:hover { color: rgba(255,255,255,0.7); }
+        .sort-chip.active {
+            background: rgba(212,168,83,0.12);
+            border-color: rgba(212,168,83,0.45);
+            color: var(--accent-gold);
+        }
+
+        /* Sortable column headers (desktop) */
+        .chart-table th[data-sort] { cursor: pointer; transition: color 0.15s; }
+        .chart-table th[data-sort]:hover { color: #999; }
+        .chart-table th[data-sort].th-active { color: var(--accent-gold); }
+
+        /* #1 satırlarına ince vurgu */
+        .chart-table tbody tr.row-one {
+            background: rgba(212,168,83,0.04);
+            box-shadow: inset 2px 0 0 rgba(212,168,83,0.5);
+        }
+        .chart-table tbody tr.row-one:hover { background: rgba(212,168,83,0.07); }
+
+        /* Blok başlığındaki entry sayısı */
+        .block-count { color: #3a3a3a; font-weight: 400; margin-left: 6px; letter-spacing: 0.05em; }
+
+        /* Mobilde hafta kolonları gizlenir ama bilgi başlık altına taşınır */
+        .t-meta-mobile { display: none; }
+
+        .no-match td {
+            text-align: center; color: #444;
+            padding: 18px 10px; font-size: 0.75rem;
+        }
+
+        /* Hide weeks columns on small screens.
+           NOT: style.css'in global mobil reset'i tüm td/th'lere
+           "display:table-cell !important" bastığı için buradaki
+           override'lar da !important olmak zorunda. */
         @media (max-width: 520px) {
             .chart-tab { font-size: 0.7rem; padding: 7px 6px; }
-            .col-weeks { display: none; }
-            .chart-table td, .chart-table th { padding: 8px 6px; }
+            .col-weeks { display: none !important; }
+            .chart-table td, .chart-table th { padding: 8px 6px !important; }
+            .chart-table td:first-child { white-space: normal !important; }
+            .chart-table th:last-child,
+            .chart-table td:last-child { text-align: center !important; }
+            .t-meta-mobile {
+                display: block; font-size: 0.64rem;
+                color: rgba(255,255,255,0.28); margin-top: 3px;
+                font-variant-numeric: tabular-nums;
+            }
+            .t-meta-mobile .m1 { color: rgba(212,168,83,0.55); }
+            .chart-controls { gap: 8px; }
+            #chart-search { flex-basis: 100%; }
         }
 
         /* ── FOOTER ── */
@@ -245,30 +334,42 @@
             <button class="chart-tab" data-tab="uk">UK Official Charts</button>
         </div>
 
+        <div class="chart-controls">
+            <input type="search" id="chart-search" placeholder="Search song, album or artist..." autocomplete="off">
+            <div class="sort-bar" role="group" aria-label="Sort entries">
+                <span class="sort-lbl">Sort</span>
+                <button class="sort-chip active" data-sort="peak" aria-pressed="true">Peak ↑</button>
+                <button class="sort-chip" data-sort="year" aria-pressed="false">Year</button>
+                <button class="sort-chip" data-sort="woc" aria-pressed="false">Weeks</button>
+                <button class="sort-chip" data-sort="wo1" aria-pressed="false">Wks #1</button>
+                <button class="sort-chip" data-sort="title" aria-pressed="false">A–Z</button>
+            </div>
+        </div>
+
         <!-- BILLBOARD -->
         <div class="chart-section active" id="tab-billboard">
             <div class="chart-block">
-                <div class="block-title">Hot 100 — Singles</div>
+                <div class="block-title">Hot 100 — Singles<span class="block-count"></span></div>
                 <table class="chart-table" id="bb-hot100-table">
                     <thead><tr>
-                        <th>Single</th>
-                        <th>Year</th>
-                        <th class="col-weeks">Weeks</th>
-                        <th class="col-weeks">Wks #1</th>
-                        <th>Peak</th>
+                        <th data-sort="title">Single</th>
+                        <th data-sort="year">Year</th>
+                        <th class="col-weeks" data-sort="woc">Weeks</th>
+                        <th class="col-weeks" data-sort="wo1">Wks #1</th>
+                        <th data-sort="peak">Peak</th>
                     </tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div class="chart-block">
-                <div class="block-title">Billboard 200 — Albums</div>
+                <div class="block-title">Billboard 200 — Albums<span class="block-count"></span></div>
                 <table class="chart-table" id="bb-200-table">
                     <thead><tr>
-                        <th>Album</th>
-                        <th>Year</th>
-                        <th class="col-weeks">Weeks</th>
-                        <th class="col-weeks">Wks #1</th>
-                        <th>Peak</th>
+                        <th data-sort="title">Album</th>
+                        <th data-sort="year">Year</th>
+                        <th class="col-weeks" data-sort="woc">Weeks</th>
+                        <th class="col-weeks" data-sort="wo1">Wks #1</th>
+                        <th data-sort="peak">Peak</th>
                     </tr></thead>
                     <tbody></tbody>
                 </table>
@@ -278,27 +379,27 @@
         <!-- UK -->
         <div class="chart-section" id="tab-uk">
             <div class="chart-block">
-                <div class="block-title">UK Singles Chart</div>
+                <div class="block-title">UK Singles Chart<span class="block-count"></span></div>
                 <table class="chart-table" id="uk-singles-table">
                     <thead><tr>
-                        <th>Single</th>
-                        <th>Year</th>
-                        <th class="col-weeks">Weeks</th>
-                        <th class="col-weeks">Wks #1</th>
-                        <th>Peak</th>
+                        <th data-sort="title">Single</th>
+                        <th data-sort="year">Year</th>
+                        <th class="col-weeks" data-sort="woc">Weeks</th>
+                        <th class="col-weeks" data-sort="wo1">Wks #1</th>
+                        <th data-sort="peak">Peak</th>
                     </tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
             <div class="chart-block">
-                <div class="block-title">UK Albums Chart</div>
+                <div class="block-title">UK Albums Chart<span class="block-count"></span></div>
                 <table class="chart-table" id="uk-albums-table">
                     <thead><tr>
-                        <th>Album</th>
-                        <th>Year</th>
-                        <th class="col-weeks">Weeks</th>
-                        <th class="col-weeks">Wks #1</th>
-                        <th>Peak</th>
+                        <th data-sort="title">Album</th>
+                        <th data-sort="year">Year</th>
+                        <th class="col-weeks" data-sort="woc">Weeks</th>
+                        <th class="col-weeks" data-sort="wo1">Wks #1</th>
+                        <th data-sort="peak">Peak</th>
                     </tr></thead>
                     <tbody></tbody>
                 </table>
@@ -419,29 +520,114 @@
         return 'plo';
     }
 
-    function renderTable(id, rows) {
-        const tbody = document.querySelector('#' + id + ' tbody');
-        if (!tbody) return;
-        tbody.innerHTML = rows
-            .slice().sort((a, b) => a.peak - b.peak || a.year - b.year)
-            .map(e => {
-                const subParts = [
-                    e.feat  ? `<span class="feat">${e.feat}</span>` : null,
-                    e.album ? `<span class="album">${e.album}</span>` : null,
-                ].filter(Boolean).join('<span style="color:#2a2a2a;margin:0 3px">·</span>');
+    // ── Sort + Search durumu ──
+    // Her anahtarın "doğal" ilk yönü: peak küçük→iyi (asc), diğer sayılar çok→iyi (desc)
+    const SORT_DEFAULTS = { peak: true, year: false, woc: false, wo1: false, title: true };
+    let sortKey = 'peak';
+    let sortAsc = true;
+    let searchQuery = '';
 
-                return `<tr>
-                    <td>
-                        <span class="t-title${e.peak === 1 ? ' is-one' : ''}">${e.title}</span>
-                        ${subParts ? `<span class="t-sub">${subParts}</span>` : ''}
-                    </td>
-                    <td><span class="t-year">${e.year}</span></td>
-                    <td class="col-weeks"><span class="t-weeks">${e.woc}w</span></td>
-                    <td class="col-weeks"><span class="t-weeks${e.wo1 ? ' has-one' : ''}">${e.wo1 ? e.wo1 + 'w' : '—'}</span></td>
-                    <td><span class="peak-num ${peakClass(e.peak)}">${e.peak}</span></td>
-                </tr>`;
-            }).join('');
+    function comparator(a, b) {
+        let va, vb;
+        if (sortKey === 'title') {
+            return sortAsc ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+        }
+        va = a[sortKey] ?? -1; vb = b[sortKey] ?? -1;  // wo1 null → en sona
+        if (va === vb) return a.peak - b.peak || a.year - b.year; // stabil ikincil sıralama
+        return sortAsc ? va - vb : vb - va;
     }
+
+    function matchesSearch(e) {
+        if (!searchQuery) return true;
+        return [e.title, e.feat, e.album].filter(Boolean)
+            .some(s => s.toLowerCase().includes(searchQuery));
+    }
+
+    function renderTable(id, rows) {
+        const table = document.getElementById(id);
+        const tbody = table?.querySelector('tbody');
+        if (!tbody) return;
+
+        const filtered = rows.filter(matchesSearch).sort(comparator);
+
+        // Blok başlığındaki sayaç
+        const countEl = table.closest('.chart-block')?.querySelector('.block-count');
+        if (countEl) countEl.textContent = searchQuery
+            ? `· ${filtered.length} / ${rows.length}`
+            : `· ${rows.length} entries`;
+
+        if (!filtered.length) {
+            tbody.innerHTML = '<tr class="no-match"><td colspan="5">No matches</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(e => {
+            const subParts = [
+                e.feat  ? `<span class="feat">${e.feat}</span>` : null,
+                e.album ? `<span class="album">${e.album}</span>` : null,
+            ].filter(Boolean).join('<span style="color:#2a2a2a;margin:0 3px">·</span>');
+
+            // Mobilde gizlenen hafta kolonlarının bilgisi başlık altına gelir
+            const meta = `${e.woc}w on chart${e.wo1 ? ` · <span class="m1">${e.wo1}w at #1</span>` : ''}`;
+
+            return `<tr${e.peak === 1 ? ' class="row-one"' : ''}>
+                <td>
+                    <span class="t-title${e.peak === 1 ? ' is-one' : ''}">${e.title}</span>
+                    ${subParts ? `<span class="t-sub">${subParts}</span>` : ''}
+                    <span class="t-meta-mobile">${meta}</span>
+                </td>
+                <td><span class="t-year">${e.year}</span></td>
+                <td class="col-weeks"><span class="t-weeks">${e.woc}w</span></td>
+                <td class="col-weeks"><span class="t-weeks${e.wo1 ? ' has-one' : ''}">${e.wo1 ? e.wo1 + 'w' : '—'}</span></td>
+                <td><span class="peak-num ${peakClass(e.peak)}">${e.peak}</span></td>
+            </tr>`;
+        }).join('');
+    }
+
+    function renderAll() {
+        renderTable('bb-hot100-table',  data.bbHot100);
+        renderTable('bb-200-table',     data.bb200);
+        renderTable('uk-singles-table', data.ukSingles);
+        renderTable('uk-albums-table',  data.ukAlbums);
+        updateSortUI();
+    }
+
+    const CHIP_LABELS = { peak: 'Peak', year: 'Year', woc: 'Weeks', wo1: 'Wks #1', title: 'A–Z' };
+
+    function updateSortUI() {
+        const arrow = sortAsc ? '↑' : '↓';
+        document.querySelectorAll('.sort-chip').forEach(ch => {
+            const key = ch.dataset.sort;
+            const active = key === sortKey;
+            ch.classList.toggle('active', active);
+            ch.setAttribute('aria-pressed', active);
+            ch.textContent = active ? `${CHIP_LABELS[key]} ${arrow}` : CHIP_LABELS[key];
+        });
+        document.querySelectorAll('.chart-table th[data-sort]').forEach(th => {
+            th.classList.toggle('th-active', th.dataset.sort === sortKey);
+        });
+    }
+
+    function applySort(key) {
+        if (sortKey === key) {
+            sortAsc = !sortAsc;             // aynı anahtara ikinci tık: yön değiştir
+        } else {
+            sortKey = key;
+            sortAsc = SORT_DEFAULTS[key];   // yeni anahtar: doğal yönüyle başla
+        }
+        renderAll();
+    }
+
+    document.querySelectorAll('.sort-chip').forEach(ch =>
+        ch.addEventListener('click', () => applySort(ch.dataset.sort)));
+
+    document.querySelectorAll('.chart-table th[data-sort]').forEach(th =>
+        th.addEventListener('click', () => applySort(th.dataset.sort)));
+
+    document.getElementById('chart-search').addEventListener('input', e => {
+        searchQuery = e.target.value.trim().toLowerCase();
+        renderAll();
+    });
 
     function renderPills() {
         const bb1  = data.bbHot100.filter(e => e.peak === 1).length;
@@ -468,10 +654,7 @@
     });
 
     renderPills();
-    renderTable('bb-hot100-table',  data.bbHot100);
-    renderTable('bb-200-table',     data.bb200);
-    renderTable('uk-singles-table', data.ukSingles);
-    renderTable('uk-albums-table',  data.ukAlbums);
+    renderAll();
     document.dispatchEvent(new Event('dataReady'));
     </script>
 </body>
