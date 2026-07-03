@@ -33,3 +33,48 @@ jobs:
           KWORB_DIRECT_URL: ${{ secrets.KWORB_DIRECT_URL }}
         run: node daily-snapshot.js
         working-directory: scripts
+
+  sync-seo-figures:
+    # EAS ve certified-units rakamları index.html/about.html/vault.html
+    # içine statik metin olarak gömülü (AI crawler'lar JS çalıştırmaz).
+    # Bu job canlı siteyi gerçek bir tarayıcıda açıp client-side JS'in
+    # hesapladığı güncel sayıları okur ve <!--AUTO:X--> marker'larının
+    # içini günceller — kaynak dosyalarda manuel rakam güncellemesi
+    # gerektirmeden SEO metni taze kalır.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+
+      - name: Node.js 24 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: scripts/package.json
+
+      - name: Bağımlılıkları yükle (Puppeteer/Chromium dahil)
+        run: npm install
+        working-directory: scripts
+
+      - name: Canlı siteden EAS + certified units oku, dosyaları güncelle
+        id: sync
+        run: node sync-seo-figures.js
+        working-directory: scripts
+
+      - name: Değişiklik varsa commit + push
+        run: |
+          if git diff --quiet -- index.html about.html vault.html; then
+            echo "Değişiklik yok, commit atlanıyor."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html about.html vault.html
+          git commit -m "chore: sync EAS/certified-units SEO figures with live site [skip ci]"
+          git pull --rebase origin main
+          git push
