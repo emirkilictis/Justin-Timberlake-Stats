@@ -200,7 +200,7 @@
         const heroBg = document.querySelector('.hero-bg');
         const heroVideo = document.querySelector('.hero video');
         if (heroBg) {
-            const img = isDefault ? "url('assets/jt-horizontal.png')" : `url('${era.cover || "assets/jt-horizontal.png"}')`;
+            const img = isDefault ? "url('assets/jt-horizontal.webp')" : `url('${era.cover || "assets/jt-horizontal.webp"}')`;
             heroBg.style.backgroundImage =
                 `linear-gradient(to right, rgba(10,10,15,0.6) 30%, rgba(10,10,15,0.25) 100%),
                  linear-gradient(to bottom, transparent 60%, #0a0a0f 100%), ${img}`;
@@ -450,7 +450,7 @@
         const loader = document.createElement('div');
         loader.id = 'jt-global-loader';
         loader.innerHTML = `
-            <img src="assets/jt-head.png" alt="Loading JT" id="jt-loader-img"/>
+            <img src="assets/jt-head.webp" alt="Loading JT" id="jt-loader-img"/>
             <div id="jt-loader-text">SYNCING LIVE DATA</div>
         `;
         document.documentElement.appendChild(loader);
@@ -523,7 +523,7 @@
     function injectJTScrollTop() {
         const stt = document.createElement('div');
         stt.id = 'jt-scroll-top';
-        stt.innerHTML = `<img src="assets/jt-head.png" alt="Scroll to Top" />`;
+        stt.innerHTML = `<img src="assets/jt-head.webp" alt="Scroll to Top" />`;
         document.body.appendChild(stt);
 
         window.addEventListener('scroll', () => {

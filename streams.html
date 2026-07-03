@@ -92,7 +92,7 @@
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap"
             rel="stylesheet">
     </noscript>
-    <link rel="stylesheet" href="style.css?v=1778952530">
+    <link rel="stylesheet" href="style.css?v=1783096893">
     <style>
         /* Sadece bu sayfaya özel dashboard stilleri */
         .analytics-container {
@@ -287,31 +287,6 @@
             vertical-align: middle;
         }
 
-        .ctry-btn {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: rgba(255,255,255,0.45);
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .ctry-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
-        .ctry-btn.active { background: rgba(29,185,84,0.12); border-color: rgba(29,185,84,0.4); color: #1DB954; }
-
-        .country-track-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 9px 4px;
-            border-bottom: 1px solid rgba(255,255,255,0.035);
-            transition: background 0.1s;
-        }
-        .country-track-row:last-child { border-bottom: none; }
-        .country-track-row:hover { background: rgba(255,255,255,0.02); border-radius: 6px; }
-
         @media (max-width: 768px) {
             .growth-stats { grid-template-columns: 1fr; }
             .growth-value { font-size: 1.3rem; }
@@ -396,18 +371,11 @@
                 min-width: 105px !important;
             }
 
-            #country-tabs {
-                flex-wrap: nowrap !important;
-                overflow-x: auto !important;
-                padding-bottom: 4px;
-            }
-            #country-tabs::-webkit-scrollbar { display: none; }
-            #country-search { width: 100% !important; }
         }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js?v=1778952530" defer></script>
-    <script src="song-map.js?v=1778952530" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js?v=1783096893" defer></script>
+    <script src="song-map.js?v=1783096893" defer></script>
 
 </head>
 
@@ -450,10 +418,18 @@
                 <div class="hero-sub">Monthly Listeners</div>
                 <div class="hero-value" id="jt-spotify-monthly" style="color:#1DB954;">—</div>
                 <div style="font-size:0.72rem;color:#333;margin-top:4px;">
-                    Followers: <span id="jt-spotify-followers" style="color:rgba(255,255,255,0.3);">—</span>
-                    &nbsp;·&nbsp; Popularity: <span id="jt-spotify-popularity" style="color:rgba(255,255,255,0.3);">—</span>/100
-                    <span id="jt-spotify-status" style="font-size:0.6rem;color:#3a3a3a;margin-left:6px;"></span>
+                    Spotify <span id="jt-spotify-status" style="font-size:0.6rem;color:#3a3a3a;margin-left:6px;"></span>
                 </div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-sub">Total AOD Streams</div>
+                <div class="hero-value" id="jt-total-aod">Calculating...</div>
+                <div style="font-size:0.72rem;color:#333;margin-top:4px;">Estimated Audio On Demand</div>
+            </div>
+            <div class="hero-card">
+                <div class="hero-sub">Total YouTube Views</div>
+                <div class="hero-value" id="jt-total-youtube">Calculating...</div>
+                <div style="font-size:0.72rem;color:#333;margin-top:4px;">Across official uploads</div>
             </div>
         </div>
 
@@ -473,34 +449,6 @@
                 <div class="hero-sub" style="font-size:0.75rem;">2026 Streams</div>
                 <div class="growth-value loading" id="jt-ytd-growth">—</div>
                 <div class="data-status" id="snapytd-status">Calculating...</div>
-            </div>
-        </div>
-
-        <!-- Regional Top Tracks -->
-        <div class="analytics-row" style="background:rgba(255,255,255,0.015);padding:24px 28px;border-radius:10px;border:1px solid rgba(255,255,255,0.035);">
-            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:18px;">
-                <div>
-                    <h2 style="font-family:'Playfair Display';font-size:1.3rem;margin:0;">Regional Top Tracks</h2>
-                    <div style="font-size:0.68rem;color:#3a3a3a;margin-top:3px;font-family:'Space Grotesk',sans-serif;">Spotify · Top 10 by market</div>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                    <div style="display:flex;gap:8px;flex-wrap:wrap;" id="country-tabs">
-                        <button class="ctry-btn active" data-market="US">🇺🇸 US</button>
-                        <button class="ctry-btn" data-market="GB">🇬🇧 UK</button>
-                        <button class="ctry-btn" data-market="BR">🇧🇷 BR</button>
-                        <button class="ctry-btn" data-market="DE">🇩🇪 DE</button>
-                        <button class="ctry-btn" data-market="TR">🇹🇷 TR</button>
-                        <button class="ctry-btn" data-market="FR">🇫🇷 FR</button>
-                        <button class="ctry-btn" data-market="AU">🇦🇺 AU</button>
-                        <button class="ctry-btn" data-market="JP">🇯🇵 JP</button>
-                    </div>
-                    <input type="text" id="country-search" placeholder="ISO code (MX, IN, KR...)"
-                        maxlength="2"
-                        style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:6px 14px;color:rgba(255,255,255,0.7);font-family:'Space Grotesk',sans-serif;font-size:0.75rem;outline:none;width:170px;text-transform:uppercase;">
-                </div>
-            </div>
-            <div id="country-tracks-body">
-                <div style="text-align:center;color:#333;padding:28px;font-size:0.82rem;">Loading regional data...</div>
             </div>
         </div>
 
@@ -544,6 +492,8 @@
                         <th data-sort-col="daily" data-label="Daily Streams">Daily Streams</th>
                         <th data-sort-col="real7d" data-label="Real 7-Day ▲">Real 7-Day ▲</th>
                         <th data-sort-col="pct" data-label="% of Daily">% of Daily</th>
+                        <th data-sort-col="eoy" data-label="EOY 2026 Proj.">EOY 2026 Proj.</th>
+                        <th data-sort-col="milestone" data-label="Next Milestone">Next Milestone</th>
                     </tr>
                 </thead>
                 <tbody id="album-table-body">
@@ -573,6 +523,8 @@
                         <th data-sort-col="real7d" data-label="Real 7-Day ▲">Real 7-Day ▲</th>
                         <th data-sort-col="real30d" data-label="Real 30-Day ▲">Real 30-Day ▲</th>
                         <th data-sort-col="ytd" data-label="YTD 2026 ▲">YTD 2026 ▲</th>
+                        <th data-sort-col="eoy" data-label="EOY 2026 Proj.">EOY 2026 Proj.</th>
+                        <th data-sort-col="milestone" data-label="Next Milestone">Next Milestone</th>
                     </tr>
                 </thead>
                 <tbody id="streams-table-body">
@@ -770,9 +722,9 @@
         </div>
     </div>
 
-    <script src="config.js?v=1778952530" defer></script>
-    <script src="spotify.js?v=1778952530" defer></script>
-    <script src="fab.js?v=1778952530" defer></script>
+    <script src="config.js?v=1783096893" defer></script>
+    <script src="spotify.js?v=1783096893" defer></script>
+    <script src="fab.js?v=1783096893" defer></script>
 
     <!-- Firebase Modülü: Firestore'a erişim sağlar ve window'a helper açar -->
     <script type="module">
@@ -781,7 +733,7 @@
 
         if (typeof CONFIG === 'undefined' || !CONFIG.FIREBASE) {
             console.error("config.js yüklenemedi — Firestore devre dışı.");
-            window.dispatchEvent(new Event('firestore-ready')); // streams.js?v=1778952530'in bloke olmaması için
+            window.dispatchEvent(new Event('firestore-ready')); // streams.js?v=1783096893'in bloke olmaması için
             throw new Error("CONFIG missing");
         }
         const app = initializeApp(CONFIG.FIREBASE);
@@ -801,11 +753,11 @@
             }
         };
 
-        // streams.js?v=1778952530'e "Firestore hazır" sinyali gönder
+        // streams.js?v=1783096893'e "Firestore hazır" sinyali gönder
         window.dispatchEvent(new Event('firestore-ready'));
     </script>
 
-    <script src="streams.js?v=1778952530" defer></script>
+    <script src="streams.js?v=1783096893" defer></script>
 
 <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
     <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">

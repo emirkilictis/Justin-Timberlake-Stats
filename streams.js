@@ -19,7 +19,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YTD_BASELINE_DATE = `${CURRENT_YEAR}-01-01`;
 const YTD_2026_BASELINE = {
     date: YTD_BASELINE_DATE,
-    career_total: 16_687_312_167,
+    career_total: 16_804_299_514,
     tracks: {
         "CAN'T STOP THE FEELING! (from":  1_997_165_198,
         "FEELING! - Film Version":           136_996_989,
@@ -49,6 +49,7 @@ const YTD_2026_BASELINE = {
         "Like I Love You":                   130_249_781,
         "Filthy":                            126_475_446,
         "Better Place":                      121_159_121,
+        "Not A Bad Thing - Radio Edit":      116_987_347
     }
 };
 
@@ -82,9 +83,22 @@ const albumCovers = {
 // --- 2. YARDIMCI FONKSİYONLAR ---
 
 function getTrackYTDBaseline(liveTitle) {
-    const lower = liveTitle.toLowerCase();
+    const lower = liveTitle.toLowerCase().trim();
+    // Try exact match first
     for (const key in YTD_2026_BASELINE.tracks) {
-        if (lower.includes(key.toLowerCase())) {
+        if (key.toLowerCase().trim() === lower) {
+            return YTD_2026_BASELINE.tracks[key];
+        }
+    }
+    // Try fuzzy match, checking longer keys first to ensure specific matches win
+    const keys = Object.keys(YTD_2026_BASELINE.tracks).sort((a, b) => b.length - a.length);
+    for (const key of keys) {
+        const keyLower = key.toLowerCase().trim();
+        if (lower.includes(keyLower)) {
+            // Special rule for '4 minutes'
+            if (keyLower === '4 minutes' && lower !== '4 minutes') {
+                continue;
+            }
             return YTD_2026_BASELINE.tracks[key];
         }
     }
@@ -110,6 +124,25 @@ function formatCompact(n) {
     return Number(n || 0).toLocaleString('en-US');
 }
 
+function formatMilestone(target, daysLeft) {
+    const targetText = target >= 1_000_000_000
+        ? (target / 1_000_000_000).toFixed(1).replace(/\.0$/, '') + 'B'
+        : (target / 1_000_000).toFixed(0) + 'M';
+    
+    if (daysLeft === null || isNaN(daysLeft) || daysLeft <= 0) {
+        return `<span style="color:#555;">N/A</span>`;
+    }
+    
+    let timeText;
+    if (daysLeft > 365) {
+        const yrs = (daysLeft / 365).toFixed(1);
+        timeText = `in ${yrs}y`;
+    } else {
+        timeText = `in ${daysLeft}d`;
+    }
+    return `<span style="font-weight:600;color:#d4a853;">${targetText}</span> <span style="font-size:0.75rem;color:#aaa;">(${timeText})</span>`;
+}
+
 function animateValue(obj, start, end, duration, prefix = "") {
     if (!obj || isNaN(end)) return;
     let startTimestamp = null;
@@ -128,6 +161,103 @@ function getTrueDailyAverage(dailyStreams) {
     const dataDay = today === 0 ? 6 : today - 1;
     const dayWeights = { 0: 0.85, 1: 0.90, 2: 0.95, 3: 1.00, 4: 1.05, 5: 1.15, 6: 1.10 };
     return dailyStreams / dayWeights[dataDay];
+}
+
+// Bir track snapshot'ta YOKKEN büyümesini tahmin ederken kullanılan günlük tavan.
+// Hiçbir JT parçası gerçekte günde ~600k'yı geçmez (CSTF ~541k). Bu tavan, Neon/Kworb'dan
+// gelen tek seferlik zehirli `daily` değerlerinin (çok günlük boşluk, count düzeltmesi,
+// estimate↔gerçek geçişi) yıl sonu projeksiyonunu milyarlara fırlatmasını engeller.
+const MAX_TRACK_DAILY_EST = 1_000_000;
+
+function getCleanSnapshotDelta(liveStats, snapshot, days) {
+    if (!snapshot) return null;
+    let cleanDelta = 0;
+    
+    if (snapshot.tracks && Object.keys(snapshot.tracks).length > 0) {
+        liveStats.tracks.forEach(track => {
+            const trackTitleLower = track.title.toLowerCase().trim();
+            let snapTrack = snapshot.tracks[track.title];
+            if (!snapTrack) {
+                const foundKey = Object.keys(snapshot.tracks).find(k => k.toLowerCase().trim() === trackTitleLower);
+                if (foundKey) {
+                    snapTrack = snapshot.tracks[foundKey];
+                }
+            }
+            
+            if (snapTrack && typeof snapTrack.total === 'number') {
+                let trackDelta = track.total - snapTrack.total;
+                if (trackDelta < 0) trackDelta = 0;
+
+                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                const expectedGrowth = dailyEst * days;
+                const maxReasonable = Math.max(2_000_000 * (days / 7), expectedGrowth * 3);
+
+                if (trackDelta > maxReasonable) {
+                    console.warn(`[Snapshot Anomaly] Track: "${track.title}", Delta: ${trackDelta}, Max Reasonable: ${maxReasonable}. Estimating growth: ${expectedGrowth}`);
+                    trackDelta = expectedGrowth;
+                }
+                cleanDelta += Math.round(trackDelta);
+            } else {
+                // If it is NOT in the snapshot, estimate its growth to avoid 118M jumps
+                const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), MAX_TRACK_DAILY_EST);
+                cleanDelta += Math.max(0, Math.round(dailyEst * days));
+            }
+        });
+        return cleanDelta;
+    }
+    
+    // Fallback: If snapshot has no track data, use career total delta, but cap it to something reasonable
+    const rawDelta = liveStats.TotalSpotify - (snapshot.career_total || 0);
+    const maxReasonable = (liveStats.TotalDaily || 3000000) * days * 2;
+    if (rawDelta > 0 && rawDelta <= maxReasonable) {
+        return rawDelta;
+    }
+    return Math.round((liveStats.TotalDaily || 3000000) * days);
+}
+
+function getCleanYTDDelta(liveStats) {
+    let cleanDelta = 0;
+    const ytdDays = getYTDDaysElapsed();
+    
+    liveStats.tracks.forEach(track => {
+        const baseline = getTrackYTDBaseline(track.title);
+        if (baseline !== null) {
+            let trackDelta = track.total - baseline;
+            if (trackDelta < 0) trackDelta = 0;
+
+            const dailyEst = getTrueDailyAverage(track.daily || 0);
+            const expectedGrowth = dailyEst * ytdDays;
+            const maxReasonable = Math.max(5_000_000 * (ytdDays / 7), expectedGrowth * 3);
+
+            if (trackDelta > maxReasonable) {
+                console.warn(`[YTD Anomaly] Track: "${track.title}", Delta: ${trackDelta}, Max Reasonable: ${maxReasonable}. Estimating YTD growth: ${expectedGrowth}`);
+                trackDelta = expectedGrowth;
+            }
+            cleanDelta += Math.round(trackDelta);
+        } else {
+            // Track was not in the baseline.
+            // If it is a new release in CURRENT_YEAR, we assume it had 0 streams on Jan 1.
+            let isNewRelease = false;
+            const lowerTitle = track.title.toLowerCase();
+            for (let key in songToAlbumMap) {
+                if (lowerTitle.includes(key.toLowerCase())) {
+                    const albName = songToAlbumMap[key];
+                    if (albumMetData[albName] && albumMetData[albName].year === CURRENT_YEAR) {
+                        isNewRelease = true;
+                    }
+                    break;
+                }
+            }
+            if (isNewRelease) {
+                cleanDelta += track.total;
+            } else {
+                // Otherwise, it's an old song newly tracked, so we estimate its YTD growth
+                const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), MAX_TRACK_DAILY_EST);
+                cleanDelta += Math.max(0, Math.round(dailyEst * ytdDays));
+            }
+        }
+    });
+    return cleanDelta;
 }
 
 function getUTCDateString(daysAgo = 0) {
@@ -165,35 +295,76 @@ function calculateImprovedMilestone(track, snap7, snap30) {
     const ytdDays     = getYTDDaysElapsed();
 
     let projectedDaily, confidence;
+    const dailyEst = getTrueDailyAverage(track.daily || 0);
 
-    if (hist7 && hist30 && track.total > hist7.total && track.total > hist30.total) {
-        const realWeeklyAvg  = (track.total - hist7.total)  / 7;
-        const realMonthlyAvg = (track.total - hist30.total) / 30;
-        if (ytdBaseline && track.total > ytdBaseline && ytdDays > 30) {
-            const ytdAvg = (track.total - ytdBaseline) / ytdDays;
+    let realWeeklyAvg = null;
+    if (hist7 && track.total > hist7.total) {
+        let delta = track.total - hist7.total;
+        const expected = dailyEst * 7;
+        const cap = Math.max(2_000_000, expected * 3);
+        if (delta > cap) {
+            delta = expected;
+        }
+        realWeeklyAvg = delta / 7;
+    }
+
+    let realMonthlyAvg = null;
+    if (hist30 && track.total > hist30.total) {
+        let delta = track.total - hist30.total;
+        const expected = dailyEst * 30;
+        const cap = Math.max(5_000_000, expected * 3);
+        if (delta > cap) {
+            delta = expected;
+        }
+        realMonthlyAvg = delta / 30;
+    }
+
+    let ytdAvg = null;
+    if (ytdBaseline && track.total > ytdBaseline) {
+        let delta = track.total - ytdBaseline;
+        const expected = dailyEst * ytdDays;
+        const cap = Math.max(10_000_000, expected * 3);
+        if (delta > cap) {
+            delta = expected;
+        }
+        ytdAvg = delta / ytdDays;
+    }
+
+    if (realWeeklyAvg !== null && realMonthlyAvg !== null) {
+        if (ytdAvg !== null && ytdDays > 30) {
             projectedDaily = realWeeklyAvg * 0.5 + realMonthlyAvg * 0.3 + ytdAvg * 0.2;
         } else {
             projectedDaily = realWeeklyAvg * 0.6 + realMonthlyAvg * 0.4;
         }
         confidence = "high";
-    } else if (hist7 && track.total > hist7.total) {
-        projectedDaily = (track.total - hist7.total) / 7;
+    } else if (realWeeklyAvg !== null) {
+        projectedDaily = realWeeklyAvg;
         confidence = "medium";
-    } else if (ytdBaseline && track.total > ytdBaseline) {
-        projectedDaily = (track.total - ytdBaseline) / ytdDays;
+    } else if (ytdAvg !== null) {
+        projectedDaily = ytdAvg;
         confidence = "medium";
     } else {
-        projectedDaily = getTrueDailyAverage(track.daily);
+        projectedDaily = dailyEst;
         confidence = "low";
+    }
+
+    if (projectedDaily <= 0 && track.daily > 0) {
+        projectedDaily = dailyEst;
     }
 
     let nextMilestone;
     if (track.total >= 1000000000) {
-        nextMilestone = Math.ceil(track.total / 1000000000) * 1000000000;
-        if (nextMilestone === track.total) nextMilestone += 1000000000;
+        nextMilestone = Math.ceil(track.total / 100000000) * 100000000;
+        if (nextMilestone === track.total) nextMilestone += 100000000;
+    } else if (track.total >= 100000000) {
+        nextMilestone = Math.ceil(track.total / 100000000) * 100000000;
+        if (nextMilestone === track.total) nextMilestone += 100000000;
+    } else if (track.total >= 10000000) {
+        nextMilestone = Math.ceil(track.total / 10000000) * 10000000;
+        if (nextMilestone === track.total) nextMilestone += 10000000;
     } else {
-        nextMilestone = Math.ceil(track.total / 500000000) * 500000000;
-        if (nextMilestone === track.total) nextMilestone += 500000000;
+        nextMilestone = Math.ceil(track.total / 1000000) * 1000000;
+        if (nextMilestone === track.total) nextMilestone += 1000000;
     }
 
     const remaining = nextMilestone - track.total;
@@ -218,9 +389,8 @@ function renderEOYProjection(liveStats, snap7, snap30) {
     const progressBar = document.getElementById('eoy-progress-bar');
 
     const careerTotal = liveStats.TotalSpotify;
-    const ytdBaseline = YTD_2026_BASELINE.career_total;
     const ytdDays     = getYTDDaysElapsed();
-    const ytdDelta    = careerTotal - ytdBaseline;
+    const ytdDelta    = getCleanYTDDelta(liveStats);
 
     // Year progress
     const now      = new Date();
@@ -232,10 +402,10 @@ function renderEOYProjection(liveStats, snap7, snap30) {
 
     // Compute weighted projected daily rate
     const ytdAvg    = ytdDays > 0 ? ytdDelta / ytdDays : 0;
-    const monthlyAvg = (snap30 && careerTotal > snap30.career_total)
-        ? (careerTotal - snap30.career_total) / 30 : null;
-    const weeklyAvg  = (snap7  && careerTotal > snap7.career_total)
-        ? (careerTotal - snap7.career_total)  / 7  : null;
+    const cleanWeeklyDelta = getCleanSnapshotDelta(liveStats, snap7, 7);
+    const cleanMonthlyDelta = getCleanSnapshotDelta(liveStats, snap30, 30);
+    const weeklyAvg  = cleanWeeklyDelta !== null ? cleanWeeklyDelta / 7 : null;
+    const monthlyAvg = cleanMonthlyDelta !== null ? cleanMonthlyDelta / 30 : null;
 
     let projectedDaily, confidence, confNote;
     if (ytdAvg > 0 && monthlyAvg !== null && weeklyAvg !== null) {
@@ -365,6 +535,12 @@ function renderTracksTable() {
             case 'real7d': return dir * ((a.real7d  ?? -Infinity) - (b.real7d  ?? -Infinity));
             case 'real30d':return dir * ((a.real30d ?? -Infinity) - (b.real30d ?? -Infinity));
             case 'ytd':    return dir * ((a.ytd     ?? -Infinity) - (b.ytd     ?? -Infinity));
+            case 'eoy':    return dir * (a.eoyProjected - b.eoyProjected);
+            case 'milestone': {
+                const da = a.milestone.daysLeft === null ? Infinity : a.milestone.daysLeft;
+                const db = b.milestone.daysLeft === null ? Infinity : b.milestone.daysLeft;
+                return dir * (da - db);
+            }
             default: return 0;
         }
     });
@@ -408,6 +584,9 @@ function renderTracksTable() {
             ytdCell = `<td style="color:#555;">—</td>`;
         }
 
+        const eoyCell = `<td style="color:#d4a853;font-weight:600;">~${formatCompact(track.eoyProjected)}</td>`;
+        const milestoneCell = `<td>${formatMilestone(track.milestone.target, track.milestone.daysLeft)}</td>`;
+
         const tr = document.createElement('tr');
         
         let displayTitle = track.title;
@@ -419,7 +598,7 @@ function renderTracksTable() {
             <td>${displayTitle}</td>
             <td>${fmtNum(track.total)}</td>
             <td class="positive-trend">${fmtDelta(track.daily)}</td>
-            ${real7Cell}${real30Cell}${ytdCell}
+            ${real7Cell}${real30Cell}${ytdCell}${eoyCell}${milestoneCell}
         `;
         tbody.appendChild(tr);
     });
@@ -458,6 +637,12 @@ function renderAlbumsTable() {
             case 'daily':  return dir * (a.daily - b.daily);
             case 'real7d': return dir * ((a.real7d ?? -Infinity) - (b.real7d ?? -Infinity));
             case 'pct':    return dir * (a.pctDaily - b.pctDaily);
+            case 'eoy':    return dir * (a.eoyProjected - b.eoyProjected);
+            case 'milestone': {
+                const da = a.daysToMilestone === null ? Infinity : a.daysToMilestone;
+                const db = b.daysToMilestone === null ? Infinity : b.daysToMilestone;
+                return dir * (da - db);
+            }
             default: return 0;
         }
     });
@@ -476,8 +661,12 @@ function renderAlbumsTable() {
         if (album.real7d !== null) {
             weekly7Cell = `<td class="positive-trend" style="vertical-align:middle;">${fmtDelta(album.real7d)}</td>`;
         } else {
-            weekly7Cell = `<td style="vertical-align:middle;color:#555;">—</td>`;
+            weekly7Cell = `<td style="vertical-align:middle;color:#555;">—</td>
+            `;
         }
+
+        const eoyCell = `<td style="color:#d4a853;font-weight:600;vertical-align:middle;">~${formatCompact(album.eoyProjected)}</td>`;
+        const milestoneCell = `<td style="vertical-align:middle;">${formatMilestone(album.nextMilestone, album.daysToMilestone)}</td>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -492,11 +681,13 @@ function renderAlbumsTable() {
                     </div>
                 </div>
             </td>
-            <td style="vertical-align:middle;">${album.year}</td>
+            <td style="vertical-align:middle;text-align:center;">${album.year}</td>
             <td style="vertical-align:middle;">${fmtNum(album.total)}</td>
             <td class="positive-trend" style="vertical-align:middle;">${fmtDelta(album.daily)}</td>
             ${weekly7Cell}
             <td style="vertical-align:middle;color:${barColor};font-weight:700;">${album.pctDaily.toFixed(1)}%</td>
+            ${eoyCell}
+            ${milestoneCell}
         `;
         tbody.appendChild(tr);
     });
@@ -726,7 +917,8 @@ async function initStreamsDashboard() {
         // daily-snapshot.js Madonna gibi diger artist sayfalarindan cekip yaziyor;
         // canli parser (analyzeKworbData) JT'nin sayfasina bakiyor, onlari goremez.
         const liveTitles = new Set(liveStats.tracks.map(t => t.title.toLowerCase()));
-        let extraTrackTotal = 0;
+        let has4Min = false;
+        let hasRadioEdit = false;
         if (snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
                 if (liveTitles.has(title.toLowerCase())) continue;
@@ -737,7 +929,10 @@ async function initStreamsDashboard() {
                 liveStats.TotalDaily   += daily;
                 const lc = title.toLowerCase();
                 if (lc.includes('4 minutes') && lc.includes('and timbaland')) {
-                    extraTrackTotal += total;
+                    has4Min = true;
+                }
+                if (lc.includes('not a bad thing') && lc.includes('radio edit')) {
+                    hasRadioEdit = true;
                 }
                 let matched = false;
                 for (const key in songToAlbumMap) {
@@ -757,10 +952,16 @@ async function initStreamsDashboard() {
                 }
             }
         }
+        // Canlı + snapshot birleştikten sonra KESİN kontrol: track herhangi bir kaynaktan
+        // (canlı Kworb ya da Firestore snapshot) geldiyse fallback enjeksiyonuna gerek yok.
+        // Yukarıdaki döngü liveTitles'taki track'lerde `continue` ettiği için bu bayrakları
+        // kaçırıyordu → track canlı/snapshot'ta varken fallback ikinci kez ~118M enjekte
+        // edip career total'i ve projeksiyonu bozuyordu. Tüm merge edilmiş listeyi tarıyoruz.
+        has4Min      = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('4 minutes') && lc.includes('and timbaland'); });
+        hasRadioEdit = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('not a bad thing') && lc.includes('radio edit'); });
+
         // Fallback: Firestore'da "4 Minutes ... and Timbaland" varyantlari yoksa
-        // (daily-snapshot.js fail veya henuz yeni baslik formati ile yazilmadi)
-        // hardcoded estimate: 4 versiyon toplami baseline + tahmini günlük büyüme
-        if (extraTrackTotal === 0) {
+        if (!has4Min) {
             const baselineDate = '2026-04-23';
             const baselineTotal = 102_400_000;  // 97.9M + 1.9M + 1.5M + 1.0M
             const dailyGrowth = 120_000;
@@ -780,6 +981,34 @@ async function initStreamsDashboard() {
             console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for 4 Minutes (no Firestore data)`);
         }
 
+        // Fallback: Firestore'da "Not A Bad Thing - Radio Edit" varyantlari yoksa
+        if (!hasRadioEdit) {
+            const baselineDate = '2026-05-24';
+            const baselineTotal = 118_417_347;
+            const dailyGrowth = 1_500;
+            const days = Math.max(0, Math.round(
+                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+            ));
+            const fbTotal = baselineTotal + days * dailyGrowth;
+            liveStats.tracks.push({
+                title: 'Not A Bad Thing - Radio Edit',
+                total: fbTotal,
+                daily: dailyGrowth
+            });
+            liveStats.TotalSpotify += fbTotal;
+            liveStats.TotalDaily   += dailyGrowth;
+            
+            const albName = "The 20/20 Experience \u2013 2 of 2";
+            if (liveStats[albName]) {
+                liveStats[albName].total += fbTotal;
+                liveStats[albName].daily += dailyGrowth;
+            } else {
+                liveStats['Orphan'].total += fbTotal;
+                liveStats['Orphan'].daily += dailyGrowth;
+            }
+            console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for Not A Bad Thing - Radio Edit (no Firestore data)`);
+        }
+
         // TOP SECTION — animasyonu artik dogru deger ile baslat (extra track'ler merge edildi)
         _jtTotalDaily = liveStats.TotalDaily || 0;
         animateValue(jtTotalCareer, 0, liveStats.TotalSpotify, 2000);
@@ -792,22 +1021,12 @@ async function initStreamsDashboard() {
             if (!valueEl) return;
 
             const dailyEst = Math.round(_jtTotalDaily * days);
-            const maxReasonable = _jtTotalDaily * days * 2;
+            const cleanDelta = getCleanSnapshotDelta(liveStats, snapshot, days);
 
-            if (snapshot && snapshot.career_total) {
-                const delta = liveStats.TotalSpotify - snapshot.career_total;
-                if (delta > 0 && delta <= maxReasonable) {
-                    // Snapshot delta makul — gerçek veriyi göster
-                    valueEl.textContent = '+' + delta.toLocaleString('en-US');
-                    valueEl.classList.remove('loading');
-                    if (statusEl) { statusEl.textContent = 'Snapshot: ' + snapshot.date; statusEl.classList.add('ok'); }
-                } else {
-                    // Snapshot delta tutarsız — daily rate'ten hesapla
-                    valueEl.textContent = '+' + dailyEst.toLocaleString('en-US');
-                    valueEl.classList.remove('loading');
-                    valueEl.style.color = '#d4a853';
-                    if (statusEl) { statusEl.textContent = `Based on ${_jtTotalDaily.toLocaleString('en-US')}/day avg`; statusEl.classList.add('ok'); }
-                }
+            if (cleanDelta !== null) {
+                valueEl.textContent = '+' + cleanDelta.toLocaleString('en-US');
+                valueEl.classList.remove('loading');
+                if (statusEl) { statusEl.textContent = 'Snapshot: ' + snapshot.date; statusEl.classList.add('ok'); }
             } else {
                 // Snapshot yok — daily rate'ten hesapla
                 valueEl.textContent = '+' + dailyEst.toLocaleString('en-US');
@@ -823,32 +1042,13 @@ async function initStreamsDashboard() {
         // YTD: statik baseline
         const ytdEl     = document.getElementById('jt-ytd-growth');
         const ytdStatus = document.getElementById('snapytd-status');
-        const ytdDelta  = liveStats.TotalSpotify - YTD_2026_BASELINE.career_total;
+        const ytdDelta  = getCleanYTDDelta(liveStats);
         const ytdDays   = getYTDDaysElapsed();
         if (ytdEl) { ytdEl.textContent = '+' + ytdDelta.toLocaleString('en-US'); ytdEl.classList.remove('loading'); }
         if (ytdStatus) {
             ytdStatus.textContent = `Since Jan 1 · ${ytdDays} days · ~${Math.round(ytdDelta / ytdDays).toLocaleString()}/day avg`;
             ytdStatus.classList.add('ok');
         }
-
-        // ── ADIM D: Album verisi oluştur ──────────────────────────────
-        _albumsData = allAlbums.map(id => {
-            const album = liveStats[id];
-            const pctDaily = _jtTotalDaily > 0 ? (album.daily / _jtTotalDaily) * 100 : 0;
-            const hist7Album = getAlbumFromSnapshot(id, snap7);
-            const real7d = (hist7Album && album.total > hist7Album.total)
-                ? album.total - hist7Album.total
-                : null;
-            return {
-                id,
-                year: albumMetData[id].year,
-                total: album.total,
-                daily: album.daily,
-                real7d,
-                pctDaily
-            };
-        });
-        renderAlbumsTable();
 
         // ── ADIM E: Track verisi oluştur ──────────────────────────────
         _tracksData = liveStats.tracks.map(track => {
@@ -876,9 +1076,77 @@ async function initStreamsDashboard() {
                 ? track.total - ytdBaseline
                 : null;
 
-            return { title: track.title, total: track.total, daily: track.daily, real7d, real7dEst, real30d, real30dEst, ytd };
+            const milestone = calculateImprovedMilestone(track, snap7, snap30);
+            const now = new Date();
+            const yearEnd = new Date(CURRENT_YEAR, 11, 31, 23, 59, 59);
+            const daysLeft = Math.max(0, Math.ceil((yearEnd - now) / 86400000));
+            const eoyProjected = track.total + milestone.projectedDaily * daysLeft;
+
+            return { 
+                title: track.title, 
+                total: track.total, 
+                daily: track.daily, 
+                real7d, 
+                real7dEst, 
+                real30d, 
+                real30dEst, 
+                ytd, 
+                eoyProjected, 
+                milestone 
+            };
         });
         renderTracksTable();
+
+        // ── ADIM D: Album verisi oluştur ──────────────────────────────
+        _albumsData = allAlbums.map(id => {
+            const album = liveStats[id];
+            const pctDaily = _jtTotalDaily > 0 ? (album.daily / _jtTotalDaily) * 100 : 0;
+            const hist7Album = getAlbumFromSnapshot(id, snap7);
+            const real7d = (hist7Album && album.total > hist7Album.total)
+                ? album.total - hist7Album.total
+                : null;
+
+            // Find all tracks belonging to this album
+            const albumTracks = _tracksData.filter(t => {
+                const lowerTitle = t.title.toLowerCase();
+                for (const key in songToAlbumMap) {
+                    if (lowerTitle.includes(key.toLowerCase())) {
+                        return songToAlbumMap[key] === id;
+                    }
+                }
+                return id === 'Orphan'; // fallback to orphan if no other album matched
+            });
+
+            // Sum up track projections
+            const eoyProjected = albumTracks.reduce((sum, t) => sum + t.eoyProjected, 0);
+            const albumProjectedDaily = albumTracks.reduce((sum, t) => sum + t.milestone.projectedDaily, 0);
+
+            // Calculate milestone target and days left
+            let nextMilestone;
+            if (album.total >= 1000000000) {
+                nextMilestone = Math.ceil(album.total / 500000000) * 500000000;
+                if (nextMilestone === album.total) nextMilestone += 500000000;
+            } else {
+                nextMilestone = Math.ceil(album.total / 100000000) * 100000000;
+                if (nextMilestone === album.total) nextMilestone += 100000000;
+            }
+            const remaining = nextMilestone - album.total;
+            const daysToMilestone = albumProjectedDaily > 0 ? Math.ceil(remaining / albumProjectedDaily) : null;
+
+            return {
+                id,
+                year: albumMetData[id].year,
+                total: album.total,
+                daily: album.daily,
+                real7d,
+                pctDaily,
+                eoyProjected,
+                albumProjectedDaily,
+                nextMilestone,
+                daysToMilestone
+            };
+        });
+        renderAlbumsTable();
 
         // ── ADIM F: Sort handler'larını bağla ─────────────────────────
         attachSortHandlers();
@@ -985,7 +1253,44 @@ async function initStreamsDashboard() {
             });
         }
 
-        // ── ADIM I: Trend Line Chart ──────────────────────────────────
+        // ── ADIM I: AOD + YouTube hero cards ─────────────────────────
+        const ARTIST_RATIO = 1.82;
+        const totalAOD = Math.round(liveStats.TotalSpotify * ARTIST_RATIO);
+        const aodEl = document.getElementById('jt-total-aod');
+        if (aodEl) aodEl.textContent = (totalAOD / 1e9).toFixed(2) + 'B';
+
+        // YouTube — data.json album-level + vault.json song-level ID'lerini BİRLEŞTİR, /api/youtube'a gönder.
+        // ÖNEMLİ: Homepage (script.js getCombinedYtIds) ikisini de birleştiriyor; aynı toplamı
+        // vermesi için burada da vault.json song-level ID'lerini dahil ediyoruz (yoksa ~1B fark çıkıyor).
+        // Non-blocking: dashboard render'ını bekletmesin, gelince hero card'ı güncellesin.
+        (async () => {
+            try {
+                const [dataJson, vaultJson] = await Promise.all([
+                    fetch('data.json').then(r => r.json()),
+                    fetch('data/vault.json').then(r => r.json()).catch(() => ({ songs: [] }))
+                ]);
+                const allIds = new Set();
+                for (const alb of Object.values(dataJson.albums)) {
+                    const ids = (alb.streams && alb.streams.youtubeVideoIds) || [];
+                    ids.forEach(id => allIds.add(id));
+                }
+                for (const s of (vaultJson.songs || [])) {
+                    const ids = (s.streams && s.streams.youtubeVideoIds) || s.youtubeVideoIds || [];
+                    ids.forEach(id => allIds.add(id));
+                }
+                if (allIds.size > 0) {
+                    const ytRes = await fetch(`/api/youtube?ids=${[...allIds].join(',')}`);
+                    const ytData = await ytRes.json();
+                    const ytTotal = ytData.views || 0;
+                    const ytEl = document.getElementById('jt-total-youtube');
+                    if (ytEl) ytEl.textContent = (ytTotal / 1e9).toFixed(2) + 'B';
+                }
+            } catch (e) {
+                console.warn('[streams.js] YouTube views fetch failed:', e.message);
+            }
+        })();
+
+        // ── ADIM J: Trend Line Chart ──────────────────────────────────
         buildTrendChart(trendSnapshots, liveStats.TotalSpotify);
 
     } catch (e) {
@@ -1105,135 +1410,29 @@ window.tweetStats = function() {
 
 async function loadSpotifyArtistData() {
     const monthlyEl   = document.getElementById('jt-spotify-monthly');
-    const followersEl = document.getElementById('jt-spotify-followers');
-    const popularityEl= document.getElementById('jt-spotify-popularity');
     const statusEl    = document.getElementById('jt-spotify-status');
 
     if (typeof SpotifyAPI === 'undefined') return;
 
     try {
         const artist = await SpotifyAPI.getArtist();
+        const monthly = artist.monthly_listeners;
 
-        const monthly    = artist.monthly_listeners;
-        const followers  = artist.followers?.total ?? 0;
-        const popularity = artist.popularity ?? 0;
-
-        if (monthly && monthlyEl)   monthlyEl.textContent = formatCompact(monthly);
-        else if (monthlyEl)         monthlyEl.textContent = '—';
-
-        if (followersEl)  followersEl.textContent = followers.toLocaleString('en-US');
-        if (popularityEl) popularityEl.textContent = popularity;
-        if (statusEl)     statusEl.textContent = '● Live';
+        if (monthly && monthlyEl) {
+            monthlyEl.textContent = formatCompact(monthly);
+            if (statusEl) statusEl.textContent = '● Live';
+        } else {
+            if (monthlyEl) monthlyEl.textContent = '—';
+            if (statusEl)  statusEl.textContent = 'unavailable';
+        }
     } catch (e) {
         console.warn('Spotify artist fetch failed:', e.message);
-        const monthlyEl = document.getElementById('jt-spotify-monthly');
         if (monthlyEl) monthlyEl.textContent = '—';
         if (statusEl)  statusEl.textContent = 'unavailable';
-    }
-}
-
-// ── Country Top Tracks ────────────────────────────────────────
-const _countryCache = {};
-let   _activeMarket = 'US';
-
-async function loadCountryTracks(market) {
-    market = market.toUpperCase().slice(0, 2);
-    if (!/^[A-Z]{2}$/.test(market)) return;
-    _activeMarket = market;
-
-    // Update tab highlights
-    document.querySelectorAll('.ctry-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.market === market);
-    });
-
-    const container = document.getElementById('country-tracks-body');
-    if (!container) return;
-
-    // Show cached instantly if available
-    if (_countryCache[market]) {
-        renderCountryTracks(_countryCache[market], container);
-        return;
-    }
-
-    container.innerHTML = '<div style="text-align:center;color:#333;padding:28px;font-size:0.82rem;">Loading ' + market + '...</div>';
-
-    try {
-        const data   = await SpotifyAPI.getTopTracks(market);
-        const tracks = data.tracks ?? [];
-        // Sort by popularity descending
-        tracks.sort((a, b) => (b.popularity ?? 0) - (a.popularity ?? 0));
-        _countryCache[market] = tracks;
-        if (_activeMarket === market) renderCountryTracks(tracks, container);
-    } catch (e) {
-        if (_activeMarket === market) {
-            container.innerHTML = '<div style="text-align:center;color:#555;padding:28px;font-size:0.82rem;">Failed to load ' + market + ' data.</div>';
-        }
-    }
-}
-
-function renderCountryTracks(tracks, container) {
-    if (!tracks.length) {
-        container.innerHTML = '<div style="text-align:center;color:#555;padding:28px;">No data for this market.</div>';
-        return;
-    }
-
-    container.innerHTML = tracks.map((t, i) => {
-        const popularity = t.popularity ?? 0;
-        const pctText    = popularity + '%';
-        const barWidth   = popularity + '%';
-        const barColor   = popularity >= 80 ? '#1DB954' : popularity >= 60 ? '#d4a853' : '#555';
-        const mins  = Math.floor((t.duration_ms || 0) / 60000);
-        const secs  = String(Math.floor(((t.duration_ms || 0) % 60000) / 1000)).padStart(2, '0');
-        const cover = t.album?.images?.[2]?.url || t.album?.images?.[0]?.url || '';
-        const explicit = t.explicit ? '<span style="font-size:0.58rem;background:rgba(255,255,255,0.08);color:#888;padding:1px 4px;border-radius:3px;margin-left:6px;">E</span>' : '';
-
-        return `
-        <div class="country-track-row">
-            <div style="width:22px;text-align:right;font-size:0.75rem;color:#444;flex-shrink:0;">${i + 1}</div>
-            ${cover ? `<img src="${cover}" width="36" height="36" style="border-radius:4px;flex-shrink:0;" alt="" loading="lazy">` : '<div style="width:36px;height:36px;background:rgba(255,255,255,0.04);border-radius:4px;flex-shrink:0;"></div>'}
-            <div style="flex:1;min-width:0;">
-                <div style="font-size:0.82rem;color:rgba(255,255,255,0.8);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.name}${explicit}</div>
-                <div style="font-size:0.68rem;color:#444;margin-top:2px;">${t.album?.name ?? ''}</div>
-            </div>
-            <div style="width:130px;flex-shrink:0;">
-                <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
-                    <span style="font-size:0.65rem;color:#3a3a3a;">Popularity</span>
-                    <span style="font-size:0.72rem;font-weight:700;color:${barColor};">${pctText}</span>
-                </div>
-                <div style="height:3px;background:rgba(255,255,255,0.05);border-radius:2px;">
-                    <div style="height:3px;width:${barWidth};background:${barColor};border-radius:2px;transition:width 0.3s;"></div>
-                </div>
-            </div>
-            <div style="width:38px;text-align:right;font-size:0.75rem;color:#444;flex-shrink:0;">${mins}:${secs}</div>
-        </div>`;
-    }).join('');
-}
-
-function attachCountryTabHandlers() {
-    // Tab buttons
-    document.getElementById('country-tabs')?.addEventListener('click', e => {
-        const btn = e.target.closest('.ctry-btn');
-        if (btn) loadCountryTracks(btn.dataset.market);
-    });
-
-    // Country search input
-    const searchInput = document.getElementById('country-search');
-    if (searchInput) {
-        searchInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                const code = searchInput.value.trim().toUpperCase();
-                if (/^[A-Z]{2}$/.test(code)) {
-                    loadCountryTracks(code);
-                    searchInput.value = '';
-                }
-            }
-        });
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     initStreamsDashboard();
     loadSpotifyArtistData();
-    attachCountryTabHandlers();
-    if (typeof SpotifyAPI !== 'undefined') loadCountryTracks('US');
 });

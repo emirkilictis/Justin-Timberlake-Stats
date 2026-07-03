@@ -22,6 +22,9 @@ const SONG_TO_ALBUM_MAP = {
     "Right For Me":          "Justified",
     "Nothin' Else":          "Justified",
     "Never Again":           "Justified",
+    "(Oh No) What You Got":  "Justified",
+    "What You Got":          "Justified",   // fallback if Kworb omits "(Oh No)"
+    "Let's Take a Ride":     "Justified",
 
     // ── FUTURESEX/LOVESOUNDS (2006) — standard + deluxe ────────
     // ── FUTURESEX/LOVESOUNDS (2006) — standard + deluxe ────────

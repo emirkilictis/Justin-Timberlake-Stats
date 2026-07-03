@@ -203,7 +203,7 @@
       "id": "drink_you_away",
       "title": "Drink You Away",
       "album_id": "The 20/20 Experience",
-      "pure_sales_us": 300000,
+      "pure_sales_us": 620000,
       "official_certifications": {
         "USA": "None",
         "UK": "None",
@@ -237,7 +237,7 @@
       "youtubeVideoIds": ["IsUsVbTj2AY"],
       "official_certifications": {
         "USA": "1x Platinum",
-        "UK": "Gold",
+        "UK": "1x Platinum",
         "Brazil": "2x Platinum",
         "Germany": "None",
         "Australia": "1x Platinum",
@@ -353,7 +353,7 @@
       "id": "no_angels",
       "title": "No Angels",
       "album_id": "Everything I Thought It Was",
-      "pure_sales_us": 20000,
+      "pure_sales_us": 60000,
       "official_certifications": {
         "USA": "None",
         "UK": "Silver",
@@ -611,7 +611,10 @@
         "Canada": "None",
         "New Zealand": "1x Platinum",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "F0B7HDiY-10"
+      ]
     },
     {
       "id": "stay_with_me",
@@ -626,7 +629,10 @@
         "Australia": "None",
         "Canada": "None",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "eMQuofsOOzo"
+      ]
     },
     {
       "id": "better_place",
@@ -641,7 +647,11 @@
         "Australia": "None",
         "Canada": "1x Platinum",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "Ii7aOjjJAxw",
+        "k8rpVEzU9do"
+      ]
     },
     {
       "id": "where_is_the_love",
@@ -657,7 +667,10 @@
         "Canada": "Gold",
         "New Zealand": "5x Platinum",
         "World": "None"
-      }
+      },
+      "youtubeVideoIds": [
+        "WpYeekQkAdc"
+      ]
     },
     {
       "id": "rehab",
@@ -673,7 +686,10 @@
         "Canada": "None",
         "World": "None"
       },
-      "streams": {}
+      "streams": {},
+      "youtubeVideoIds": [
+        "rJYcmq__nDM"
+      ]
     }
   ],
   "albums": [
@@ -723,9 +739,14 @@
         "Australia": "1x Platinum",
         "Canada": "2x Platinum",
         "Denmark": "5x Platinum",
-        "Poland": "1x Platinum",
-        "Mexico": "None",
+        "Poland": "2x Platinum",
+        "Mexico": "Gold",
         "New Zealand": "2x Platinum",
+        "Netherlands": "Gold",
+        "Sweden": "Gold",
+        "Switzerland": "Gold",
+        "Ireland": "7500 units",
+        "Norway": "15000 units",
         "World": "None",
         "Other": "230000 units"
       }

@@ -274,6 +274,138 @@
         return Math.max(1, Math.floor((now - start) / 86400000));
     }
 
+    const CURRENT_YEAR = new Date().getFullYear();
+    const YTD_2026_BASELINE = {
+        date: '2026-01-01',
+        career_total: 16_804_299_514,
+        tracks: {
+            "Mirrors": 1_404_622_163,
+            "SexyBack": 1_283_973_094,
+            "Not A Bad Thing - Radio Edit": 116_987_347
+        }
+    };
+    const songToAlbumMap = {
+        "mirrors": "The 20/20 Experience",
+        "sexyback": "FutureSex/LoveSounds",
+        "not a bad thing": "The 20/20 Experience – 2 of 2"
+    };
+    const albumMetData = {
+        "The 20/20 Experience": { year: 2013 },
+        "The 20/20 Experience – 2 of 2": { year: 2013 },
+        "FutureSex/LoveSounds": { year: 2006 }
+    };
+
+    function getTrackYTDBaseline(liveTitle) {
+        const lower = liveTitle.toLowerCase().trim();
+        for (const key in YTD_2026_BASELINE.tracks) {
+            if (key.toLowerCase().trim() === lower) {
+                return YTD_2026_BASELINE.tracks[key];
+            }
+        }
+        const keys = Object.keys(YTD_2026_BASELINE.tracks).sort((a, b) => b.length - a.length);
+        for (const key of keys) {
+            const keyLower = key.toLowerCase().trim();
+            if (lower.includes(keyLower)) {
+                if (keyLower === '4 minutes' && lower !== '4 minutes') {
+                    continue;
+                }
+                return YTD_2026_BASELINE.tracks[key];
+            }
+        }
+        return null;
+    }
+
+    function getTrueDailyAverage(dailyStreams) {
+        const today = new Date().getDay();
+        const dataDay = today === 0 ? 6 : today - 1;
+        const dayWeights = { 0: 0.85, 1: 0.90, 2: 0.95, 3: 1.00, 4: 1.05, 5: 1.15, 6: 1.10 };
+        return dailyStreams / dayWeights[dataDay];
+    }
+
+    function getCleanSnapshotDelta(liveStats, snapshot, days) {
+        if (!snapshot) return null;
+        let cleanDelta = 0;
+        
+        if (snapshot.tracks && Object.keys(snapshot.tracks).length > 0) {
+            liveStats.tracks.forEach(track => {
+                const trackTitleLower = track.title.toLowerCase().trim();
+                let snapTrack = snapshot.tracks[track.title];
+                if (!snapTrack) {
+                    const foundKey = Object.keys(snapshot.tracks).find(k => k.toLowerCase().trim() === trackTitleLower);
+                    if (foundKey) {
+                        snapTrack = snapshot.tracks[foundKey];
+                    }
+                }
+                
+                if (snapTrack && typeof snapTrack.total === 'number') {
+                    let trackDelta = track.total - snapTrack.total;
+                    if (trackDelta < 0) trackDelta = 0;
+
+                    const dailyEst = getTrueDailyAverage(track.daily || 0);
+                    const expectedGrowth = dailyEst * days;
+                    const maxReasonable = Math.max(2_000_000 * (days / 7), expectedGrowth * 3);
+
+                    if (trackDelta > maxReasonable) {
+                        trackDelta = expectedGrowth;
+                    }
+                    cleanDelta += Math.round(trackDelta);
+                } else {
+                    const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), 1_000_000);
+                    cleanDelta += Math.max(0, Math.round(dailyEst * days));
+                }
+            });
+            return cleanDelta;
+        }
+        
+        const rawDelta = liveStats.TotalSpotify - (snapshot.career_total || 0);
+        const maxReasonable = (liveStats.TotalDaily || 3000000) * days * 2;
+        if (rawDelta > 0 && rawDelta <= maxReasonable) {
+            return rawDelta;
+        }
+        return Math.round((liveStats.TotalDaily || 3000000) * days);
+    }
+
+    function getCleanYTDDelta(liveStats) {
+        let cleanDelta = 0;
+        const ytdDays = getYTDDaysElapsed();
+        
+        liveStats.tracks.forEach(track => {
+            const baseline = getTrackYTDBaseline(track.title);
+            if (baseline !== null) {
+                let trackDelta = track.total - baseline;
+                if (trackDelta < 0) trackDelta = 0;
+
+                const dailyEst = getTrueDailyAverage(track.daily || 0);
+                const expectedGrowth = dailyEst * ytdDays;
+                const maxReasonable = Math.max(5_000_000 * (ytdDays / 7), expectedGrowth * 3);
+
+                if (trackDelta > maxReasonable) {
+                    trackDelta = expectedGrowth;
+                }
+                cleanDelta += Math.round(trackDelta);
+            } else {
+                let isNewRelease = false;
+                const lowerTitle = track.title.toLowerCase();
+                for (let key in songToAlbumMap) {
+                    if (lowerTitle.includes(key.toLowerCase())) {
+                        const albName = songToAlbumMap[key];
+                        if (albumMetData[albName] && albumMetData[albName].year === CURRENT_YEAR) {
+                            isNewRelease = true;
+                        }
+                        break;
+                    }
+                }
+                if (isNewRelease) {
+                    cleanDelta += track.total;
+                } else {
+                    const dailyEst = Math.min(getTrueDailyAverage(track.daily || 0), 1_000_000);
+                    cleanDelta += Math.max(0, Math.round(dailyEst * ytdDays));
+                }
+            }
+        });
+        return cleanDelta;
+    }
+
     // EOY projection helper (extracted from streams.js renderEOYProjection)
     function calcEOYProjection({ careerTotal, ytdBaseline, ytdDays, snap7, snap30 }) {
         const ytdDelta = careerTotal - ytdBaseline;
@@ -680,6 +812,87 @@
             const pureSales = 1_500_000;
             const total = streamsEquivalent + pureSales; // 2,760,000
             expect(quantizeRIAAUnits(total)).toBe(2_000_000); // 2x Platinum
+        });
+    });
+
+    describe('getCleanSnapshotDelta — handles sudden track additions', () => {
+        it('calculates clean delta when all tracks exist in snapshot', () => {
+            const liveStats = {
+                TotalSpotify: 17_000_000_000,
+                TotalDaily: 3_000_000,
+                tracks: [
+                    { title: "Mirrors", total: 1_420_000_000, daily: 1_000_000 },
+                    { title: "SexyBack", total: 1_300_000_000, daily: 1_000_000 }
+                ]
+            };
+            const snapshot = {
+                career_total: 16_986_000_000,
+                tracks: {
+                    "Mirrors": { total: 1_413_000_000 },
+                    "SexyBack": { total: 1_293_000_000 }
+                }
+            };
+            const delta = getCleanSnapshotDelta(liveStats, snapshot, 7);
+            expect(delta).toBe(14_000_000);
+        });
+
+        it('ignores anomalous jump when an old track is newly added', () => {
+            const liveStats = {
+                TotalSpotify: 17_118_000_000,
+                TotalDaily: 3_010_000,
+                tracks: [
+                    { title: "Mirrors", total: 1_420_000_000, daily: 1_000_000 },
+                    { title: "SexyBack", total: 1_300_000_000, daily: 1_000_000 },
+                    { title: "Not A Bad Thing - Radio Edit", total: 118_000_000, daily: 10_000 }
+                ]
+            };
+            const snapshot = {
+                career_total: 16_986_000_000,
+                tracks: {
+                    "Mirrors": { total: 1_413_000_000 },
+                    "SexyBack": { total: 1_293_000_000 }
+                }
+            };
+            const delta = getCleanSnapshotDelta(liveStats, snapshot, 7);
+            expect(delta).toBeLessThan(15_000_000);
+            expect(delta).toBeGreaterThan(14_000_000);
+        });
+
+        it('ignores anomalous jump when an existing track has a placeholder value in snapshot', () => {
+            const liveStats = {
+                TotalSpotify: 17_118_000_000,
+                TotalDaily: 3_010_000,
+                tracks: [
+                    { title: "Mirrors", total: 1_420_000_000, daily: 1_000_000 },
+                    { title: "SexyBack", total: 1_300_000_000, daily: 1_000_000 },
+                    { title: "Give It To Me", total: 520_000_000, daily: 50_000 }
+                ]
+            };
+            const snapshot = {
+                career_total: 16_986_000_000,
+                tracks: {
+                    "Mirrors": { total: 1_413_000_000 },
+                    "SexyBack": { total: 1_293_000_000 },
+                    "Give It To Me": { total: 26_900_000 }
+                }
+            };
+            const delta = getCleanSnapshotDelta(liveStats, snapshot, 7);
+            expect(delta).toBeLessThan(15_000_000);
+            expect(delta).toBeGreaterThan(14_300_000);
+        });
+    });
+
+    describe('getCleanYTDDelta — baseline calculations', () => {
+        it('calculates correct YTD delta excluding baseline of newly added old tracks', () => {
+            const liveStats = {
+                tracks: [
+                    { title: "Mirrors", total: 1_420_000_000, daily: 1_000_000 },
+                    { title: "SexyBack", total: 1_300_000_000, daily: 1_000_000 },
+                    { title: "Not A Bad Thing - Radio Edit", total: 118_000_000, daily: 10_000 }
+                ]
+            };
+            const delta = getCleanYTDDelta(liveStats);
+            expect(delta).toBeCloseTo(32_417_396, 100_000);
         });
     });
 

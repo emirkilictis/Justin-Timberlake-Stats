@@ -14,7 +14,7 @@ const songToAlbumMap = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_
 
 function waitForFirestore(timeoutMs = 5000) {
     return new Promise(resolve => {
-        if (typeof window.getHistoricalSnapshot === 'function') { resolve(true); return; }
+        if (typeof window.getLatestSnapshot === 'function') { resolve(true); return; }
         const timer = setTimeout(() => resolve(false), timeoutMs);
         window.addEventListener('firestore-ready', () => { clearTimeout(timer); resolve(true); }, { once: true });
     });
@@ -32,11 +32,16 @@ function getTodayUTC() {
 //   "...and Timbaland) - Peter Saves New York Edit"               ~1.5M
 //   "...and Timbaland) - Junkie XL Remix Edit"                    ~1.0M
 // "&" versiyonlarını filtre dışı bırakıyoruz (zaten JT total'ında).
-function isExtraTrackTitle(title) {
+function is4MinTrack(title) {
     const lc = title.toLowerCase();
     return lc.includes('4 minutes') &&
            lc.includes('justin timberlake') &&
            lc.includes('and timbaland'); // "&" versiyonu "& Timbaland" içerir, eşleşmez
+}
+
+function isRadioEditTrack(title) {
+    const lc = title.toLowerCase();
+    return lc.includes('not a bad thing') && lc.includes('radio edit');
 }
 
 // Fallback: Firestore'da bulamazsa son bilinen baseline + tahmini günlük büyüme.
@@ -46,6 +51,12 @@ const FALLBACK_4MIN = {
     dailyGrowth: 120_000
 };
 
+const FALLBACK_RADIO_EDIT = {
+    baselineDate: '2026-05-24',
+    baselineTotal: 118_417_347,
+    dailyGrowth: 10_000
+};
+
 function getEstimated4MinTotal() {
     const days = Math.max(0, Math.round(
         (Date.now() - new Date(FALLBACK_4MIN.baselineDate + 'T00:00:00Z').getTime()) / 86400000
@@ -53,38 +64,46 @@ function getEstimated4MinTotal() {
     return FALLBACK_4MIN.baselineTotal + days * FALLBACK_4MIN.dailyGrowth;
 }
 
+function getEstimatedRadioEditTotal() {
+    const days = Math.max(0, Math.round(
+        (Date.now() - new Date(FALLBACK_RADIO_EDIT.baselineDate + 'T00:00:00Z').getTime()) / 86400000
+    ));
+    return FALLBACK_RADIO_EDIT.baselineTotal + days * FALLBACK_RADIO_EDIT.dailyGrowth;
+}
+
 async function mergeExtraTracks(liveStats) {
     const ok = await waitForFirestore(3000);
-    let total = 0;
-    let matchCount = 0;
+    let total4Min = 0;
+    let totalRadioEdit = 0;
 
-    if (ok && typeof window.getHistoricalSnapshot === 'function') {
-        for (let daysBack = 0; daysBack < 30; daysBack++) {
-            const d = new Date();
-            d.setUTCDate(d.getUTCDate() - daysBack);
-            const dateStr = d.toISOString().split('T')[0];
-            const snap = await window.getHistoricalSnapshot(dateStr);
-            if (!snap || !snap.tracks) continue;
-            let snapTotal = 0, snapCount = 0;
+    if (ok && typeof window.getLatestSnapshot === 'function') {
+        const snap = await window.getLatestSnapshot();
+        if (snap && snap.tracks) {
+            let temp4Min = 0;
+            let tempRadio = 0;
             for (const [title, vals] of Object.entries(snap.tracks)) {
-                if (!isExtraTrackTitle(title)) continue;
-                snapTotal += Number(vals.total) || 0;
-                snapCount++;
+                if (is4MinTrack(title)) {
+                    temp4Min += Number(vals.total) || 0;
+                }
+                if (isRadioEditTrack(title)) {
+                    tempRadio += Number(vals.total) || 0;
+                }
             }
-            if (snapTotal > 0) {
-                total = snapTotal;
-                matchCount = snapCount;
-                break;
-            }
+            total4Min = temp4Min;
+            totalRadioEdit = tempRadio;
         }
     }
 
-    const fromFirestore = total > 0;
-    if (total <= 0) total = getEstimated4MinTotal();
+    const fromFirestore4Min = total4Min > 0;
+    const fromFirestoreRadio = totalRadioEdit > 0;
+    if (total4Min <= 0) total4Min = getEstimated4MinTotal();
+    if (totalRadioEdit <= 0) totalRadioEdit = getEstimatedRadioEditTotal();
 
-    liveStats.TotalSpotify += total;
-    liveStats['Orphan'] += total;
-    console.log(`[mergeExtraTracks] +${total.toLocaleString('en-US')} (${fromFirestore ? `firestore: ${matchCount} tracks` : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
+    liveStats.TotalSpotify += (total4Min + totalRadioEdit);
+    liveStats['Orphan'] += total4Min;
+    // Note: in script.js, Part 2 is merged into "The 20/20 Experience"
+    liveStats['The 20/20 Experience'] += totalRadioEdit;
+    console.log(`[mergeExtraTracks] +${total4Min.toLocaleString('en-US')} 4Min (${fromFirestore4Min ? 'firestore' : 'fallback'}), +${totalRadioEdit.toLocaleString('en-US')} RadioEdit (${fromFirestoreRadio ? 'firestore' : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
 }
 
 // --- 3. AKILLI PARSER ---
@@ -206,12 +225,6 @@ function getCombinedYtIds(albumName, albumData) {
 
 async function fetchAllData() {
     try {
-        // data.json'u her zaman çek (local, hızlı)
-        const dataRes = await fetch('data.json');
-        jtData = await dataRes.json();
-        // Vault song-level YT IDs'lerini de yükle (paralel olabilir ama kucuk dosya)
-        await loadVaultSongYtIds();
-
         // Cache kontrol: 1 saatten tazeyse hemen göster
         let cachedKworb = null;
         try {
@@ -223,6 +236,15 @@ async function fetchAllData() {
                 }
             }
         } catch (_) {}
+
+        // data.json + vault.json + (cache yoksa) Kworb'u PARALEL başlat — sıralı beklemek yerine.
+        const dataPromise  = fetch('data.json').then(r => r.json());
+        const vaultPromise = loadVaultSongYtIds();
+        const kworbPromise = cachedKworb ? null : fetch(MY_DYNAMIC_API).then(r => r.text());
+
+        // data.json + vault.json paralel bekle
+        jtData = await dataPromise;
+        await vaultPromise;
 
         // mergedStats: YouTube güncelleme callback'i için doğru (merge edilmiş) stats'ı tutar
         let mergedStats = null;
@@ -244,9 +266,8 @@ async function fetchAllData() {
                 mergedStats = fresh;
             }).catch(() => {});
         } else {
-            // Cache yok, API'yi bekle
-            const kworbRes = await fetch(MY_DYNAMIC_API);
-            const htmlText = await kworbRes.text();
+            // Cache yok — paralel başlatılan Kworb fetch'ini bekle
+            const htmlText = await kworbPromise;
             const liveStats = smartParseKworb(htmlText);
             try { localStorage.setItem('jt_kworb_cache', JSON.stringify({ ts: Date.now(), data: liveStats })); } catch (_) {}
             await mergeExtraTracks(liveStats);
@@ -260,7 +281,14 @@ async function fetchAllData() {
 
         // Arka planda YouTube'u çek, gelince EAS'ı güncelle
         // mergedStats kullan — localStorage'daki değil, 96M extra track'i içeren doğru stats
-        if (YOUTUBE_API_KEY) {
+        //
+        // İKİ AYRI HESAP:
+        //  (1) Per-album: her albümün streams.youtube'u (EAS/CSPC hesabı için gerekli).
+        //  (2) Headline toplam: TÜM video ID'lerinin GLOBAL DEDUPLICATED tek çekimi.
+        //      Per-album toplamı, aynı video birden fazla albümde geçince MÜKERRER sayıp
+        //      ~1B şişiriyordu (streams.html ile uyuşmuyordu). Global unique set bunu çözer.
+        Promise.all([
+            // (1) per-album
             Promise.all(Object.keys(jtData.albums).map(async albumName => {
                 const ids = getCombinedYtIds(albumName, jtData.albums[albumName]);
                 if (ids.length > 0) {
@@ -268,11 +296,23 @@ async function fetchAllData() {
                     if (live > 0) jtData.albums[albumName].streams.youtube = live;
                     console.log(`[YT] ${albumName}: ${ids.length} videos → ${live.toLocaleString('en-US')} views`);
                 }
-            })).then(() => {
-                if (mergedStats) updateCareerOverview(mergedStats);
-                console.log("YouTube verileri güncellendi.");
-            }).catch(() => {});
-        }
+            })),
+            // (2) global deduplicated headline toplamı
+            (async () => {
+                const globalIds = new Set();
+                Object.keys(jtData.albums).forEach(albumName => {
+                    getCombinedYtIds(albumName, jtData.albums[albumName]).forEach(id => globalIds.add(id));
+                });
+                if (globalIds.size > 0) {
+                    const total = await fetchRealYouTubeViews([...globalIds]);
+                    if (total > 0) jtData._youtubeTotalDedup = total;
+                    console.log(`[YT headline] ${globalIds.size} unique videos → ${total.toLocaleString('en-US')} views`);
+                }
+            })()
+        ]).then(() => {
+            if (mergedStats) updateCareerOverview(mergedStats);
+            console.log("YouTube verileri güncellendi.");
+        }).catch(() => {});
 
     } catch (e) {
         console.error("Hata:", e);
@@ -284,7 +324,7 @@ async function fetchAllData() {
 // --- GLOBAL TABLO DEĞİŞKENLERİ ---
 let easTableData = [];
 let currentEasSort = { key: 'total', asc: false };
-let careerSnapshot = { totalEAS: 0, totalSpotify: 0, bestEra: { name: '', eas: 0 } };
+let careerSnapshot = { totalEAS: 0, totalSpotify: 0, totalAOD: 0, totalYoutube: 0, bestEra: { name: '', eas: 0 } };
 
 window.resetToCareer = function () {
     const s = careerSnapshot;
@@ -293,6 +333,8 @@ window.resetToCareer = function () {
     if (title) title.textContent = 'Career Totals';
     animateValue(document.getElementById('eas-total'), 0, s.totalEAS, 600);
     animateValue(document.getElementById('spotify-total'), 0, s.totalSpotify, 600);
+    animateValue(document.getElementById('aod-total'), 0, s.totalAOD, 600);
+    animateValue(document.getElementById('youtube-total'), 0, s.totalYoutube, 600);
     const bestEraNameEl = document.getElementById('best-era-name');
     const bestEraValEl = document.getElementById('best-era-val');
     if (bestEraNameEl) bestEraNameEl.textContent = s.bestEra.name;
@@ -304,12 +346,15 @@ window.resetToCareer = function () {
 function updateCareerOverview(liveStats) {
     let careerTotalEAS = 0;
     let bestEra = { name: "", eas: 0 };
+    let totalYoutube = 0;
+    let totalAOD = Math.round(liveStats.TotalSpotify * ARTIST_RATIO);
     easTableData = []; // Tablo verisini her güncellemede sıfırla
 
     Object.keys(jtData.albums).forEach(id => {
         const albumData = jtData.albums[id];
         const stats = calculateRealCSPC(albumData);
         careerTotalEAS += stats.totalEAS;
+        totalYoutube += (albumData.streams.youtube || 0);
 
         if (stats.totalEAS > bestEra.eas) {
             bestEra = { name: id, eas: stats.totalEAS };
@@ -342,7 +387,13 @@ function updateCareerOverview(liveStats) {
     if (bestEra.name === "The 20/20 Experience \u2013 2 of 2") bestEra.name = "The 20/20 Experience (Complete Experience)";
     if (bestEra.name === "The 20/20 Experience") bestEra.name = "The 20/20 Experience (Complete Experience)";
 
-    careerSnapshot = { totalEAS: careerTotalEAS, totalSpotify: liveStats.TotalSpotify, bestEra };
+    // Headline YouTube: global deduplicated değer varsa onu kullan (per-album toplamı
+    // mükerrer video ID'lerini saydığı için şişik olabiliyor; streams.html ile tutarlılık).
+    const headlineYoutube = (jtData._youtubeTotalDedup && jtData._youtubeTotalDedup > 0)
+        ? jtData._youtubeTotalDedup
+        : totalYoutube;
+
+    careerSnapshot = { totalEAS: careerTotalEAS, totalSpotify: liveStats.TotalSpotify, totalAOD, totalYoutube: headlineYoutube, bestEra };
 
     // AI crawler için statik veri bölümünü güncelle
     const aiEasEl = document.getElementById('ai-eas-value');
@@ -350,6 +401,8 @@ function updateCareerOverview(liveStats) {
 
     animateValue(document.getElementById('eas-total'), 0, careerTotalEAS, 600);
     animateValue(document.getElementById('spotify-total'), 0, liveStats.TotalSpotify, 600);
+    animateValue(document.getElementById('aod-total'), 0, totalAOD, 600);
+    animateValue(document.getElementById('youtube-total'), 0, headlineYoutube, 600);
 
     const bestEraNameEl = document.getElementById('best-era-name');
     const bestEraValEl = document.getElementById('best-era-val');
@@ -382,6 +435,8 @@ async function playAlbum(albumName) {
     document.querySelector('.cspc-title').textContent = albumName + " Era";
     animateValue(document.getElementById('eas-total'), 0, stats.totalEAS, 1000);
     animateValue(document.getElementById('spotify-total'), 0, stats.spotifyStreams, 1000);
+    animateValue(document.getElementById('aod-total'), 0, Math.round(stats.spotifyStreams * ARTIST_RATIO), 1000);
+    animateValue(document.getElementById('youtube-total'), 0, albumData.streams.youtube || 0, 1000);
 
     // "View Deep Analytics" butonunu seçili albüme yönlendir
     const btn = document.getElementById('deep-analytics-btn');
@@ -410,11 +465,11 @@ async function playAlbum(albumName) {
 
 // YouTube API
 async function fetchRealYouTubeViews(ids) {
-    const url = `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.join(',')}&key=${YOUTUBE_API_KEY}`;
+    const url = `/api/youtube?ids=${ids.join(',')}`;
     try {
         const res = await fetch(url);
         const data = await res.json();
-        return data.items.reduce((sum, item) => sum + parseInt(item.statistics.viewCount), 0);
+        return data.views || 0;
     } catch (e) { return 0; }
 }
 

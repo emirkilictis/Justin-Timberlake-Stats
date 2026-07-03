@@ -2,6 +2,9 @@
   "functions": {
     "api/spotify.js": {
       "maxDuration": 15
+    },
+    "api/streams.js": {
+      "maxDuration": 15
     }
   },
   "headers": [

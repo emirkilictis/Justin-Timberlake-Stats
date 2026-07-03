@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "localdev",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["localdev.js"],
+      "port": 3000
+    }
+  ]
+}
