@@ -77,12 +77,13 @@ const ALBUM_COVERS = {
 // Data States
 let vaultData = { songs: [], albums: [] };
 let jtData = null; // For base data.json including youtubeVideoIds and Orphan
-let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {}, songs: {} };
-let computedData = { songs: [], albums: [] };
+let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {}, songs: {}, titles: {} };
+let computedData = { songs: [], albums: [], nonSingles: [] };
 
 let sortState = {
     albums: { col: 'global', asc: false },
-    songs: { col: 'global', asc: false }
+    songs: { col: 'global', asc: false },
+    nonSingles: { col: 'usLive', asc: false }
 };
 
 // ── 2. DATA FETCHING ──
@@ -119,6 +120,7 @@ async function fetchLiveStreams() {
 
                 // Track mapping
                 liveStreams.tracks[lowerTitle] = val;
+                liveStreams.titles[lowerTitle] = title;
 
                 // Album grouping logic
                 const map = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {};
@@ -144,6 +146,7 @@ async function fetchLiveStreams() {
             ));
             const radioStreams = baselineTotal + days * dailyGrowth;
             liveStreams.tracks[radioLower] = radioStreams;
+            liveStreams.titles[radioLower] = radioTitle;
             
             const albumName = "The 20/20 Experience – 2 of 2";
             liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + radioStreams;
@@ -160,6 +163,7 @@ async function fetchLiveStreams() {
             ));
             const fourMinStreams = baselineTotal + days * dailyGrowth;
             liveStreams.tracks[fourMinLower] = fourMinStreams;
+            liveStreams.titles[fourMinLower] = fourMinTitle;
             
             const albumName = "Orphan";
             liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + fourMinStreams;
@@ -478,6 +482,48 @@ function computeAllData() {
 
         return { ...s, usLive: usaFinal, global: usaFinal + officialSum, certTotal, cMap };
     }).filter(s => s.global > 0);
+
+    computeNonSingles();
+}
+
+// Kworb canlı tablosunda olup vault.json'da OLMAYAN parçalar (album cuts,
+// alternatif versiyonlar, eski feature'lar). Bunlar için de RIAA eligible
+// hesabı yapılır — sadece audio streams (per-track YT verisi yok), pure
+// sales 0 kabul edilir. Grand total'a DAHİL EDİLMEZ.
+function computeNonSingles() {
+    const MIN_STREAMS = 5_000_000;
+    const vaultTitlesLower = vaultData.songs.map(s => s.title.toLowerCase());
+    const pre2016Eras = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience – 2 of 2"];
+    const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Soulmate"];
+    const map = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {};
+
+    const out = [];
+    for (const k in liveStreams.tracks) {
+        const streams = liveStreams.tracks[k];
+        if (streams < MIN_STREAMS) continue;
+        // vault'taki single'larla eşleşenler zaten getTrackSpotify tarafından
+        // tüketiliyor — aynı fuzzy mantıkla ele
+        if (vaultTitlesLower.some(t => k.includes(t) || t.includes(k))) continue;
+
+        let albumId = "Orphan";
+        for (const key in map) {
+            if (k.includes(key.toLowerCase())) { albumId = map[key]; break; }
+        }
+
+        // Kworb feature'ları "* " önekiyle işaretler — görüntüde temizle
+        const displayTitle = (liveStreams.titles[k] || k).replace(/^\*\s*/, '');
+        let share = US_SHARE;
+        if (pre2016Eras.includes(albumId) ||
+            (albumId === "Orphan" && !post2016Orphans.some(o => k.includes(o.toLowerCase())))) {
+            share = 0.27;
+        }
+
+        const usAudio = streams * ARTIST_RATIO * share;
+        const usLive = Math.floor(usAudio / 150);
+        out.push({ title: displayTitle, album_id: albumId, streams, usLive });
+    }
+    out.sort((a, b) => b.usLive - a.usLive);
+    computedData.nonSingles = out;
 }
 
 function animateValue(obj, start, end, duration) {
@@ -509,15 +555,64 @@ window.sortVault = function(type, col, forceAsc) {
     arr.sort((a,b) => {
         let valA, valB;
         if (col === 'title') { valA = a.title; valB = b.title; return state.asc ? valA.localeCompare(valB) : valB.localeCompare(valA); }
+        if (col === 'album') { valA = a.album_id || ''; valB = b.album_id || ''; return state.asc ? valA.localeCompare(valB) : valB.localeCompare(valA); }
         if (col === 'global') { valA = a.global; valB = b.global; }
         else if (col === 'certTotal') { valA = a.certTotal; valB = b.certTotal; }
-        else if (col === 'USA') { valA = a.usLive; valB = b.usLive; }
+        else if (col === 'streams') { valA = a.streams || 0; valB = b.streams || 0; }
+        else if (col === 'USA' || col === 'usLive') { valA = a.usLive; valB = b.usLive; }
         else { valA = a.cMap[col] || 0; valB = b.cMap[col] || 0; }
         return state.asc ? valA - valB : valB - valA;
     });
 
     renderTables();
 };
+
+function renderNonSingles() {
+    const tbody = document.getElementById('nonsingles-tbody');
+    if (!tbody) return;
+    const countEl = document.getElementById('nonsingles-count');
+    const arr = computedData.nonSingles;
+    if (countEl) countEl.textContent = `${arr.length} tracks`;
+
+    if (!arr.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#555;padding:24px;">Live stream data unavailable — non-single eligibility needs the Kworb feed.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = arr.map(t => {
+        const elig = getRiaalEligibility(t.usLive);
+        // Sonraki eşik: Gold 500k → Platinum 1M → Nx Platinum (1M adım)
+        const next = t.usLive < 500000 ? 500000
+                   : t.usLive < 1000000 ? 1000000
+                   : (Math.floor(t.usLive / 1000000) + 1) * 1000000;
+        const nextLabel = next === 500000 ? 'Gold'
+                        : next === 1000000 ? 'Platinum'
+                        : `${next / 1000000}x Platinum`;
+        const pct = Math.min(100, Math.round(t.usLive / next * 100));
+        const color = ALBUM_COLORS[t.album_id] || '#bdc3c7';
+
+        return `
+            <tr>
+                <td>
+                    <div class="title-inner">
+                        <div class="font-bold text-[14px] text-white title-text">${t.title}</div>
+                        <div class="text-[10px] uppercase tracking-widest title-text" style="color:${color}99">${t.album_id}</div>
+                    </div>
+                </td>
+                <td class="text-right" style="font-variant-numeric:tabular-nums;color:rgba(255,255,255,0.6);">${t.streams.toLocaleString()}</td>
+                <td class="col-total text-right">${t.usLive.toLocaleString()}</td>
+                <td class="text-center">${getBadgeHTML(elig.label, false, elig.isDiamond, elig.platCount)}</td>
+                <td style="min-width:130px;">
+                    <div style="display:flex;justify-content:space-between;font-size:0.62rem;color:#666;margin-bottom:3px;font-family:'Space Grotesk',sans-serif;">
+                        <span>${pct}%</span><span>→ ${nextLabel}</span>
+                    </div>
+                    <div style="height:4px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden;">
+                        <div style="height:100%;width:${pct}%;background:${color};border-radius:2px;"></div>
+                    </div>
+                </td>
+            </tr>`;
+    }).join('');
+}
 
 function renderTables() {
     let grandTotal = 0;
@@ -617,6 +712,8 @@ function renderTables() {
         songsTbody.innerHTML += tr;
     });
     songsTbody.innerHTML += buildFooterRow(computedData.songs, 'Singles Total');
+
+    renderNonSingles();
 
     // Country Summary Table
     const summaryTbody = document.getElementById('country-summary-tbody');
