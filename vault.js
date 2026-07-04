@@ -488,10 +488,17 @@ function computeAllData() {
 
 // Kworb canlı tablosunda olup vault.json'da OLMAYAN parçalar (album cuts,
 // alternatif versiyonlar, eski feature'lar). Bunlar için de RIAA eligible
-// hesabı yapılır — sadece audio streams (per-track YT verisi yok), pure
-// sales 0 kabul edilir. Grand total'a DAHİL EDİLMEZ.
+// hesabı yapılır: track'in toplam AOD (audio-on-demand) stream'i × artist
+// ratio × dönem bazlı US payı → audio units. Albümün sertifikaya sayılan
+// YouTube video ID'lerinden toplam görüntüleme varsa (jtData.albums[id]
+// .streams.youtube), track'in albüm içindeki audio payıyla orantılı bir
+// video-view tahmini eklenir — calculateUSALive'ın per-song YT ID'si
+// olmayan track'ler için kullandığı aynı yöntem. Pure sales 0 kabul edilir
+// (vault.json'da resmi kayıt yok). Grand total'a DAHİL EDİLMEZ, sadece en
+// çok stream alan ilk 10 track gösterilir.
 function computeNonSingles() {
     const MIN_STREAMS = 5_000_000;
+    const TOP_N = 10;
     const vaultTitlesLower = vaultData.songs.map(s => s.title.toLowerCase());
     const pre2016Eras = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience – 2 of 2"];
     const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Soulmate"];
@@ -519,11 +526,23 @@ function computeNonSingles() {
         }
 
         const usAudio = streams * ARTIST_RATIO * share;
-        const usLive = Math.floor(usAudio / 150);
+
+        // YouTube views (varsa) — albümün sertifika videolarından toplam
+        // görüntüleme, track'in albüm audio payıyla orantılı dağıtılır.
+        let usVideo = 0;
+        const albumData = jtData && jtData.albums && jtData.albums[albumId];
+        const albumSpot = liveStreams.albums[albumId] || 0;
+        if (albumData && albumData.streams && albumData.streams.youtube && albumSpot > 0) {
+            const spotShare = streams / albumSpot;
+            const ytTrackShare = albumData.streams.youtube * spotShare;
+            usVideo = ytTrackShare * share;
+        }
+
+        const usLive = Math.floor((usAudio + usVideo) / 150);
         out.push({ title: displayTitle, album_id: albumId, streams, usLive });
     }
     out.sort((a, b) => b.usLive - a.usLive);
-    computedData.nonSingles = out;
+    computedData.nonSingles = out.slice(0, TOP_N);
 }
 
 function animateValue(obj, start, end, duration) {
