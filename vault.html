@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1783098723">
+    <link rel="stylesheet" href="style.css?v=1783165277">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -288,25 +288,25 @@
 
         <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <h2 class="font-playfair text-2xl text-accent">Singles</h2>
+                <h2 class="font-playfair text-2xl text-accent">Studio Albums</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="cert-table">
                     <thead>
                         <tr>
-                            <th class="w-1/4 cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'title')">Song Title ⇕</th>
-                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'certTotal')">Cert. Total ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'USA')">🇺🇸 USA (Eligible) ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'UK')">🇬🇧 UK ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Brazil')">🇧🇷 Brazil ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Germany')">🇩🇪 Germany ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Australia')">🇦🇺 Australia ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
+                            <th class="w-1/4">Title / Context</th>
+                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'certTotal')">Cert. Total ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'USA')">🇺🇸 USA (Eligible) ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'UK')">🇬🇧 UK ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Brazil')">🇧🇷 Brazil ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Germany')">🇩🇪 Germany ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Australia')">🇦🇺 Australia ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Canada')">🇨🇦 Canada ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Mexico')">🇲🇽 Mexico ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Other')">🌍 Other ⇕</th>
                         </tr>
                     </thead>
-                    <tbody id="songs-tbody">
+                    <tbody id="albums-tbody">
                         <!-- Populated by JS -->
                     </tbody>
                 </table>
@@ -316,8 +316,8 @@
         <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 flex-wrap gap-2">
                 <div>
-                    <h2 class="font-playfair text-2xl text-accent">Album Tracks — Live US Eligibility</h2>
-                    <p class="text-xs text-gray-500 mt-1">Non-single tracks from the live Kworb feed · audio streams only · not counted in the grand total</p>
+                    <h2 class="font-playfair text-2xl text-accent">Top 10 Album Tracks — Live US Eligibility</h2>
+                    <p class="text-xs text-gray-500 mt-1">Non-single tracks from the live Kworb feed · audio streams + proportional YouTube views (if available) · not counted in the grand total</p>
                 </div>
                 <span id="nonsingles-count" class="text-xs text-gray-500 uppercase tracking-widest"></span>
             </div>
@@ -341,25 +341,25 @@
 
         <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <h2 class="font-playfair text-2xl text-accent">Studio Albums</h2>
+                <h2 class="font-playfair text-2xl text-accent">Singles</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="cert-table">
                     <thead>
                         <tr>
-                            <th class="w-1/4">Title / Context</th>
-                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'certTotal')">Cert. Total ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'USA')">🇺🇸 USA (Eligible) ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'UK')">🇬🇧 UK ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Brazil')">🇧🇷 Brazil ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Germany')">🇩🇪 Germany ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Australia')">🇦🇺 Australia ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Canada')">🇨🇦 Canada ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Mexico')">🇲🇽 Mexico ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Other')">🌍 Other ⇕</th>
+                            <th class="w-1/4 cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'title')">Song Title ⇕</th>
+                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'certTotal')">Cert. Total ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'USA')">🇺🇸 USA (Eligible) ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'UK')">🇬🇧 UK ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Brazil')">🇧🇷 Brazil ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Germany')">🇩🇪 Germany ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Australia')">🇦🇺 Australia ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
                         </tr>
                     </thead>
-                    <tbody id="albums-tbody">
+                    <tbody id="songs-tbody">
                         <!-- Populated by JS -->
                     </tbody>
                 </table>
@@ -411,9 +411,9 @@
 
     </div>
 
-    <script src="config.js?v=1783098723" defer></script>
-    <script src="song-map.js?v=1783098723" defer></script>
-    <script src="vault.js?v=1783098723" defer></script>
+    <script src="config.js?v=1783165277" defer></script>
+    <script src="song-map.js?v=1783165277" defer></script>
+    <script src="vault.js?v=1783165277" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
