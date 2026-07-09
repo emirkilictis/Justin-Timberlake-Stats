@@ -164,6 +164,22 @@ async function fetchLiveStreams() {
             const albumName = "Orphan";
             liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + fourMinStreams;
         }
+
+        const loveSexMagicTitle = 'Love Sex Magic (feat. Justin Timberlake)';
+        const loveSexMagicLower = loveSexMagicTitle.toLowerCase();
+        if (!liveStreams.tracks[loveSexMagicLower]) {
+            const baselineDate = '2026-06-30';
+            const baselineTotal = 96_685_624;
+            const dailyGrowth = 17_965;
+            const days = Math.max(0, Math.round(
+                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+            ));
+            const lsmStreams = baselineTotal + days * dailyGrowth;
+            liveStreams.tracks[loveSexMagicLower] = lsmStreams;
+            
+            const albumName = "Orphan";
+            liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + lsmStreams;
+        }
     } catch (e) {
         console.error("Failed to fetch Kworb live streams:", e);
     }

@@ -280,7 +280,8 @@
         tracks: {
             "Mirrors": 1_404_622_163,
             "SexyBack": 1_283_973_094,
-            "Not A Bad Thing - Radio Edit": 116_987_347
+            "Not A Bad Thing - Radio Edit": 116_987_347,
+            "Love Sex Magic (feat. Justin Timberlake)": 93_373_624
         }
     };
     const songToAlbumMap = {
@@ -306,6 +307,9 @@
             const keyLower = key.toLowerCase().trim();
             if (lower.includes(keyLower)) {
                 if (keyLower === '4 minutes' && lower !== '4 minutes') {
+                    continue;
+                }
+                if (keyLower === 'love sex magic (feat. justin timberlake)' && lower !== 'love sex magic (feat. justin timberlake)') {
                     continue;
                 }
                 return YTD_2026_BASELINE.tracks[key];

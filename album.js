@@ -67,6 +67,7 @@ const YTD_2026_BASELINE = {
         "What Goes Around":                  550_091_404,
         "Give It To Me":                     471_587_284,
         "4 Minutes":                         469_728_383,
+        "Love Sex Magic (feat. Justin Timberlake)": 93_373_624,
         "Love Never Felt So Good":           436_341_531,
         "Ayo Technology":                    388_645_139,
         "Holy Grail":                        378_980_701,
@@ -98,6 +99,9 @@ function getTrackYTDBaseline(liveTitle) {
         const keyLower = key.toLowerCase().trim();
         if (lower.includes(keyLower)) {
             if (keyLower === '4 minutes' && lower !== '4 minutes') {
+                continue;
+            }
+            if (keyLower === 'love sex magic (feat. justin timberlake)' && lower !== 'love sex magic (feat. justin timberlake)') {
                 continue;
             }
             return YTD_2026_BASELINE.tracks[key];
@@ -505,6 +509,22 @@ async function init() {
                 all.push({
                     title: '4 Minutes (feat. Justin Timberlake and Timbaland)',
                     total: fourMinStreams,
+                    daily: dailyGrowth
+                });
+            }
+
+            const hasLSM = all.some(t => t.title.toLowerCase().includes('love sex magic'));
+            if (!hasLSM) {
+                const baselineDate = '2026-06-30';
+                const baselineTotal = 96_685_624;
+                const dailyGrowth = 17_965;
+                const days = Math.max(0, Math.round(
+                    (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+                ));
+                const lsmStreams = baselineTotal + days * dailyGrowth;
+                all.push({
+                    title: 'Love Sex Magic (feat. Justin Timberlake)',
+                    total: lsmStreams,
                     daily: dailyGrowth
                 });
             }

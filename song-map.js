@@ -122,6 +122,7 @@ const SONG_TO_ALBUM_MAP = {
     "Give It To Me":           "Orphan",
     "Love Never Felt So Good": "Orphan",
     "Ayo Technology":          "Orphan",
+    "Love Sex Magic":          "Orphan",
     "Carry Out":               "Orphan",
     "The Other Side":          "Orphan",
     "Signs":                   "Orphan",

@@ -163,11 +163,14 @@ function analyzeKworbData(htmlInput) {
 // JT'nin kworb sayfasında sadece "&" versiyonları var; bunlar zaten total'da.
 // Madonna sayfasındaki "and" yazılan 4 versiyon JT total'ında YOK, onları ekliyoruz.
 const MADONNA_SOURCE = 'https://kworb.net/spotify/artist/6tbjWDEIzxoDsBA1FuhfPW_songs.html';
+const CIARA_SOURCE = 'https://kworb.net/spotify/artist/2NdeV5rLm47xAvogXrYhJX_songs.html';
 const EXTRA_TRACKS = [
     { title: '4 Minutes (feat. Justin Timberlake and Timbaland)',                                  sourceUrl: MADONNA_SOURCE },
     { title: '4 Minutes (feat. Justin Timberlake and Timbaland) - Live',                           sourceUrl: MADONNA_SOURCE },
     { title: '4 Minutes (feat. Justin Timberlake and Timbaland) - Peter Saves New York Edit',      sourceUrl: MADONNA_SOURCE },
-    { title: '4 Minutes (feat. Justin Timberlake and Timbaland) - Junkie XL Remix Edit',           sourceUrl: MADONNA_SOURCE }
+    { title: '4 Minutes (feat. Justin Timberlake and Timbaland) - Junkie XL Remix Edit',           sourceUrl: MADONNA_SOURCE },
+    { title: 'Love Sex Magic (feat. Justin Timberlake)',                                           sourceUrl: CIARA_SOURCE },
+    { title: 'Love Sex Magic (feat. Justin Timberlake) - Jason Nevins Sex Club Radio Mix',          sourceUrl: CIARA_SOURCE }
 ];
 
 // ── UTC Tarih String Üretici ────────────────────────────────────

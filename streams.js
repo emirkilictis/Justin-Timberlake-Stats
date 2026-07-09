@@ -34,6 +34,7 @@ const YTD_2026_BASELINE = {
         "What Goes Around":                  550_091_404,
         "Give It To Me":                     471_587_284,
         "4 Minutes":                         469_728_383,
+        "Love Sex Magic (feat. Justin Timberlake)": 93_373_624,
         "Love Never Felt So Good":           436_341_531,
         "Ayo Technology":                    388_645_139,
         "Holy Grail":                        378_980_701,
@@ -97,6 +98,9 @@ function getTrackYTDBaseline(liveTitle) {
         if (lower.includes(keyLower)) {
             // Special rule for '4 minutes'
             if (keyLower === '4 minutes' && lower !== '4 minutes') {
+                continue;
+            }
+            if (keyLower === 'love sex magic (feat. justin timberlake)' && lower !== 'love sex magic (feat. justin timberlake)') {
                 continue;
             }
             return YTD_2026_BASELINE.tracks[key];
@@ -917,6 +921,7 @@ async function initStreamsDashboard() {
         const liveTitles = new Set(liveStats.tracks.map(t => t.title.toLowerCase()));
         let has4Min = false;
         let hasRadioEdit = false;
+        let hasLSM = false;
         if (snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
                 if (liveTitles.has(title.toLowerCase())) continue;
@@ -931,6 +936,9 @@ async function initStreamsDashboard() {
                 }
                 if (lc.includes('not a bad thing') && lc.includes('radio edit')) {
                     hasRadioEdit = true;
+                }
+                if (lc.includes('love sex magic')) {
+                    hasLSM = true;
                 }
                 let matched = false;
                 for (const key in songToAlbumMap) {
@@ -957,6 +965,28 @@ async function initStreamsDashboard() {
         // edip career total'i ve projeksiyonu bozuyordu. Tüm merge edilmiş listeyi tarıyoruz.
         has4Min      = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('4 minutes') && lc.includes('and timbaland'); });
         hasRadioEdit = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('not a bad thing') && lc.includes('radio edit'); });
+        hasLSM       = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('love sex magic'); });
+
+        // Fallback: Firestore'da "Love Sex Magic" varyantlari yoksa
+        if (!hasLSM) {
+            const baselineDate = '2026-06-30';
+            const baselineTotal = 96_685_624;
+            const dailyGrowth = 17_965;
+            const days = Math.max(0, Math.round(
+                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
+            ));
+            const fbTotal = baselineTotal + days * dailyGrowth;
+            liveStats.tracks.push({
+                title: 'Love Sex Magic (feat. Justin Timberlake)',
+                total: fbTotal,
+                daily: dailyGrowth
+            });
+            liveStats.TotalSpotify += fbTotal;
+            liveStats.TotalDaily   += dailyGrowth;
+            liveStats['Orphan'].total += fbTotal;
+            liveStats['Orphan'].daily += dailyGrowth;
+            console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for Love Sex Magic (no Firestore data)`);
+        }
 
         // Fallback: Firestore'da "4 Minutes ... and Timbaland" varyantlari yoksa
         if (!has4Min) {
