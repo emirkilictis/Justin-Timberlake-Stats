@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Emir Kilic">
     <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
     <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
     <title>Justin Timberlake Record Sales & Certifications — Global Units Database</title>
@@ -87,7 +88,7 @@
               "name": "How many platinum records does Justin Timberlake have?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Justin Timberlake has approximately 180 million certified + streaming-eligible units worldwide, combining official certifications across RIAA (USA), BPI (UK), ARIA (Australia), Music Canada, and 60+ other certifying bodies with US streaming-eligible units calculated from live Spotify and YouTube data."
+                "text": "Justin Timberlake has approximately <!--AUTO:CERTS_M-->190<!--/AUTO:CERTS_M--> million certified + streaming-eligible units worldwide, combining official certifications across RIAA (USA), BPI (UK), ARIA (Australia), Music Canada, and 60+ other certifying bodies with US streaming-eligible units calculated from live Spotify and YouTube data. The streaming-eligible portion is included because US labels often delay submitting catalog tracks for re-certification despite the streams already meeting Platinum / multi-Platinum thresholds."
               }
             }
           ]
@@ -110,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1783631608">
+    <link rel="stylesheet" href="style.css?v=1783631945">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -267,8 +268,7 @@
                 <li><a href="awards.html">Awards</a></li>
                 <li><a href="charts.html">Charts</a></li>
                 <li><a href="analytics.html">Deep Analytics</a></li>
-                <li><a href="game.html">Album Crush</a></li>
-                <li><a href="transform.html">Timbertrix</a></li>
+                <li><a href="games.html">Games</a></li>
                 <li><a href="about.html">About</a></li>
             </ul>
         </nav>
@@ -285,33 +285,6 @@
             </div>
             <div id="vault-count" style="margin-top:8px;font-size:0.75rem;color:#555;font-family:'Space Grotesk',sans-serif;min-height:1.2em;"></div>
         </div>
-
-        <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
-                <h2 class="font-playfair text-2xl text-accent">Singles</h2>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="cert-table">
-                    <thead>
-                        <tr>
-                            <th class="w-1/4 cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'title')">Song Title ⇕</th>
-                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'certTotal')">Cert. Total ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'USA')">🇺🇸 USA (Eligible) ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'UK')">🇬🇧 UK ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Brazil')">🇧🇷 Brazil ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Germany')">🇩🇪 Germany ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Australia')">🇦🇺 Australia ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
-                        </tr>
-                    </thead>
-                    <tbody id="songs-tbody">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-        </section>
 
         <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
@@ -334,6 +307,59 @@
                         </tr>
                     </thead>
                     <tbody id="albums-tbody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 flex-wrap gap-2">
+                <div>
+                    <h2 class="font-playfair text-2xl text-accent">Top 10 Album Tracks — Live US Eligibility</h2>
+                    <p class="text-xs text-gray-500 mt-1">Non-single tracks from the live Kworb feed · audio streams + proportional YouTube views (if available) · not counted in the grand total</p>
+                </div>
+                <span id="nonsingles-count" class="text-xs text-gray-500 uppercase tracking-widest"></span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="cert-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/3 cursor-pointer hover:text-white transition-colors" onclick="sortVault('nonSingles', 'title')">Track ⇕</th>
+                            <th class="text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('nonSingles', 'streams')">Spotify Streams ⇕</th>
+                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('nonSingles', 'usLive')">🇺🇸 Eligible Units ⇕</th>
+                            <th class="text-center">RIAA Status</th>
+                            <th class="text-left">Next Milestone</th>
+                        </tr>
+                    </thead>
+                    <tbody id="nonsingles-tbody">
+                        <tr><td colspan="5" style="text-align:center;color:#555;padding:24px;">Loading live data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h2 class="font-playfair text-2xl text-accent">Singles</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="cert-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4 cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'title')">Song Title ⇕</th>
+                            <th class="col-total-head text-right cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'certTotal')">Cert. Total ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'USA')">🇺🇸 USA (Eligible) ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'UK')">🇬🇧 UK ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Brazil')">🇧🇷 Brazil ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Germany')">🇩🇪 Germany ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Australia')">🇦🇺 Australia ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="songs-tbody">
                         <!-- Populated by JS -->
                     </tbody>
                 </table>
@@ -385,14 +411,14 @@
 
     </div>
 
-    <script src="config.js?v=1783631608" defer></script>
-    <script src="song-map.js?v=1783631608" defer></script>
-    <script src="vault.js?v=1783631608" defer></script>
+    <script src="config.js?v=1783631945" defer></script>
+    <script src="song-map.js?v=1783631945" defer></script>
+    <script src="vault.js?v=1783631945" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
             let shown = 0, total = 0;
-            ['albums-tbody', 'songs-tbody'].forEach(id => {
+            ['albums-tbody', 'songs-tbody', 'nonsingles-tbody'].forEach(id => {
                 const tbody = document.getElementById(id);
                 if (!tbody) return;
                 Array.from(tbody.querySelectorAll('tr')).forEach(row => {
@@ -418,7 +444,7 @@
         <a href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">TikTok</a>
         <a href="about.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
     </div>
-    Timberlake Analytics — Independent Fan Project · Not affiliated with Justin Timberlake or RCA Records
+    Timberlake Analytics — Independent music analytics by Emir Kilic · Not affiliated with Justin Timberlake or RCA Records
 </footer>
 </body>
 </html>

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Emir Kilic">
     <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
     <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
     <title>Methodology — How We Calculate Justin Timberlake Sales & Streaming Stats</title>
@@ -37,7 +38,7 @@
               "name": "What is Equivalent Album Sales (EAS)?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Equivalent Album Sales (EAS) is a unified metric that converts all music consumption formats — physical album sales, digital downloads, physical singles, digital singles, audio streams, and video streams — into a single comparable number. The formula was popularised by Chartmasters' CSPC methodology. For example, 1,166 Spotify streams equal approximately 1 EAS."
+                "text": "Equivalent Album Sales (EAS) is a unified metric that converts all music consumption formats — physical album sales, digital downloads, physical singles, digital singles, audio streams, and video streams — into a single comparable number. The formula was popularised by Chartmasters' CSPC methodology. For example, 1,166 Spotify streams equal approximately 1 EAS, and 6,750 YouTube views equal approximately 1 EAS. Justin Timberlake's career EAS for his solo discography is approximately <!--AUTO:EAS_M-->80.6<!--/AUTO:EAS_M--> million as calculated live on this site. Note: EAS is much smaller than total records sold (~117M solo) or certified units (~<!--AUTO:CERTS_M-->190<!--/AUTO:CERTS_M-->M solo) because it is a consumption-equivalent metric, not a sales or certification metric."
               }
             },
             {
@@ -53,7 +54,7 @@
               "name": "What is the difference between certified units and pure sales?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Pure sales (records sold) count only physical and digital purchases. Certified units (from RIAA, BPI, ARIA etc.) include streaming equivalents: since 2016 in the US, 150 streams count as one single sale and 1,500 streams count as one album sale for certification purposes. This is why Justin Timberlake's label reports ~117 million records sold (total records — albums and singles combined, not album sales) while his total certified + streaming-eligible units across all certifying bodies reach approximately 180 million."
+                "text": "Pure sales (records sold) count only physical and digital purchases. Certified units (from RIAA, BPI, ARIA etc.) include streaming equivalents: since 2016 in the US, 150 streams count as one single sale and 1,500 streams count as one album sale for certification purposes. This is why Justin Timberlake's label reports ~117 million records sold (total records — albums and singles combined, not album sales) while his total certified + streaming-eligible units across all certifying bodies reach approximately <!--AUTO:CERTS_M-->190<!--/AUTO:CERTS_M--> million. Note: the 117M figure is solo-only and does not include NSYNC; with NSYNC the combined records sold total reaches approximately 187 million."
               }
             },
             {
@@ -92,7 +93,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=1783631608">
+    <link rel="stylesheet" href="style.css?v=1783631945">
     <style>
         body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
 
@@ -270,8 +271,7 @@
             <li><a href="awards.html">Awards</a></li>
             <li><a href="charts.html">Charts</a></li>
             <li><a href="analytics.html">Deep Analytics</a></li>
-            <li><a href="game.html">Album Crush</a></li>
-            <li><a href="transform.html">Timbertrix</a></li>
+            <li><a href="games.html">Games</a></li>
             <li><a href="about.html" class="active">About</a></li>
         </ul>
     </nav>
@@ -279,13 +279,13 @@
     <div class="about-container">
 
         <h1 class="about-hero-title">Timberlake <span>Analytics</span></h1>
-        <p class="about-subtitle">A fan-built real-time statistics platform</p>
+        <p class="about-subtitle">Independent real-time music analytics · Built by Emir Kilic</p>
 
         <!-- What is this -->
         <div class="about-section">
             <h2>What Is This?</h2>
             <p>
-                Timberlake Analytics is an independently built, data-driven fan site tracking Justin Timberlake's
+                Timberlake Analytics is an independent, data-driven music analytics platform tracking Justin Timberlake's
                 career in real time — album sales, streaming statistics, record certifications, box office grosses,
                 and awards history, all in one place.
             </p>
@@ -398,14 +398,14 @@
                 These are two different metrics that are often confused. Justin Timberlake's record label
                 reports approximately <strong style="color:#fff;">117 million records sold</strong> — meaning
                 total records (albums and singles combined), physical and digital purchases only, with no
-                streaming counted. This is records sold, not album sales.
+                streaming counted. This is records sold, not album sales. This figure is solo-only and does <strong style="color:#fff;">not include NSYNC</strong>; combined with NSYNC sales, the total reaches approximately <strong style="color:#fff;">187 million records sold</strong>.
             </p>
             <p>
                 However, modern certification bodies (RIAA since 2016, BPI since 2014, ARIA since 2016, and others)
                 count streaming equivalents toward certifications: in the US, 150 streams = 1 single sale and
                 1,500 streams = 1 album sale. When all certifications are aggregated across RIAA, BPI, ARIA,
                 Music Canada, and 60+ other certifying bodies, Justin Timberlake's total reaches
-                approximately <strong style="color:#fff;">180 million certified + streaming-eligible units</strong>.
+                approximately <strong style="color:#fff;"><!--AUTO:CERTS_M-->190<!--/AUTO:CERTS_M--> million certified + streaming-eligible units</strong>.
             </p>
             <div class="note-box">
                 Neither number is "wrong" — they measure different things. Pure sales reflect purchases.
@@ -465,7 +465,7 @@
                     <tr>
                         <td>Certified + eligible units</td>
                         <td>Not shown</td>
-                        <td>~180M across 60+ certifying bodies + US streaming</td>
+                        <td>~<!--AUTO:CERTS_M-->190<!--/AUTO:CERTS_M-->M across 60+ certifying bodies + US streaming</td>
                     </tr>
                 </tbody>
             </table></div>
@@ -558,11 +558,33 @@
             </div>
         </div>
 
+        <!-- About the Author -->
+        <div class="about-section" id="author">
+            <h2>About the Author</h2>
+            <p>
+                Timberlake Analytics is built and maintained by <strong style="color:#fff;">Emir Kilic</strong>,
+                an independent music data analyst and longtime Justin Timberlake catalog researcher.
+                I built this site because no public source tracks JT's streaming, certifications, and
+                equivalent album sales in one place using live data — most aggregators rely on yearly
+                snapshots or estimates, while this platform recomputes every figure on each page load
+                from Kworb, the YouTube Data API, the Spotify Web API, and a curated certifications
+                database compiled from RIAA, BPI, ARIA, Music Canada, and 60+ other official certifying
+                bodies. All methodology is documented openly on this page so any figure can be reproduced
+                or audited.
+            </p>
+            <p style="color:#888;font-size:0.85rem;">
+                Contact:
+                <a href="https://x.com/emoycukv3" target="_blank" rel="noopener" style="color:#d4a853;">@emoycukv3 on X</a>
+                ·
+                <a href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener" style="color:#d4a853;">@emirtimber on TikTok</a>
+            </p>
+        </div>
+
         <!-- Disclaimer -->
         <div class="about-section">
             <h2>Disclaimer</h2>
             <p>
-                This is an independent fan project with no affiliation to Justin Timberlake,
+                This is an independent music analytics project with no affiliation to Justin Timberlake,
                 RCA Records, Sony Music Entertainment, or any associated management.
                 All data is sourced from public records and third-party databases.
                 Sales figures are estimates and may not reflect exact label-reported numbers.
@@ -578,7 +600,7 @@
             <a href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">TikTok</a>
             <a href="about.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
         </div>
-        Timberlake Analytics — Independent Fan Project · Not affiliated with Justin Timberlake or RCA Records
+        Timberlake Analytics — Independent music analytics by Emir Kilic · Not affiliated with Justin Timberlake or RCA Records
     </footer>
 
 </body>
