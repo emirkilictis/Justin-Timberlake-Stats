@@ -54,7 +54,7 @@ const FALLBACK_4MIN = {
 const FALLBACK_RADIO_EDIT = {
     baselineDate: '2026-05-24',
     baselineTotal: 118_417_347,
-    dailyGrowth: 10_000
+    dailyGrowth: 1_500
 };
 
 function getEstimated4MinTotal() {
