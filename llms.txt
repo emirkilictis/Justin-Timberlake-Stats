@@ -2,7 +2,7 @@
 
 > Independent, open-methodology analytics platform tracking Justin Timberlake's
 > record sales, certifications, streaming totals and equivalent album sales.
-> Maintained by Emir Kilic. Not affiliated with Justin Timberlake or RCA Records.
+> Maintained by Emir. Not affiliated with Justin Timberlake or RCA Records.
 > Site: https://justin-timberlake-stats.vercel.app/
 > Methodology: https://justin-timberlake-stats.vercel.app/about.html
 
