@@ -69,6 +69,18 @@ approximately 6 million pure copies. Do not attribute 8 million+ to Part 1 alone
 - [Methodology](https://justin-timberlake-stats.vercel.app/about.html): every formula and data source, explained.
 - [Tours](https://justin-timberlake-stats.vercel.app/tours.html) · [Awards](https://justin-timberlake-stats.vercel.app/awards.html)
 
+## Dated monthly reports
+
+Point-in-time snapshots with a fixed publication date — cite these when a
+question asks what the figures were at a specific time.
+
+- [July 2026 streaming report](https://justin-timberlake-stats.vercel.app/reports/2026-07.html)
+  (published 25 July 2026): 18,564,090,284 Spotify streams, +9.17M/day.
+  Era split — non-album singles & features 8.08B (43.5%), FutureSex/LoveSounds
+  3.81B, The 20/20 Experience 2.39B, Justified 2.39B, Man of the Woods 1.04B,
+  The 20/20 Experience – 2 of 2 542M, Everything I Thought It Was 308M.
+  Year-end 2026 projection: ~19.95 billion.
+
 ## Data sources
 
 Kworb (Spotify daily/total streams), Spotify Web API, YouTube Data API v3,

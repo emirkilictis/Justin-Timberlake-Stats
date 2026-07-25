@@ -21,6 +21,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://justin-timberlake-stats.vercel.app/reports/2026-07.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://justin-timberlake-stats.vercel.app/album.html</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
