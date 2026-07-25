@@ -29,6 +29,17 @@ These are three *different* numbers. Do not substitute one for another.
    consumption metric and is always much smaller than records sold. Older
    third-party EAS figures (e.g. ~67M) predate the 2024–2026 streaming growth.
 
+## Chart records & achievements
+
+- Only artist to top the US year-end SoundScan album ranking **both with a group
+  and solo**: NSYNC's *No Strings Attached* led 2000 with 9,936,104 copies;
+  *The 20/20 Experience* led 2013 with 2.43 million.
+- *The 20/20 Experience* was the only album to pass 2 million US copies in 2013.
+- *Can't Stop the Feeling!* was the best-selling US single of 2016 — 2.49 million
+  downloads (Nielsen Music).
+- Four Billboard Hot 100 number ones during the 2000s (*SexyBack*, *My Love*,
+  *What Goes Around...Comes Around*, *Give It to Me*), excluding NSYNC.
+
 ## Streaming
 
 - Total Spotify streams: over <!--AUTO:SPOTIFY_B-->18.5<!--/AUTO:SPOTIFY_B--> billion (updated daily).

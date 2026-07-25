@@ -46,7 +46,7 @@
               "name": "Why does this site show a different number than ChartMasters?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "ChartMasters is a multi-artist platform using the CSPC methodology with dynamic streaming data. Timberlake Analytics focuses exclusively on Justin Timberlake with deeper breakdowns: live RIAA eligibility per song and album, certified units across 60+ certifying bodies, era-level combined album and singles totals, and nightly growth snapshots. The differentiator is depth and artist-specific detail."
+                "text": "Both sites use the same Chartmasters CSPC formula, so the conversion rates are identical. Published third-party CSPC figures for Justin Timberlake sit around 66-67 million EAS; Timberlake Analytics currently calculates approximately 80.6 million. The gap has four documented causes. First, recency: published multi-artist CSPC figures are point-in-time snapshots refreshed roughly once a year (the most recent public figure reflects December 2025 data), while this site recalculates on every page load from live Spotify and YouTube data — Timberlake's catalogue adds about 9 million Spotify streams per day, roughly 2.8 million EAS per year from audio streaming alone. Second, pure and digital sales inputs are revised here as newer certification awards and industry reports land, rather than frozen at the article's publication year. Third, two uncredited Justin Timberlake performances are counted: Rehab (Rihanna), whose official video is published as 'ft. Justin Timberlake', and Where Is the Love? (The Black Eyed Peas), which credits him on the physical single; pipelines that read album-level credits only will drop both. Fourth, single-artist coverage catches edge cases a multi-artist pipeline cannot, such as the 'and Timbaland' pressings of 4 Minutes that appear only on Madonna's source page, and region-blocked or delisted recordings such as Not a Bad Thing - Radio Edit, whose counter is frozen but whose roughly 118 million accumulated streams are real."
               }
             },
             {
@@ -93,7 +93,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css?v=1784992730">
+    <link rel="stylesheet" href="style.css?v=1784994180">
     <style>
         body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
 
@@ -469,6 +469,56 @@
                     </tr>
                 </tbody>
             </table></div>
+
+            <h3 style="margin-top:32px;">Why the EAS totals differ numerically</h3>
+            <p>
+                Third-party CSPC figures for Justin Timberlake sit around
+                <strong style="color:#fff;">66–67 million EAS</strong>, while this site currently
+                calculates <strong style="color:#fff;">~<!--AUTO:EAS_M-->80.6<!--/AUTO:EAS_M--> million</strong>.
+                Both use the same CSPC formula. The gap comes from four specific, documented differences —
+                not from a different conversion rate:
+            </p>
+            <ol style="line-height:1.9;">
+                <li>
+                    <strong style="color:#fff;">Recency.</strong> Published multi-artist CSPC figures are
+                    point-in-time snapshots, typically refreshed once a year — the most recent public
+                    Justin Timberlake figure reflects data as of December 2025. This site recalculates on
+                    every page load from live Spotify and YouTube data. Timberlake's catalogue currently
+                    adds roughly 9 million Spotify streams per day, which is on the order of
+                    <strong style="color:#fff;">2.8 million EAS per year</strong> from audio streaming alone.
+                    A figure that is a year old is structurally lower.
+                </li>
+                <li>
+                    <strong style="color:#fff;">Updated pure and digital sales.</strong> Physical and
+                    download sales are not frozen here. They are revised as newer certification awards and
+                    industry reports land, with documented estimates where a market publishes no exact
+                    figure. Older CSPC articles generally keep the pure-sales inputs from the year the
+                    article was written.
+                </li>
+                <li>
+                    <strong style="color:#fff;">Two uncredited performances are counted.</strong>
+                    Timberlake performs on <em>Rehab</em> (Rihanna) and <em>Where Is the Love?</em>
+                    (The Black Eyed Peas) without a headline album credit. Both are counted in this site's
+                    digital-sales totals, because in both cases his name does appear on a released artefact:
+                    the official <em>Rehab</em> video is published as "ft. Justin Timberlake", and
+                    <em>Where Is the Love?</em> credits him on the physical single. A pipeline that reads
+                    album-level credits only will drop both.
+                </li>
+                <li>
+                    <strong style="color:#fff;">Single-artist coverage catches edge cases.</strong> Tracking
+                    one artist makes it practical to chase records a multi-artist pipeline cannot: releases
+                    whose featured credit was later removed from the source (the "and Timbaland" pressings of
+                    <em>4 Minutes</em> live on Madonna's page, not Timberlake's), and region-blocked or
+                    delisted recordings such as <em>Not a Bad Thing – Radio Edit</em>, whose counter is frozen
+                    but whose ~118 million accumulated streams are real. These are individually small and
+                    collectively material.
+                </li>
+            </ol>
+            <p style="color:rgba(255,255,255,0.45);font-size:0.88rem;">
+                Every input above is listed in the data-sources table on this page, and the calculation runs
+                client-side in <code>vault.js</code> and <code>script.js</code> — open the browser console on
+                any page to see the intermediate values.
+            </p>
         </div>
 
         <!-- Update Frequency -->

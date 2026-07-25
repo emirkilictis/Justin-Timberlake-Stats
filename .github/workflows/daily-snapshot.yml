@@ -67,14 +67,23 @@ jobs:
         working-directory: scripts
 
       - name: Değişiklik varsa commit + push
+        id: commit
         run: |
           if git diff --quiet -- index.html about.html vault.html llms.txt; then
             echo "Değişiklik yok, commit atlanıyor."
+            echo "changed=false" >> $GITHUB_OUTPUT
             exit 0
           fi
+          echo "changed=true" >> $GITHUB_OUTPUT
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html about.html vault.html llms.txt
           git commit -m "chore: sync EAS/certified-units SEO figures with live site [skip ci]"
           git pull --rebase origin main
           git push
+
+      # Commit mesajında [skip ci] olduğu için indexnow.yml push trigger'ı çalışmaz —
+      # bu yüzden bildirimi buradan doğrudan gönderiyoruz.
+      - name: Güncellenen sayfaları IndexNow'a bildir
+        if: steps.commit.outputs.changed == 'true'
+        run: node scripts/indexnow-ping.js / /about.html /vault.html /llms.txt
