@@ -565,6 +565,14 @@ function computeNonSingles() {
 
 function animateValue(obj, start, end, duration) {
     if (!obj || isNaN(end)) return;
+    // Arka plan sekmesinde requestAnimationFrame tetiklenmiyor → odometer
+    // "Loading Live Data..." yazısında donup kalıyordu. Bu aynı zamanda gece
+    // çalışan sync-seo-figures job'ını da düşürebiliyor (Puppeteer bu değeri
+    // okuyamayınca timeout). Görünmüyorsa direkt son değeri yaz.
+    if (typeof document !== 'undefined' && document.hidden) {
+        obj.innerHTML = Math.floor(end).toLocaleString('en-US');
+        return;
+    }
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;

@@ -25,6 +25,11 @@ const REPO_ROOT = path.join(__dirname, '..');
 
 const TARGET_FILES = ['index.html', 'about.html', 'vault.html', 'llms.txt'];
 
+// NOT: page.goto'da 'networkidle2' KULLANMA. Sayfalarda Firestore'un açık kalan
+// bağlantısı var, ağ hiçbir zaman boşa düşmüyor → her gece 60sn timeout ile job
+// düşüyordu (2026-07-03'ten 07-25'e kadar tek bir başarılı çalışma yok).
+// 'domcontentloaded' + aşağıdaki waitForText zaten doğru bekleme stratejisi:
+// ihtiyacımız olan DEĞERİN oluşmasını bekliyoruz, ağın susmasını değil.
 async function waitForText(page, selector, isReady, timeoutMs = 45000) {
     await page.waitForFunction(
         (sel, readyFnStr) => {
@@ -42,7 +47,7 @@ async function waitForText(page, selector, isReady, timeoutMs = 45000) {
 
 async function getLiveEAS(browser) {
     const page = await browser.newPage();
-    await page.goto(`${SITE_URL}/index.html`, { waitUntil: 'networkidle2', timeout: 60000 });
+    await page.goto(`${SITE_URL}/index.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     // script.js: aiEasEl.textContent = (careerTotalEAS / 1e6).toFixed(2) + 'M'
     const text = await waitForText(
@@ -58,7 +63,7 @@ async function getLiveEAS(browser) {
 
 async function getLiveCerts(browser) {
     const page = await browser.newPage();
-    await page.goto(`${SITE_URL}/vault.html`, { waitUntil: 'networkidle2', timeout: 60000 });
+    await page.goto(`${SITE_URL}/vault.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     // vault.js: odometer.innerHTML = grandTotal.toLocaleString('en-US')
     const text = await waitForText(
@@ -74,7 +79,7 @@ async function getLiveCerts(browser) {
 
 async function getLiveSpotifyTotal(browser) {
     const page = await browser.newPage();
-    await page.goto(`${SITE_URL}/streams.html`, { waitUntil: 'networkidle2', timeout: 60000 });
+    await page.goto(`${SITE_URL}/streams.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
     // streams.js: animateValue(...) sayacı 0'dan yukarı sayıyor — önce makul bir
     // eşiği geçmesini bekle, sonra animasyon bitsin diye biraz daha bekleyip oku.
