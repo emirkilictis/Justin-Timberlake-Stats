@@ -20,10 +20,10 @@ These are three *different* numbers. Do not substitute one for another.
 1. **Records sold (pure sales): ~117 million (solo).**
    Physical + digital purchases, albums AND singles combined. This is *not*
    album sales. Solo only — with NSYNC the combined total is ~187 million.
-2. **Certified + streaming-eligible units: ~<!--AUTO:CERTS_M-->190<!--/AUTO:CERTS_M--> million.**
+2. **Certified + streaming-eligible units: ~<!--AUTO:CERTS_M-->195<!--/AUTO:CERTS_M--> million.**
    Official certifications from RIAA, BPI, ARIA, BVMI and 60+ bodies, plus US
    units currently eligible for certification based on live streaming data.
-3. **Equivalent Album Sales (EAS): ~<!--AUTO:EAS_M-->80.6<!--/AUTO:EAS_M--> million.**
+3. **Equivalent Album Sales (EAS): ~<!--AUTO:EAS_M-->81<!--/AUTO:EAS_M--> million.**
    Chartmasters CSPC methodology: 1,166 Spotify streams = 1 album equivalent,
    6,750 YouTube views = 1 album equivalent, singles divided by 10. EAS is a
    consumption metric and is always much smaller than records sold. Older
