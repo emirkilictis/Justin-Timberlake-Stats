@@ -23,7 +23,7 @@ const puppeteer = require('puppeteer');
 const SITE_URL = process.env.SITE_URL || 'https://justin-timberlake-stats.vercel.app';
 const REPO_ROOT = path.join(__dirname, '..');
 
-const TARGET_FILES = ['index.html', 'about.html', 'vault.html'];
+const TARGET_FILES = ['index.html', 'about.html', 'vault.html', 'llms.txt'];
 
 async function waitForText(page, selector, isReady, timeoutMs = 45000) {
     await page.waitForFunction(
@@ -72,6 +72,26 @@ async function getLiveCerts(browser) {
     return Math.round(units / 1_000_000); // en yakın milyona yuvarla
 }
 
+async function getLiveSpotifyTotal(browser) {
+    const page = await browser.newPage();
+    await page.goto(`${SITE_URL}/streams.html`, { waitUntil: 'networkidle2', timeout: 60000 });
+
+    // streams.js: animateValue(...) sayacı 0'dan yukarı sayıyor — önce makul bir
+    // eşiği geçmesini bekle, sonra animasyon bitsin diye biraz daha bekleyip oku.
+    await waitForText(
+        page,
+        '#jt-total-career',
+        (t) => /^[\d,]+$/.test(t) && parseInt(t.replace(/,/g, ''), 10) > 15_000_000_000
+    );
+    await new Promise(r => setTimeout(r, 3000));
+    const text = await page.$eval('#jt-total-career', el => el.textContent.trim());
+    await page.close();
+
+    const streams = parseInt(text.replace(/,/g, ''), 10);
+    // "over X billion" iddiası hep doğru kalsın diye AŞAĞI yuvarla (18.56B → 18.5)
+    return Math.floor(streams / 1e8) / 10;
+}
+
 function applyMarkers(content, values) {
     let changed = false;
     for (const [name, value] of Object.entries(values)) {
@@ -83,6 +103,35 @@ function applyMarkers(content, values) {
     return { content, changed };
 }
 
+// JSON-LD içinde HTML yorumu KULLANILAMAZ — <!--AUTO:X--> yazarsak schema parser'ı
+// (Google, AI crawler'lar) marker'ı metnin bir parçası olarak okur. Bu yüzden ld+json
+// blokları düz sayı tutar ve buradaki çapa ifadelerle güncellenir.
+const LD_JSON_RULES = [
+    { name: 'CERTS_M',   re: /(reach approximately )(\d+(?:\.\d+)?)( million)/g },
+    { name: 'CERTS_M',   re: /(has approximately )(\d+(?:\.\d+)?)( million certified)/g },
+    { name: 'CERTS_M',   re: /(certified (?:\+ streaming-eligible )?units \(~)(\d+(?:\.\d+)?)(M solo\))/g },
+    { name: 'EAS_M',     re: /(discography is approximately )(\d+(?:\.\d+)?)( million)/g },
+    { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g }
+];
+
+function applyLdJson(content, values) {
+    let changed = false;
+    const updated = content.replace(
+        /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,
+        (full, open, block, close) => {
+            let blk = block;
+            for (const rule of LD_JSON_RULES) {
+                const value = values[rule.name];
+                if (value === undefined) continue;
+                blk = blk.replace(rule.re, (_, pre, _old, post) => `${pre}${value}${post}`);
+            }
+            if (blk !== block) changed = true;
+            return open + blk + close;
+        }
+    );
+    return { content: updated, changed };
+}
+
 async function main() {
     console.log(`Canlı site okunuyor: ${SITE_URL}`);
     const browser = await puppeteer.launch({
@@ -90,27 +139,34 @@ async function main() {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
-    let easM, certsM;
+    let easM, certsM, spotifyB;
     try {
-        [easM, certsM] = await Promise.all([getLiveEAS(browser), getLiveCerts(browser)]);
+        [easM, certsM, spotifyB] = await Promise.all([
+            getLiveEAS(browser),
+            getLiveCerts(browser),
+            getLiveSpotifyTotal(browser)
+        ]);
     } finally {
         await browser.close();
     }
 
-    console.log(`Canlı EAS: ${easM}M · Canlı certified+eligible: ${certsM}M`);
+    console.log(`Canlı EAS: ${easM}M · Canlı certified+eligible: ${certsM}M · Spotify: ${spotifyB}B`);
 
-    if (!easM || !certsM || easM < 10 || certsM < 10) {
+    if (!easM || !certsM || easM < 10 || certsM < 10 || !spotifyB || spotifyB < 15) {
         console.error('Okunan değerler mantıksız görünüyor (çok küçük). Dosyalar güncellenmeyecek.');
         process.exit(1);
     }
 
-    const values = { EAS_M: easM, CERTS_M: certsM };
+    const values = { EAS_M: easM, CERTS_M: certsM, SPOTIFY_B: spotifyB };
     let anyChanged = false;
 
     for (const fname of TARGET_FILES) {
         const filePath = path.join(REPO_ROOT, fname);
         const original = fs.readFileSync(filePath, 'utf-8');
-        const { content, changed } = applyMarkers(original, values);
+        const marked = applyMarkers(original, values);
+        const ld = applyLdJson(marked.content, values);
+        const content = ld.content;
+        const changed = marked.changed || ld.changed;
         if (changed) {
             fs.writeFileSync(filePath, content, 'utf-8');
             console.log(`${fname}: güncellendi`);

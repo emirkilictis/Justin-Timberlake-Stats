@@ -116,7 +116,9 @@ async function fetchLiveStreams() {
                 let title = cols[0].textContent.trim();
                 let val = parseInt(cols[1].textContent.replace(/,/g, ''), 10) || 0;
                 if (!title) return;
-                let lowerTitle = title.toLowerCase();
+                // Kworb feature track'lerini "* " ile işaretliyor; normalize etmezsek
+                // aynı şarkı fallback bloklarında "yok" sanılıp ikinci kez ekleniyor.
+                let lowerTitle = normalizeKworbTitle(title);
 
                 // Track mapping
                 liveStreams.tracks[lowerTitle] = val;

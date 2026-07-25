@@ -89,6 +89,19 @@ const allAlbums = [
     "Man of the Woods", "Everything I Thought It Was", "Orphan"
 ];
 
+// ── Kworb başlık normalizasyonu (song-map.js ile birebir aynı) ──
+// Kworb, sanatçının FEATURED olduğu şarkıların başına "* " koyar. Aynı şarkı asıl
+// sanatçının sayfasından çekildiğinde bu yıldız yok → ham string karşılaştırması
+// aynı şarkıyı iki ayrı track sanıp snapshot'a MÜKERRER yazıyordu
+// (2026-07-11'den beri career_total ~98.9M şişikti).
+function normalizeKworbTitle(title) {
+    return String(title || '')
+        .toLowerCase()
+        .replace(/^\s*\*\s*/, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 // ── HTML Parser ─────────────────────────────────────────────────
 function analyzeKworbData(htmlInput) {
     const root = parse(htmlInput, { lowerCaseTagName: false, comment: false, blockTextElements: { script: false, style: false } });
@@ -229,7 +242,10 @@ async function fetchRadioEditStreams() {
     const trackTitle = 'Not A Bad Thing - Radio Edit';
     const baselineDate = '2026-05-24';
     const baselineTotal = 118417347;
-    const dailyGrowth = 10000;
+    // Track Spotify'da donmuş durumda — gerçek günlük artış ~1.5k. 10k tahmini
+    // her gün fazladan 8.5k enjekte ediyordu (streams.js / vault.js / script.js
+    // fallback'leri ile aynı değerde kalmalı).
+    const dailyGrowth = 1500;
 
     if (process.env.DATABASE_URL) {
         try {
@@ -298,7 +314,8 @@ async function fetchAndSnapshot() {
     // Extra track'leri ana listeye ekle (JT sayfasında yoksa)
     const combinedExtraTracks = [...extraTracks, radioEditTrack];
     for (const t of combinedExtraTracks) {
-        const alreadyPresent = stats.tracks.some(x => x.title.toLowerCase() === t.title.toLowerCase());
+        const tNorm = normalizeKworbTitle(t.title);
+        const alreadyPresent = stats.tracks.some(x => normalizeKworbTitle(x.title) === tNorm);
         if (!alreadyPresent) {
             stats.tracks.push(t);
             
@@ -331,10 +348,19 @@ async function fetchAndSnapshot() {
         console.warn(`⚠️  TotalSpotify tablodan okunamadı — ${stats.tracks.length} track'in toplamı kullanıldı: ${stats.TotalSpotify.toLocaleString('en-US')}`);
     }
 
-    // Tracks'i map'e çevir (Firestore'da verimli okuma için)
+    // Tracks'i map'e çevir (Firestore'da verimli okuma için).
+    // Kworb'da aynı başlığa sahip birden fazla satır var ("* Give It To Me", "* Work It",
+    // "Sanctified (feat. Tobe Nwigwe)" …). Düz atama yapınca son satır öncekini EZİYOR ve
+    // snapshot ~548M stream kaybediyordu → aynı başlıkları TOPLA.
     const tracksMap = {};
     stats.tracks.forEach(t => {
-        tracksMap[t.title] = { total: t.total, daily: t.daily };
+        const key = t.title;
+        if (tracksMap[key]) {
+            tracksMap[key].total += t.total;
+            tracksMap[key].daily += t.daily;
+        } else {
+            tracksMap[key] = { total: t.total, daily: t.daily };
+        }
     });
 
     // Albums map

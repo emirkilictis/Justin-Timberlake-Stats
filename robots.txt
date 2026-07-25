@@ -1,4 +1,33 @@
 User-agent: *
 Allow: /
 
+# AI / answer-engine crawlers are explicitly welcome.
+# Google-Extended controls whether this content may ground Gemini & AI Overviews.
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# Canonical machine-readable summary of this site's key figures:
+# https://justin-timberlake-stats.vercel.app/llms.txt
+
 Sitemap: https://justin-timberlake-stats.vercel.app/sitemap.xml
