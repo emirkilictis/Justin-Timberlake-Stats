@@ -84,6 +84,11 @@
   .fill.alt { background:linear-gradient(90deg,#3a3a3a,#8f8f8f); }
   .daily { font-size:0.72rem; color:var(--dim); margin-top:5px; }
   .chart-foot { border-top:1px solid var(--line); margin-top:20px; padding-top:14px; font-size:0.72rem; color:var(--dim); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .legend { display:flex; gap:18px; flex-wrap:wrap; font-size:0.74rem; color:var(--dim); margin:-6px 0 20px; }
+  .legend span { display:flex; align-items:center; gap:7px; }
+  .legend i { width:11px; height:11px; border-radius:3px; display:inline-block; }
+  .track.stack { display:flex; }
+  .track.stack i { height:100%; display:block; }
 
   table { width:100%; border-collapse:collapse; font-size:0.88rem; }
   th,td { text-align:left; padding:11px 10px; border-bottom:1px solid var(--line); }
@@ -213,6 +218,101 @@
     The headline surprise is the top bar. Timberlake's non-album work — soundtrack singles,
     features and one-offs — accounts for roughly <strong>44%</strong> of his entire Spotify
     catalogue, more than twice his biggest studio album. No other part of his career comes close.
+  </div>
+
+  <h2>Career equivalent album sales</h2>
+  <p class="h2sub">The same catalogue converted to album equivalents, and — more interestingly — what each era is actually made of.</p>
+
+  <div class="chart" id="chart-eas">
+    <div class="chart-head">
+      <div class="chart-title">Justin Timberlake — career EAS by era</div>
+      <div class="chart-meta">25 JULY 2026 · TIMBERLAKE ANALYTICS</div>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:#d4a853"></i>Pure album sales</span>
+      <span><i style="background:#8a6a2a"></i>Singles ÷ 10</span>
+      <span><i style="background:#5b8c85"></i>Streaming (audio + video)</span>
+    </div>
+
+    <div class="row">
+      <img class="cover" src="../assets/fsls.jpg" alt="FutureSex/LoveSounds cover">
+      <div class="barwrap">
+        <div class="barlabel"><div class="name">FutureSex/LoveSounds <span>· 2006</span></div><div class="num">22.79M</div></div>
+        <div class="track stack" style="width:100%">
+          <i style="width:47.6%;background:#d4a853"></i><i style="width:24.6%;background:#8a6a2a"></i><i style="width:27.8%;background:#5b8c85"></i>
+        </div>
+        <div class="daily">10.84M pure · 35M download singles — the biggest download era of his career</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="cover ph" title="Non-album">★</div>
+      <div class="barwrap">
+        <div class="barlabel"><div class="name">Non-album singles &amp; features <span>· 2002–2026</span></div><div class="num">22.14M</div></div>
+        <div class="track stack" style="width:97.2%">
+          <i style="width:0.05%;background:#d4a853"></i><i style="width:38.6%;background:#8a6a2a"></i><i style="width:61.3%;background:#5b8c85"></i>
+        </div>
+        <div class="daily">Almost entirely singles and streaming — 13.58M EAS from streams alone</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <img class="cover" src="../assets/justified.jpg" alt="Justified cover">
+      <div class="barwrap">
+        <div class="barlabel"><div class="name">Justified <span>· 2002</span></div><div class="num">16.22M</div></div>
+        <div class="track stack" style="width:71.2%">
+          <i style="width:65.2%;background:#d4a853"></i><i style="width:10.7%;background:#8a6a2a"></i><i style="width:24.1%;background:#5b8c85"></i>
+        </div>
+        <div class="daily">The most sales-driven era — 65% of it is physical and digital album copies</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <img class="cover" src="../assets/the20.jpg" alt="The 20/20 Experience cover">
+      <div class="barwrap">
+        <div class="barlabel"><div class="name">The 20/20 Experience <span>· 2013 · both parts</span></div><div class="num">16.00M</div></div>
+        <div class="track stack" style="width:70.2%">
+          <i style="width:52.3%;background:#d4a853"></i><i style="width:16.9%;background:#8a6a2a"></i><i style="width:30.8%;background:#5b8c85"></i>
+        </div>
+        <div class="daily">Part 1 + Part 2 + The Complete Experience combined</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <img class="cover" src="../assets/motw.jpg" alt="Man of the Woods cover">
+      <div class="barwrap">
+        <div class="barlabel"><div class="name">Man of the Woods <span>· 2018</span></div><div class="num">3.08M</div></div>
+        <div class="track stack" style="width:13.5%">
+          <i style="width:39.0%;background:#d4a853"></i><i style="width:4.9%;background:#8a6a2a"></i><i style="width:56.2%;background:#5b8c85"></i>
+        </div>
+        <div class="daily">First era where streaming outweighs sales</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <img class="cover" src="../assets/eitiw.jpg" alt="Everything I Thought It Was cover">
+      <div class="barwrap">
+        <div class="barlabel"><div class="name">Everything I Thought It Was <span>· 2024</span></div><div class="num">0.75M</div></div>
+        <div class="track stack" style="width:3.3%">
+          <i style="width:33.4%;background:#d4a853"></i><i style="width:0.7%;background:#8a6a2a"></i><i style="width:65.9%;background:#5b8c85"></i>
+        </div>
+        <div class="daily">66% streaming — the modern consumption profile</div>
+      </div>
+    </div>
+
+    <div class="chart-foot">
+      <div>Career total: <strong style="color:#d4a853">80,979,738 EAS</strong> · CSPC method (1,166 streams or 6,750 views = 1 album; singles ÷ 10)</div>
+      <div>justin-timberlake-stats.vercel.app</div>
+    </div>
+  </div>
+
+  <div class="note">
+    Two eras are effectively tied at the top, and they got there in opposite ways.
+    <strong>FutureSex/LoveSounds</strong> is built on 10.84M album copies and 35M download
+    singles. <strong>The non-album pile</strong> has almost no album sales at all — it is
+    singles and streaming, and it still nearly matches. Between them they are more than half
+    of his career total.
   </div>
 
   <h2>Era detail</h2>
