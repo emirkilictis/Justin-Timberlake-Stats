@@ -119,22 +119,41 @@ const LD_JSON_RULES = [
     { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g }
 ];
 
+// llms.txt text/plain olarak servis ediliyor — orada da HTML yorumu KULLANILAMAZ.
+// HTML'de görünmeyen <!--AUTO:X--> düz metin dosyasında crawler'a birebir görünür
+// ("~<!--AUTO:CERTS_M-->195<!--/AUTO:CERTS_M--> million"). Aynı çapa mantığı.
+const PLAIN_TEXT_RULES = [
+    { name: 'CERTS_M',   re: /(streaming-eligible units: ~)(\d+(?:\.\d+)?)( million)/g },
+    { name: 'EAS_M',     re: /(Equivalent Album Sales \(EAS\): ~)(\d+(?:\.\d+)?)( million)/g },
+    { name: 'SPOTIFY_B', re: /(Total Spotify streams: over )(\d+(?:\.\d+)?)( billion)/g }
+];
+
+function applyRules(text, values, rules) {
+    let out = text;
+    for (const rule of rules) {
+        const value = values[rule.name];
+        if (value === undefined) continue;
+        out = out.replace(rule.re, (_, pre, _old, post) => `${pre}${value}${post}`);
+    }
+    return out;
+}
+
 function applyLdJson(content, values) {
     let changed = false;
     const updated = content.replace(
         /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,
         (full, open, block, close) => {
-            let blk = block;
-            for (const rule of LD_JSON_RULES) {
-                const value = values[rule.name];
-                if (value === undefined) continue;
-                blk = blk.replace(rule.re, (_, pre, _old, post) => `${pre}${value}${post}`);
-            }
+            const blk = applyRules(block, values, LD_JSON_RULES);
             if (blk !== block) changed = true;
             return open + blk + close;
         }
     );
     return { content: updated, changed };
+}
+
+function applyPlainText(content, values) {
+    const updated = applyRules(content, values, PLAIN_TEXT_RULES);
+    return { content: updated, changed: updated !== content };
 }
 
 async function main() {
@@ -168,10 +187,16 @@ async function main() {
     for (const fname of TARGET_FILES) {
         const filePath = path.join(REPO_ROOT, fname);
         const original = fs.readFileSync(filePath, 'utf-8');
-        const marked = applyMarkers(original, values);
-        const ld = applyLdJson(marked.content, values);
-        const content = ld.content;
-        const changed = marked.changed || ld.changed;
+        const isPlainText = fname.endsWith('.txt');
+        // .txt dosyalarında marker kullanılmıyor (crawler'a görünürler) — çapa kuralları.
+        const first = isPlainText
+            ? applyPlainText(original, values)
+            : applyMarkers(original, values);
+        const second = isPlainText
+            ? { content: first.content, changed: false }
+            : applyLdJson(first.content, values);
+        const content = second.content;
+        const changed = first.changed || second.changed;
         if (changed) {
             fs.writeFileSync(filePath, content, 'utf-8');
             console.log(`${fname}: güncellendi`);
