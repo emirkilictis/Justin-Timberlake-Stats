@@ -116,6 +116,7 @@ const LD_JSON_RULES = [
     { name: 'CERTS_M',   re: /(has approximately )(\d+(?:\.\d+)?)( million certified)/g },
     { name: 'CERTS_M',   re: /(certified (?:\+ streaming-eligible )?units \(~)(\d+(?:\.\d+)?)(M solo\))/g },
     { name: 'EAS_M',     re: /(discography is approximately )(\d+(?:\.\d+)?)( million)/g },
+    { name: 'EAS_M',     re: /(Timberlake Analytics currently calculates approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g }
 ];
 
