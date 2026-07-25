@@ -77,7 +77,29 @@ async function getLiveCerts(browser) {
     return Math.round(units / 1_000_000); // en yakın milyona yuvarla
 }
 
-async function getLiveSpotifyTotal(browser) {
+// Kworb başlıklarını düzyazıya uygun hale getir:
+//   "SexyBack (feat. Timbaland)"                      → "SexyBack"
+//   "What Goes Around.../...Comes Around (Interlude)"  → "What Goes Around...Comes Around"
+//   "* Love Sex Magic (feat. Justin Timberlake)"       → "Love Sex Magic"
+// Kworb bazı başlıkları TAMAMEN BÜYÜK harf yazıyor; sitenin geri kalanı normal
+// yazımı kullanıyor. Bilinen istisnaları burada eşliyoruz (anahtar: küçük harf).
+const TITLE_ALIASES = {
+    "can't stop the feeling!": "Can't Stop the Feeling!",
+    "sexyback": "SexyBack",
+    "tko": "TKO"
+};
+
+function prettyTrackTitle(raw) {
+    let t = String(raw || '').replace(/^\s*\*\s*/, '').trim();
+    t = t.replace(/\s*[\(\[](?:feat\.|with|from)[^)\]]*[\)\]]/gi, '');
+    t = t.replace(/\s*\(Interlude\)\s*$/i, '');
+    t = t.replace(/\.\.\.\/\.\.\./g, '...');
+    t = t.trim();
+    return TITLE_ALIASES[t.toLowerCase()] || t;
+}
+
+// Hem kariyer toplamını hem de en çok dinlenen parçaları TEK sayfa ziyaretinde okur.
+async function getLiveStreamData(browser) {
     const page = await browser.newPage();
     await page.goto(`${SITE_URL}/streams.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
@@ -89,12 +111,48 @@ async function getLiveSpotifyTotal(browser) {
         (t) => /^[\d,]+$/.test(t) && parseInt(t.replace(/,/g, ''), 10) > 15_000_000_000
     );
     await new Promise(r => setTimeout(r, 3000));
+
     const text = await page.$eval('#jt-total-career', el => el.textContent.trim());
+
+    // Track tablosu toplamına göre azalan sıralı geliyor; ilk N'i alıyoruz.
+    const topTracks = await page.$$eval('#streams-table-body tr', rows =>
+        rows.slice(0, 12).map(tr => {
+            const td = tr.querySelectorAll('td');
+            return {
+                title: td[0] ? td[0].textContent.trim() : '',
+                total: td[1] ? parseInt(td[1].textContent.replace(/[^\d]/g, ''), 10) || 0 : 0
+            };
+        })
+    );
     await page.close();
 
     const streams = parseInt(text.replace(/,/g, ''), 10);
-    // "over X billion" iddiası hep doğru kalsın diye AŞAĞI yuvarla (18.56B → 18.5)
-    return Math.floor(streams / 1e8) / 10;
+    return {
+        // "over X billion" iddiası hep doğru kalsın diye AŞAĞI yuvarla (18.56B → 18.5)
+        spotifyB: Math.floor(streams / 1e8) / 10,
+        topTracks: topTracks
+            .filter(t => t.title && t.total > 0)
+            .map(t => ({ title: prettyTrackTitle(t.title), total: t.total }))
+            .slice(0, 7)
+    };
+}
+
+// <!--AUTO_BLOCK:NAME--> ... <!--/AUTO_BLOCK:NAME--> arasını komple yeniden yazar.
+// Tek tek değer yerine LİSTE üreten alanlar için (HTML yorumu sayfada görünmez).
+function applyBlock(content, name, html) {
+    const re = new RegExp(`(<!--AUTO_BLOCK:${name}-->)[\\s\\S]*?(<!--\\/AUTO_BLOCK:${name}-->)`, 'g');
+    if (!re.test(content)) return { content, changed: false };
+    const updated = content.replace(
+        new RegExp(`(<!--AUTO_BLOCK:${name}-->)[\\s\\S]*?(<!--\\/AUTO_BLOCK:${name}-->)`, 'g'),
+        (_, open, close) => `${open}\n${html}\n  ${close}`
+    );
+    return { content: updated, changed: updated !== content };
+}
+
+function renderTopSongsHtml(tracks) {
+    return '  <ul>\n' + tracks
+        .map(t => `    <li>${t.title} — ${t.total.toLocaleString('en-US')} Spotify streams</li>`)
+        .join('\n') + '\n  </ul>';
 }
 
 function applyMarkers(content, values) {
@@ -157,6 +215,27 @@ function applyPlainText(content, values) {
     return { content: updated, changed: updated !== content };
 }
 
+// llms.txt'te HTML yorumu kullanılamaz (crawler'a görünür) — "- Most-streamed:"
+// satırını başlığına çapalayıp komple yeniden yazıyoruz. Satır sarma korunuyor.
+function applyMostStreamedLine(content, tracks) {
+    const names = tracks.slice(0, 5).map(t => t.title);
+    // 74 karakterde sar, devam satırlarını iki boşlukla girintile
+    const lines = [];
+    let cur = '- Most-streamed:';
+    names.forEach((n, i) => {
+        const piece = ' ' + n + (i < names.length - 1 ? ',' : '.');
+        if ((cur + piece).length > 74) { lines.push(cur); cur = '  ' + piece.trimStart(); }
+        else { cur += piece; }
+    });
+    lines.push(cur);
+    const replacement = lines.join('\n');
+
+    const re = /^- Most-streamed:[\s\S]*?(?=\n\n|\n## )/m;
+    if (!re.test(content)) return { content, changed: false };
+    const updated = content.replace(re, replacement);
+    return { content: updated, changed: updated !== content };
+}
+
 async function main() {
     console.log(`Canlı site okunuyor: ${SITE_URL}`);
     const browser = await puppeteer.launch({
@@ -164,22 +243,31 @@ async function main() {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
-    let easM, certsM, spotifyB;
+    let easM, certsM, streamData;
     try {
-        [easM, certsM, spotifyB] = await Promise.all([
+        [easM, certsM, streamData] = await Promise.all([
             getLiveEAS(browser),
             getLiveCerts(browser),
-            getLiveSpotifyTotal(browser)
+            getLiveStreamData(browser)
         ]);
     } finally {
         await browser.close();
     }
 
+    const spotifyB = streamData.spotifyB;
+    const topTracks = streamData.topTracks;
+
     console.log(`Canlı EAS: ${easM}M · Canlı certified+eligible: ${certsM}M · Spotify: ${spotifyB}B`);
+    console.log(`En çok dinlenen ${topTracks.length} parça okundu:`);
+    topTracks.forEach(t => console.log(`   ${t.total.toLocaleString('en-US').padStart(15)}  ${t.title}`));
 
     if (!easM || !certsM || easM < 10 || certsM < 10 || !spotifyB || spotifyB < 15) {
         console.error('Okunan değerler mantıksız görünüyor (çok küçük). Dosyalar güncellenmeyecek.');
         process.exit(1);
+    }
+    // Track listesi boş/eksik geldiyse mevcut listeyi SİLME — bloğu olduğu gibi bırak.
+    if (topTracks.length < 5) {
+        console.warn(`⚠️  Sadece ${topTracks.length} parça okunabildi — TOP_SONGS bloğuna dokunulmayacak.`);
     }
 
     const values = { EAS_M: easM, CERTS_M: certsM, SPOTIFY_B: spotifyB };
@@ -196,8 +284,17 @@ async function main() {
         const second = isPlainText
             ? { content: first.content, changed: false }
             : applyLdJson(first.content, values);
-        const content = second.content;
-        const changed = first.changed || second.changed;
+
+        // Liste blokları — sadece güvenilir veri geldiyse yaz.
+        let third = { content: second.content, changed: false };
+        if (topTracks.length >= 5) {
+            third = isPlainText
+                ? applyMostStreamedLine(second.content, topTracks)
+                : applyBlock(second.content, 'TOP_SONGS', renderTopSongsHtml(topTracks));
+        }
+
+        const content = third.content;
+        const changed = first.changed || second.changed || third.changed;
         if (changed) {
             fs.writeFileSync(filePath, content, 'utf-8');
             console.log(`${fname}: güncellendi`);
