@@ -37,9 +37,18 @@ service cloud.firestore {
     }
 
     // ── Historical Snapshots (read-only from client) ─────────────
-    // The daily-snapshot script writes via Admin SDK (bypasses rules).
-    // Clients can only read snapshot data.
-    match /snapshots/{snapshotId} {
+    // Collection name is `daily_snapshots` — this MUST match the code:
+    //   scripts/daily-snapshot.js      → db.collection('daily_snapshots')
+    //   index.html / streams.html / album.html → doc(db, "daily_snapshots", …)
+    // (Bu blok daha önce `snapshots` yazıyordu; kodda öyle bir koleksiyon yok,
+    //  yani kural hiç uygulanmıyordu ve okuma catch-all deny'e düşüyordu. Site
+    //  buna rağmen okuyabildiği için YAYINDAKİ kurallar bu dosyadan farklıydı.)
+    //
+    // Yazma istemciden KAPALI olmalı: snapshot'ları yalnızca GitHub Actions
+    // Admin SDK ile yazıyor ve Admin SDK kuralları baypas eder. İstemci yazmaya
+    // açık kalırsa, config.js'teki public API anahtarına sahip herkes stream
+    // geçmişini bozabilir — streams sayfasındaki tüm büyüme hesapları buna dayanıyor.
+    match /daily_snapshots/{snapshotId} {
       allow read: if true;
       allow write: if false;
     }

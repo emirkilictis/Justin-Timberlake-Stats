@@ -155,6 +155,82 @@ function renderTopSongsHtml(tracks) {
         .join('\n') + '\n  </ul>';
 }
 
+// ── Ödüllenmiş sertifikalar ──────────────────────────────────────
+// TEK kaynak: data/awarded-certifications.json. Bu değerler sertifika
+// kuruluşunun VERDİĞİ ödül; vault.json'ın USA kolonu ise eligible tutuyor,
+// o yüzden ödül metni için oradan okunamaz.
+function loadAwardedCerts() {
+    const p = path.join(REPO_ROOT, 'data', 'awarded-certifications.json');
+    return JSON.parse(fs.readFileSync(p, 'utf-8')).albums;
+}
+
+// "Justified (2002): over 10 million pure copies sold worldwide. US: 3x Platinum (RIAA). UK: …"
+function albumSentence(a) {
+    const era = a.partLabel ? `${a.year}, ${a.partLabel}` : `${a.year}`;
+    let s = `${a.name} (${era}): ${a.pureWorldwide} pure copies sold worldwide.`;
+    if (a.riaa) s += ` US: ${a.riaa} (RIAA).`;
+    if (a.bpi)  s += ` UK: ${a.bpi} (BPI).`;
+    if (a.note) s += ` ${a.note}`;
+    return s;
+}
+
+function renderAlbumCertsHtml(albums) {
+    return '  <ul>\n' + albums
+        .map(a => `    <li>${albumSentence(a)}</li>`)
+        .join('\n') + '\n  </ul>';
+}
+
+function renderCertSummaryHtml(albums) {
+    const riaa = albums.filter(a => a.riaa).map(a => `${a.name} ${a.riaa}`).join(', ');
+    const bpi  = albums.filter(a => a.bpi).map(a => `${a.name} ${a.bpi}`).join(', ');
+    let s = `  <p>Album certifications awarded by the RIAA (United States): ${riaa}.`;
+    if (bpi) s += ` Awarded by the BPI (United Kingdom): ${bpi}.`;
+    s += ' Additional certifications in Canada, Australia, Germany, France, Brazil, and 60+ countries.</p>';
+    return s;
+}
+
+// JSON-LD'deki her MusicAlbum açıklamasında "Certified X in the US (RIAA)" ifadesini
+// albümün adına çapalayarak günceller. Bloğu yeniden serialize etmiyoruz — biçim
+// bozulur ve diff okunamaz hale gelir.
+function applyLdJsonCerts(content, albums) {
+    let out = content;
+    for (const a of albums) {
+        if (!a.riaa) continue;
+        const nameEsc = a.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // "name": "<albüm>" ... sonraki "description": "..." içindeki cert ifadesi
+        const re = new RegExp(
+            `("name":\\s*"${nameEsc}"[\\s\\S]{0,400}?"description":\\s*")([\\s\\S]*?)(")`,
+            'g'
+        );
+        out = out.replace(re, (full, pre, desc, post) => {
+            const fixed = desc.replace(
+                /Certified [^.]*? in the US \(RIAA\)/,
+                `Certified ${a.riaa} in the US (RIAA)`
+            );
+            return pre + fixed + post;
+        });
+    }
+    return { content: out, changed: out !== content };
+}
+
+// llms.txt "## Album pure sales (worldwide)" bölümünü yeniden üretir.
+function applyLlmsAlbumSection(content, albums) {
+    const lines = albums.map(a => {
+        const era = a.partLabel ? `${a.year}, ${a.partLabel}` : `${a.year}`;
+        const certs = [a.riaa ? `US ${a.riaa}` : null, a.bpi ? `UK ${a.bpi}` : null]
+            .filter(Boolean).join(', ');
+        let s = `- **${a.name}** (${era}) — ${a.pureWorldwide}.`;
+        if (certs) s += ` ${certs}.`;
+        if (a.note) s += `\n  ${a.note}`;
+        return s;
+    }).join('\n');
+
+    const re = /(## Album pure sales \(worldwide\)\n\n)[\s\S]*?(?=\n\n\*\*Important correction)/;
+    if (!re.test(content)) return { content, changed: false };
+    const updated = content.replace(re, (_, header) => header + lines);
+    return { content: updated, changed: updated !== content };
+}
+
 function applyMarkers(content, values) {
     let changed = false;
     for (const [name, value] of Object.entries(values)) {
@@ -271,30 +347,52 @@ async function main() {
     }
 
     const values = { EAS_M: easM, CERTS_M: certsM, SPOTIFY_B: spotifyB };
+    const awarded = loadAwardedCerts();
+    console.log(`Ödüllenmiş sertifikalar: ${awarded.length} albüm (data/awarded-certifications.json)`);
     let anyChanged = false;
 
     for (const fname of TARGET_FILES) {
         const filePath = path.join(REPO_ROOT, fname);
         const original = fs.readFileSync(filePath, 'utf-8');
         const isPlainText = fname.endsWith('.txt');
-        // .txt dosyalarında marker kullanılmıyor (crawler'a görünürler) — çapa kuralları.
-        const first = isPlainText
-            ? applyPlainText(original, values)
-            : applyMarkers(original, values);
-        const second = isPlainText
-            ? { content: first.content, changed: false }
-            : applyLdJson(first.content, values);
 
-        // Liste blokları — sadece güvenilir veri geldiyse yaz.
-        let third = { content: second.content, changed: false };
-        if (topTracks.length >= 5) {
-            third = isPlainText
-                ? applyMostStreamedLine(second.content, topTracks)
-                : applyBlock(second.content, 'TOP_SONGS', renderTopSongsHtml(topTracks));
+        // Her adım bir öncekinin çıktısını alır; changed bayrakları OR'lanır.
+        const steps = [];
+        // 1) tek değerli marker'lar / .txt çapa kuralları
+        steps.push(isPlainText ? applyPlainText : applyMarkers);
+        // 2) JSON-LD içindeki sayılar (HTML'de yorum kullanılamıyor)
+        if (!isPlainText) steps.push(applyLdJson);
+
+        let content = original;
+        let changed = false;
+        for (const step of steps) {
+            const r = step(content, values);
+            content = r.content;
+            changed = changed || r.changed;
         }
 
-        const content = third.content;
-        const changed = first.changed || second.changed || third.changed;
+        // 3) Liste blokları — sadece güvenilir veri geldiyse yaz.
+        if (topTracks.length >= 5) {
+            const r = isPlainText
+                ? applyMostStreamedLine(content, topTracks)
+                : applyBlock(content, 'TOP_SONGS', renderTopSongsHtml(topTracks));
+            content = r.content;
+            changed = changed || r.changed;
+        }
+
+        // 4) Ödüllenmiş sertifikalar — tek kaynaktan üç yüzeye
+        const certSteps = isPlainText
+            ? [(c) => applyLlmsAlbumSection(c, awarded)]
+            : [
+                (c) => applyBlock(c, 'ALBUM_CERTS', renderAlbumCertsHtml(awarded)),
+                (c) => applyBlock(c, 'CERT_SUMMARY', renderCertSummaryHtml(awarded)),
+                (c) => applyLdJsonCerts(c, awarded)
+              ];
+        for (const step of certSteps) {
+            const r = step(content);
+            content = r.content;
+            changed = changed || r.changed;
+        }
         if (changed) {
             fs.writeFileSync(filePath, content, 'utf-8');
             console.log(`${fname}: güncellendi`);

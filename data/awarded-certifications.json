@@ -1,0 +1,63 @@
+{
+  "_note": "ÖDÜLLENMİŞ sertifikaların TEK kaynağı. Buradaki değerler, sertifika kuruluşunun gerçekten VERDİĞİ ödüldür — bir yayının şu an ne kadarına HAK KAZANDIĞI (eligible) değil. Bu ayrım önemli: data/vault.json'ın USA kolonu eligible tutar (vault.html başlığı 'USA (Eligible)' der), o yüzden ödül metni için oradan okunamaz. scripts/sync-seo-figures.js bu dosyayı okuyup index.html ve llms.txt'e yazar; elle üç yerde ayrı ayrı güncellemek 2026-07 sonunda 'görünür metin 2x Platinum, JSON-LD 4x Platinum' tipi çelişkilere yol açtı.",
+  "_sources": "RIAA ve BPI resmi veritabanları; Wikipedia 'Justin Timberlake discography' sertifika tablosu ile çapraz doğrulandı (2026-07-27).",
+  "_verified": "2026-07-27",
+  "albums": [
+    {
+      "id": "Justified",
+      "name": "Justified",
+      "year": 2002,
+      "pureWorldwide": "over 10 million",
+      "riaa": "3x Platinum",
+      "bpi": "7x Platinum",
+      "note": ""
+    },
+    {
+      "id": "FutureSex/LoveSounds",
+      "name": "FutureSex/LoveSounds",
+      "year": 2006,
+      "pureWorldwide": "over 10 million",
+      "riaa": "4x Platinum",
+      "bpi": "4x Platinum",
+      "note": "Best-selling album."
+    },
+    {
+      "id": "The 20/20 Experience",
+      "name": "The 20/20 Experience",
+      "year": 2013,
+      "partLabel": "Part 1",
+      "pureWorldwide": "approximately 6 million",
+      "riaa": "2x Platinum",
+      "bpi": null,
+      "note": "Best-selling album of 2013 in the United States."
+    },
+    {
+      "id": "The 20/20 Experience – 2 of 2",
+      "name": "The 20/20 Experience – 2 of 2",
+      "year": 2013,
+      "partLabel": "Part 2",
+      "pureWorldwide": "approximately 2 million",
+      "riaa": "Platinum",
+      "bpi": null,
+      "note": ""
+    },
+    {
+      "id": "Man of the Woods",
+      "name": "Man of the Woods",
+      "year": 2018,
+      "pureWorldwide": "approximately 1.2 million",
+      "riaa": "Platinum",
+      "bpi": null,
+      "note": "Certified by the RIAA in September 2021, for over 1 million album-equivalent units."
+    },
+    {
+      "id": "Everything I Thought It Was",
+      "name": "Everything I Thought It Was",
+      "year": 2024,
+      "pureWorldwide": "approximately 250,000",
+      "riaa": null,
+      "bpi": null,
+      "note": "Most recent studio album."
+    }
+  ]
+}
