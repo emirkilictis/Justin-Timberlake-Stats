@@ -116,7 +116,9 @@ async function fetchLiveStreams() {
                 let title = cols[0].textContent.trim();
                 let val = parseInt(cols[1].textContent.replace(/,/g, ''), 10) || 0;
                 if (!title) return;
-                let lowerTitle = title.toLowerCase();
+                // Kworb feature track'lerini "* " ile işaretliyor; normalize etmezsek
+                // aynı şarkı fallback bloklarında "yok" sanılıp ikinci kez ekleniyor.
+                let lowerTitle = normalizeKworbTitle(title);
 
                 // Track mapping
                 liveStreams.tracks[lowerTitle] = val;
@@ -563,6 +565,14 @@ function computeNonSingles() {
 
 function animateValue(obj, start, end, duration) {
     if (!obj || isNaN(end)) return;
+    // Arka plan sekmesinde requestAnimationFrame tetiklenmiyor → odometer
+    // "Loading Live Data..." yazısında donup kalıyordu. Bu aynı zamanda gece
+    // çalışan sync-seo-figures job'ını da düşürebiliyor (Puppeteer bu değeri
+    // okuyamayınca timeout). Görünmüyorsa direkt son değeri yaz.
+    if (typeof document !== 'undefined' && document.hidden) {
+        obj.innerHTML = Math.floor(end).toLocaleString('en-US');
+        return;
+    }
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;

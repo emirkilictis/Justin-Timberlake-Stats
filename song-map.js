@@ -130,3 +130,18 @@ const SONG_TO_ALBUM_MAP = {
     "Better Place":            "Orphan",
     "Where Is The Love":       "Orphan",
 };
+
+// ── Kworb başlık normalizasyonu ─────────────────────────────────
+// Kworb, sanatçının FEATURED olduğu şarkıların başına "* " koyar:
+//   "* Love Sex Magic (feat. Justin Timberlake)"
+// Aynı şarkı başka bir sanatçının sayfasından çekildiğinde bu yıldız YOK.
+// Karşılaştırmalar ham string üzerinden yapılırsa aynı şarkı İKİ AYRI track
+// sanılır ve stream'ler çift sayılır (2026-07 → career total +98.9M şişmişti).
+// Bu yüzden TÜM dedupe/lookup karşılaştırmaları bu fonksiyondan geçmeli.
+function normalizeKworbTitle(title) {
+    return String(title || '')
+        .toLowerCase()
+        .replace(/^\s*\*\s*/, '')   // baştaki "* " feature işareti
+        .replace(/\s+/g, ' ')
+        .trim();
+}

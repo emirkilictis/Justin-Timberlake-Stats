@@ -1,15 +1,25 @@
 // config.js
+//
+// DİKKAT: Bu dosya tarayıcıya gönderiliyor. Buradaki hiçbir değer GİZLİ DEĞİLDİR.
+// Gizli kalması gereken bir şey buraya YAZILMAZ — sunucu tarafına (api/*.js içinde
+// process.env) taşınır ve Vercel environment variable olarak tanımlanır.
+//
+// Buradaki değerlerin durumu:
+//   YOUTUBE_API_KEY — tarayıcıdan çağrıldığı için gizlenemez. Doğru koruma
+//     Google Cloud Console'da "HTTP referrer" kısıtlaması (yalnızca kendi
+//     domain'inden çağrılabilsin) + YouTube Data API dışındaki API'lere kapalı olması.
+//   FIREBASE.apiKey — Firebase'de bu değer TASARIM GEREĞİ herkese açıktır;
+//     güvenlik firestore.rules ile sağlanır, anahtarı saklamakla değil.
+//   MY_DYNAMIC_API — herkese açık bir Apps Script endpoint'i, sır değil.
+//
+// 2026-07: Kullanılmayan bir SPOTIFY bloğu (CLIENT_ID + CLIENT_SECRET) buradan
+// kaldırıldı — hiçbir kod okumuyordu ama public repoda gerçek bir secret olarak
+// duruyordu. Sunucu tarafı Spotify çağrıları api/spotify.js içinde, secret'sız.
 const CONFIG = {
 
     YOUTUBE_API_KEY: "AIzaSyC_iOX3x46Jik-qHnYqKK5na-cJnvEaoh4",
     MY_DYNAMIC_API: "https://script.google.com/macros/s/AKfycbxPQ6iA4QFzIBFbfylzRNRflDsjVXqQ21kVG2ZkiBhpfX_cYKeVglnUXNX8cIVxAGU/exec",
 
-    SPOTIFY: {
-        CLIENT_ID: "7b662fc2913a4597905633ea6a350b42",
-        CLIENT_SECRET: "4761ac8b9e4d4e159a430075c998410d",
-        ARTIST_ID: "31TPClRtHm23RisEBtV3X7"
-    },
-    
     FIREBASE: {
         apiKey: "AIzaSyAwSc0iMQSXhs8uz8uZuL-XCaeVOrgC2Ic",
         authDomain: "jt-website-5406f.firebaseapp.com",

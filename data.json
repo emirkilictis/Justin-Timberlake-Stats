@@ -1,8 +1,5 @@
 {
-  "careerTotals": {
-    "physicalSingles": 5430000,
-    "digitalSingles": 109530000
-  },
+  "_note": "Kariyer toplamları BURADA TUTULMAZ — albüm seviyesindeki physicalSinglesEAS / digitalSinglesEAS alanlarından hesaplanır (script.js: renderEasTable). Eski bir careerTotals bloğu vardı; hiçbir kod tarafından okunmuyordu ve albüm toplamlarıyla çelişiyordu (physical 5.43M vs 5.72M, digital 109.53M vs 113.63M). Çelişen ölü veri kaldırıldı.",
   "albums": {
     "Justified": {
       "year": 2002,

@@ -1,0 +1,60 @@
+name: IndexNow bildirimi
+
+# main'e her push'ta, DEĞİŞEN sayfaları Bing/Yandex/Seznam/Naver'a bildirir.
+# ChatGPT'nin web araması Bing indeksini kullandığı için bu doğrudan
+# AI görünürlüğünü etkiliyor. Google IndexNow desteklemiyor — orası
+# Search Console + sitemap üzerinden ilerliyor.
+#
+# Sadece gerçekten değişen dosyalar gönderilir (protokol kuralı).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.html'
+      - 'llms.txt'
+      - 'data/**'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Kodu çek
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # değişen dosyaları bulmak için önceki commit gerekli
+
+      - name: Node.js 24 kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Değişen sayfaları belirle
+        id: changed
+        run: |
+          # data/ altındaki değişiklikler istemci tarafında vault/streams/ana
+          # sayfaya yansıyor — o üçünü de bildir.
+          FILES=$(git diff --name-only HEAD^ HEAD || true)
+          echo "Değişen dosyalar:"; echo "$FILES"
+
+          URLS=""
+          for f in $FILES; do
+            case "$f" in
+              index.html)  URLS="$URLS /" ;;
+              *.html)      URLS="$URLS /$f" ;;
+              llms.txt)    URLS="$URLS /llms.txt" ;;
+              data/*)      URLS="$URLS / /vault.html /streams.html" ;;
+            esac
+          done
+
+          # tekilleştir
+          URLS=$(echo $URLS | tr ' ' '\n' | sort -u | tr '\n' ' ')
+          echo "Bildirilecek: $URLS"
+          echo "urls=$URLS" >> $GITHUB_OUTPUT
+
+      - name: IndexNow'a bildir
+        if: steps.changed.outputs.urls != ''
+        run: node scripts/indexnow-ping.js ${{ steps.changed.outputs.urls }}

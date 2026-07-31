@@ -54,7 +54,7 @@ const FALLBACK_4MIN = {
 const FALLBACK_RADIO_EDIT = {
     baselineDate: '2026-05-24',
     baselineTotal: 118_417_347,
-    dailyGrowth: 10_000
+    dailyGrowth: 1_500
 };
 
 function getEstimated4MinTotal() {
@@ -76,16 +76,27 @@ async function mergeExtraTracks(liveStats) {
     let total4Min = 0;
     let totalRadioEdit = 0;
 
+    // Kworb'un JT sayfasında bu track'ler ZATEN varsa (credit geri geldiyse) tekrar
+    // eklemek career total'i şişirir. Başlıkları normalize ederek kontrol et —
+    // Kworb feature'ları "* " ile prefixliyor.
+    const liveNorm = new Set((liveStats.trackTitles || []).map(normalizeKworbTitle));
+    const alreadyHas4Min = [...liveNorm].some(is4MinTrack);
+    const alreadyHasRadio = [...liveNorm].some(isRadioEditTrack);
+
     if (ok && typeof window.getLatestSnapshot === 'function') {
         const snap = await window.getLatestSnapshot();
         if (snap && snap.tracks) {
             let temp4Min = 0;
             let tempRadio = 0;
+            const seen = new Set();
             for (const [title, vals] of Object.entries(snap.tracks)) {
-                if (is4MinTrack(title)) {
+                const norm = normalizeKworbTitle(title);
+                if (seen.has(norm)) continue;   // snapshot içi mükerrer kayıtlar
+                seen.add(norm);
+                if (is4MinTrack(norm)) {
                     temp4Min += Number(vals.total) || 0;
                 }
-                if (isRadioEditTrack(title)) {
+                if (isRadioEditTrack(norm)) {
                     tempRadio += Number(vals.total) || 0;
                 }
             }
@@ -99,6 +110,10 @@ async function mergeExtraTracks(liveStats) {
     if (total4Min <= 0) total4Min = getEstimated4MinTotal();
     if (totalRadioEdit <= 0) totalRadioEdit = getEstimatedRadioEditTotal();
 
+    if (alreadyHas4Min) total4Min = 0;
+    if (alreadyHasRadio) totalRadioEdit = 0;
+    if (total4Min === 0 && totalRadioEdit === 0) return;
+
     liveStats.TotalSpotify += (total4Min + totalRadioEdit);
     liveStats['Orphan'] += total4Min;
     // Note: in script.js, Part 2 is merged into "The 20/20 Experience"
@@ -109,6 +124,7 @@ async function mergeExtraTracks(liveStats) {
 // --- 3. AKILLI PARSER ---
 function smartParseKworb(input) {
     let stats = {
+        trackTitles: [],   // mergeExtraTracks'in mükerrer enjeksiyon yapmaması için
         TotalSpotify: 0,
         "Justified": 0,
         "FutureSex/LoveSounds": 0,
@@ -139,6 +155,7 @@ function smartParseKworb(input) {
 
             if (!title) return;
 
+            stats.trackTitles.push(title);
             let lowerTitle = title.toLowerCase();
 
             for (let key in songToAlbumMap) {
@@ -475,6 +492,11 @@ async function fetchRealYouTubeViews(ids) {
 
 function animateValue(obj, start, end, duration) {
     if (!obj || isNaN(end)) return; // NaN kontrolü
+    // Arka plan sekmesinde requestAnimationFrame tetiklenmiyor → sayaç 0'da donuyordu.
+    if (typeof document !== 'undefined' && document.hidden) {
+        obj.innerHTML = Math.floor(end).toLocaleString('en-US');
+        return;
+    }
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;

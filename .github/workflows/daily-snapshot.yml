@@ -66,15 +66,33 @@ jobs:
         run: node sync-seo-figures.js
         working-directory: scripts
 
+      # Google <changefreq>/<priority> etiketlerini yok sayıyor; tek dikkate aldığı
+      # tazelik sinyali <lastmod>. Sync'ten SONRA çalışmalı ki değişen dosyalar
+      # "bugün değişti" olarak işaretlensin.
+      - name: sitemap.xml lastmod tarihlerini tazele
+        run: node update-sitemap.js
+        working-directory: scripts
+
       - name: Değişiklik varsa commit + push
+        id: commit
         run: |
-          if git diff --quiet -- index.html about.html vault.html; then
+          if git diff --quiet -- index.html about.html vault.html llms.txt sitemap.xml; then
             echo "Değişiklik yok, commit atlanıyor."
+            echo "changed=false" >> $GITHUB_OUTPUT
             exit 0
           fi
+          echo "changed=true" >> $GITHUB_OUTPUT
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html about.html vault.html
+          git add index.html about.html vault.html llms.txt sitemap.xml
           git commit -m "chore: sync EAS/certified-units SEO figures with live site [skip ci]"
-          git pull --rebase origin main
+          # --autostash şart: önceki adımdaki `npm install` scripts/package-lock.json'ı
+          # değiştirebiliyor ve rebase "You have unstaged changes" ile düşüyor.
+          git pull --rebase --autostash origin main
           git push
+
+      # Commit mesajında [skip ci] olduğu için indexnow.yml push trigger'ı çalışmaz —
+      # bu yüzden bildirimi buradan doğrudan gönderiyoruz.
+      - name: Güncellenen sayfaları IndexNow'a bildir
+        if: steps.commit.outputs.changed == 'true'
+        run: node scripts/indexnow-ping.js / /about.html /vault.html /llms.txt

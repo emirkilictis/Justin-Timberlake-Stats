@@ -84,7 +84,9 @@ const albumCovers = {
 // --- 2. YARDIMCI FONKSİYONLAR ---
 
 function getTrackYTDBaseline(liveTitle) {
-    const lower = liveTitle.toLowerCase().trim();
+    // Baseline anahtarları "* " prefix'i olmadan yazıldı — canlı başlığı normalize et,
+    // yoksa aşağıdaki exact-match kuralları (Love Sex Magic gibi) hiç tutmuyor.
+    const lower = normalizeKworbTitle(liveTitle);
     // Try exact match first
     for (const key in YTD_2026_BASELINE.tracks) {
         if (key.toLowerCase().trim() === lower) {
@@ -149,6 +151,12 @@ function formatMilestone(target, daysLeft) {
 
 function animateValue(obj, start, end, duration, prefix = "") {
     if (!obj || isNaN(end)) return;
+    // Arka plan sekmesinde requestAnimationFrame hiç tetiklenmiyor → sayaç
+    // "Calculating..." yazısında donup kalıyordu. Görünmüyorsa direkt son değeri yaz.
+    if (typeof document !== 'undefined' && document.hidden) {
+        obj.innerHTML = prefix + Math.floor(end).toLocaleString('en-US');
+        return;
+    }
     let startTimestamp = null;
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
@@ -173,16 +181,35 @@ function getTrueDailyAverage(dailyStreams) {
 // estimate↔gerçek geçişi) yıl sonu projeksiyonunu milyarlara fırlatmasını engeller.
 const MAX_TRACK_DAILY_EST = 1_000_000;
 
+// Kworb'da aynı başlıklı birden fazla satır olabiliyor ("* Give It To Me" gibi).
+// Snapshot tarafında bunlar tek anahtarda toplandığı için, karşılaştırmadan önce
+// canlı listeyi de aynı şekilde toplamamız gerekiyor — yoksa delta 500M sapıyor.
+function aggregateTracksByTitle(tracks) {
+    const agg = new Map();
+    (tracks || []).forEach(t => {
+        const key = normalizeKworbTitle(t.title);
+        const cur = agg.get(key);
+        if (cur) {
+            cur.total += Number(t.total) || 0;
+            cur.daily += Number(t.daily) || 0;
+        } else {
+            agg.set(key, { title: t.title, total: Number(t.total) || 0, daily: Number(t.daily) || 0 });
+        }
+    });
+    return Array.from(agg.values());
+}
+
 function getCleanSnapshotDelta(liveStats, snapshot, days) {
     if (!snapshot) return null;
     let cleanDelta = 0;
-    
+
     if (snapshot.tracks && Object.keys(snapshot.tracks).length > 0) {
-        liveStats.tracks.forEach(track => {
-            const trackTitleLower = track.title.toLowerCase().trim();
+        aggregateTracksByTitle(liveStats.tracks).forEach(track => {
+            const trackTitleNorm = normalizeKworbTitle(track.title);
             let snapTrack = snapshot.tracks[track.title];
             if (!snapTrack) {
-                const foundKey = Object.keys(snapshot.tracks).find(k => k.toLowerCase().trim() === trackTitleLower);
+                // "* " prefix'li ve prefix'siz varyantlar aynı şarkı — normalize ederek eşle.
+                const foundKey = Object.keys(snapshot.tracks).find(k => normalizeKworbTitle(k) === trackTitleNorm);
                 if (foundKey) {
                     snapTrack = snapshot.tracks[foundKey];
                 }
@@ -211,7 +238,7 @@ function getCleanSnapshotDelta(liveStats, snapshot, days) {
     }
     
     // Fallback: If snapshot has no track data, use career total delta, but cap it to something reasonable
-    const rawDelta = liveStats.TotalSpotify - (snapshot.career_total || 0);
+    const rawDelta = liveStats.TotalSpotify - getSnapshotCareerTotal(snapshot);
     const maxReasonable = (liveStats.TotalDaily || 3000000) * days * 2;
     if (rawDelta > 0 && rawDelta <= maxReasonable) {
         return rawDelta;
@@ -222,8 +249,8 @@ function getCleanSnapshotDelta(liveStats, snapshot, days) {
 function getCleanYTDDelta(liveStats) {
     let cleanDelta = 0;
     const ytdDays = getYTDDaysElapsed();
-    
-    liveStats.tracks.forEach(track => {
+
+    aggregateTracksByTitle(liveStats.tracks).forEach(track => {
         const baseline = getTrackYTDBaseline(track.title);
         if (baseline !== null) {
             let trackDelta = track.total - baseline;
@@ -758,6 +785,30 @@ function attachSortHandlers() {
 
 let trendChartInst = null;
 
+// Snapshot'ın career_total'i, "* " prefix'i yüzünden mükerrer yazılan track'leri
+// içerebiliyor (2026-07-11 → 2026-07-25 arası snapshot'lar ~98.9M şişik).
+// Firestore'daki geçmişi geriye dönük düzeltemediğimiz için toplamı track
+// listesinden normalize ederek yeniden hesaplıyoruz; track yoksa ham değere düşüyoruz.
+// NOT: Toplamı track listesinden yeniden hesaplayamayız — snapshot'ta tracks bir MAP
+// ve Kworb'da aynı başlığa sahip birden fazla satır var (~548M bu şekilde eziliyor).
+// Bu yüzden ham career_total'dan SADECE mükerrer başlıkların katkısını düşüyoruz.
+function getSnapshotCareerTotal(snap) {
+    if (!snap) return 0;
+    const raw = Number(snap.career_total) || 0;
+    if (!snap.tracks || typeof snap.tracks !== 'object') return raw;
+    const seen = new Set();
+    let dupSum = 0;
+    for (const [title, vals] of Object.entries(snap.tracks)) {
+        const norm = normalizeKworbTitle(title);
+        if (seen.has(norm)) {
+            dupSum += Number(vals && vals.total) || 0;
+            continue;
+        }
+        seen.add(norm);
+    }
+    return dupSum > 0 && raw > dupSum ? raw - dupSum : raw;
+}
+
 function buildTrendChart(snapshots, liveTotal) {
     const canvas = document.getElementById('trendChart');
     if (!canvas) return;
@@ -767,8 +818,9 @@ function buildTrendChart(snapshots, liveTotal) {
 
     // Firestore snapshot'ları filtrele ve sırala
     snapshots.forEach(s => {
-        if (s && s.career_total && s.date) {
-            points.push({ date: s.date, value: s.career_total });
+        if (s && s.date) {
+            const value = getSnapshotCareerTotal(s);
+            if (value > 0) points.push({ date: s.date, value });
         }
     });
 
@@ -920,13 +972,19 @@ async function initStreamsDashboard() {
         // Kworb'da JT credit'i kalkan track'leri Firestore'dan merge et.
         // daily-snapshot.js Madonna gibi diger artist sayfalarindan cekip yaziyor;
         // canli parser (analyzeKworbData) JT'nin sayfasina bakiyor, onlari goremez.
-        const liveTitles = new Set(liveStats.tracks.map(t => t.title.toLowerCase()));
+        // NOT: Kworb feature track'lerini "* " ile prefixliyor. Snapshot'ta aynı şarkı
+        // hem JT sayfasından ("* Love Sex Magic…") hem de asıl sanatçının sayfasından
+        // ("Love Sex Magic…") gelebiliyor. Ham string karşılaştırması bunları iki ayrı
+        // şarkı sanıp career total'i ~98.9M şişiriyordu → normalizeKworbTitle şart.
+        const seenTitles = new Set(liveStats.tracks.map(t => normalizeKworbTitle(t.title)));
         let has4Min = false;
         let hasRadioEdit = false;
         let hasLSM = false;
         if (snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
-                if (liveTitles.has(title.toLowerCase())) continue;
+                const normTitle = normalizeKworbTitle(title);
+                if (seenTitles.has(normTitle)) continue;
+                seenTitles.add(normTitle);
                 const total = Number(vals.total) || 0;
                 const daily = Number(vals.daily) || 0;
                 liveStats.tracks.push({ title, total, daily });
