@@ -458,7 +458,8 @@ function computeAllData() {
         certTotal += otherVal;
         officialSum += otherVal;
 
-        return { ...a, usLive: usaFinal, global: usaFinal + officialSum, certTotal, cMap };
+        // usRaw = yuvarlanmamış güncel USA ünitesi (sadece gösterim; cMap/certTotal'a girmez)
+        return { ...a, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap };
     }).filter(a => a.global > 0 && a.id !== "Orphan");
 
     // Songs
@@ -498,7 +499,8 @@ function computeAllData() {
         certTotal += otherVal;
         officialSum += otherVal;
 
-        return { ...s, usLive: usaFinal, global: usaFinal + officialSum, certTotal, cMap };
+        // usRaw = yuvarlanmamış güncel USA ünitesi (sadece gösterim; cMap/certTotal'a girmez)
+        return { ...s, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap };
     }).filter(s => s.global > 0);
 
     computeNonSingles();
@@ -605,6 +607,7 @@ window.sortVault = function(type, col, forceAsc) {
         else if (col === 'certTotal') { valA = a.certTotal; valB = b.certTotal; }
         else if (col === 'streams') { valA = a.streams || 0; valB = b.streams || 0; }
         else if (col === 'USA' || col === 'usLive') { valA = a.usLive; valB = b.usLive; }
+        else if (col === 'usRaw') { valA = a.usRaw || 0; valB = b.usRaw || 0; }
         else { valA = a.cMap[col] || 0; valB = b.cMap[col] || 0; }
         return state.asc ? valA - valB : valB - valA;
     });
@@ -659,23 +662,41 @@ function renderNonSingles() {
     }).join('');
 }
 
+// "USA (Current)" hücresi — canlı stream + pure sales'ten hesaplanan, RIAA'nın 1M'e
+// yuvarlamasına TABİ OLMAYAN güncel ünite. Yalnızca bilgi amaçlı: cMap'e, certTotal'a,
+// ülke özetine veya grand total'a girmez.
+function usRawCell(item) {
+    const raw = item.usRaw || 0;
+    if (!raw) return `<td class="col-us-raw text-center">—</td>`;
+    const surplus = raw - (item.usLive || 0);
+    const sub = surplus > 0
+        ? `<div class="col-us-raw-sub">+${surplus.toLocaleString()} not yet counted</div>`
+        : '';
+    return `<td class="col-us-raw text-center" title="Live estimate (streams + pure sales), before RIAA rounds down to the full million. Not included in certified totals.">
+        ${raw.toLocaleString()}${sub}
+    </td>`;
+}
+
 function renderTables() {
     let grandTotal = 0;
     
     // Helper: build footer row with per-country totals
     function buildFooterRow(dataArr, label) {
-        let totalCert = 0, totalGlobal = 0;
+        let totalCert = 0, totalGlobal = 0, totalRaw = 0;
         let countryTotals = {};
         COUNTRIES.forEach(c => countryTotals[c] = 0);
-        
+
         dataArr.forEach(item => {
             totalCert += item.certTotal || 0;
             totalGlobal += item.global || 0;
+            totalRaw += item.usRaw || 0;
             COUNTRIES.forEach(c => { countryTotals[c] += item.cMap[c] || 0; });
         });
-        
+
         // USA gets special treatment (wider cell for official + live)
         let usaCell = `<td class="text-center" style="font-weight:700;color:var(--accent-color);border-top:1px solid rgba(255,255,255,0.1);">${countryTotals.USA ? countryTotals.USA.toLocaleString() : '—'}</td>`;
+        // Güncel (yuvarlanmamış) USA ünitesi — sadece bilgi amaçlı, toplamlara girmez
+        usaCell += `<td class="col-us-raw text-center" style="border-top:1px solid rgba(255,255,255,0.1);font-weight:700;">${totalRaw ? totalRaw.toLocaleString() : '—'}</td>`;
         let otherCells = COUNTRIES.filter(c => c !== 'USA').map(c => {
             let val = countryTotals[c];
             return `<td class="text-center" style="font-weight:700;color:var(--accent-color);border-top:1px solid rgba(255,255,255,0.1);">${val ? val.toLocaleString() : '—'}</td>`;
@@ -712,6 +733,7 @@ function renderTables() {
                 <td class="text-center">
                     ${getBadgeHTML(usLiveObj.label, false, usLiveObj.isDiamond, usLiveObj.platCount)}
                 </td>
+                ${usRawCell(a)}
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.UK)}</td>
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Brazil)}</td>
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Germany)}</td>
@@ -745,6 +767,7 @@ function renderTables() {
                 <td class="text-center">
                     ${getBadgeHTML(usLiveObj.label, false, usLiveObj.isDiamond, usLiveObj.platCount)}
                 </td>
+                ${usRawCell(s)}
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.UK)}</td>
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Brazil)}</td>
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Germany)}</td>
