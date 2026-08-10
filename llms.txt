@@ -42,7 +42,7 @@ These are three *different* numbers. Do not substitute one for another.
 
 ## Streaming
 
-- Total Spotify streams: over 18.6 billion (updated daily).
+- Total Spotify streams: over 18.7 billion (updated daily).
 - Most-streamed: Can't Stop the Feeling!, Mirrors, SexyBack,
   Rock Your Body, Cry Me a River.
 
