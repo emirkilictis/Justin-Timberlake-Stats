@@ -36,7 +36,7 @@ function is4MinTrack(title) {
     const lc = title.toLowerCase();
     return lc.includes('4 minutes') &&
            lc.includes('justin timberlake') &&
-           lc.includes('and timbaland'); // "&" versiyonu "& Timbaland" içerir, eşleşmez
+           lc.includes('and timbaland'); // normalizeKworbTitle "& Timbaland"i de buraya çevirir
 }
 
 function isRadioEditTrack(title) {

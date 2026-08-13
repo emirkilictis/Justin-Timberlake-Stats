@@ -94,10 +94,14 @@ const allAlbums = [
 // sanatçının sayfasından çekildiğinde bu yıldız yok → ham string karşılaştırması
 // aynı şarkıyı iki ayrı track sanıp snapshot'a MÜKERRER yazıyordu
 // (2026-07-11'den beri career_total ~98.9M şişikti).
+// 2026-08-14: Kworb "4 Minutes ... and Timbaland" → "... & Timbaland" olarak
+// yeniden adlandırdı; "&" → "and" normalizasyonu olmadan aynı şarkı iki ayrı
+// kayıt sanılıyor (detay için song-map.js'teki yoruma bak).
 function normalizeKworbTitle(title) {
     return String(title || '')
         .toLowerCase()
         .replace(/^\s*\*\s*/, '')
+        .replace(/\s*&\s*/g, ' and ')
         .replace(/\s+/g, ' ')
         .trim();
 }

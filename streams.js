@@ -87,16 +87,18 @@ function getTrackYTDBaseline(liveTitle) {
     // Baseline anahtarları "* " prefix'i olmadan yazıldı — canlı başlığı normalize et,
     // yoksa aşağıdaki exact-match kuralları (Love Sex Magic gibi) hiç tutmuyor.
     const lower = normalizeKworbTitle(liveTitle);
+    // Anahtarlar da aynı normalizasyondan geçmeli — "Suit & Tie" gibi anahtarlar
+    // normalize edilmiş canlı başlıkla ("suit and tie ...") aksi halde eşleşmez.
     // Try exact match first
     for (const key in YTD_2026_BASELINE.tracks) {
-        if (key.toLowerCase().trim() === lower) {
+        if (normalizeKworbTitle(key) === lower) {
             return YTD_2026_BASELINE.tracks[key];
         }
     }
     // Try fuzzy match, checking longer keys first to ensure specific matches win
     const keys = Object.keys(YTD_2026_BASELINE.tracks).sort((a, b) => b.length - a.length);
     for (const key of keys) {
-        const keyLower = key.toLowerCase().trim();
+        const keyLower = normalizeKworbTitle(key);
         if (lower.includes(keyLower)) {
             // Special rule for '4 minutes'
             if (keyLower === '4 minutes' && lower !== '4 minutes') {
@@ -980,6 +982,16 @@ async function initStreamsDashboard() {
         let has4Min = false;
         let hasRadioEdit = false;
         let hasLSM = false;
+        // Bayraklar CANLI listeden de doldurulmalı. Aksi halde Kworb şarkıyı geri
+        // getirdiğinde (2026-08: "4 Minutes" JT sayfasına 538M olarak döndü) merge
+        // döngüsü mükerrer diye atlıyor, bayrak false kalıyor ve aşağıdaki fallback
+        // gerçek sayının ÜZERİNE sentetik baseline ekliyordu.
+        const markKnownExtras = (normTitle) => {
+            if (normTitle.includes('4 minutes') && normTitle.includes('and timbaland')) has4Min = true;
+            if (normTitle.includes('not a bad thing') && normTitle.includes('radio edit')) hasRadioEdit = true;
+            if (normTitle.includes('love sex magic')) hasLSM = true;
+        };
+        seenTitles.forEach(markKnownExtras);
         if (snapToday && snapToday.tracks) {
             for (const [title, vals] of Object.entries(snapToday.tracks)) {
                 const normTitle = normalizeKworbTitle(title);
@@ -990,16 +1002,7 @@ async function initStreamsDashboard() {
                 liveStats.tracks.push({ title, total, daily });
                 liveStats.TotalSpotify += total;
                 liveStats.TotalDaily   += daily;
-                const lc = title.toLowerCase();
-                if (lc.includes('4 minutes') && lc.includes('and timbaland')) {
-                    has4Min = true;
-                }
-                if (lc.includes('not a bad thing') && lc.includes('radio edit')) {
-                    hasRadioEdit = true;
-                }
-                if (lc.includes('love sex magic')) {
-                    hasLSM = true;
-                }
+                markKnownExtras(normTitle);
                 let matched = false;
                 for (const key in songToAlbumMap) {
                     if (title.toLowerCase().includes(key.toLowerCase())) {

@@ -88,15 +88,17 @@ const YTD_2026_BASELINE = {
 };
 
 function getTrackYTDBaseline(liveTitle) {
-    const lower = liveTitle.toLowerCase().trim();
+    // Hem canlı başlık hem anahtarlar aynı normalizasyondan geçmeli ("* " prefix'i,
+    // "&" → "and"); aksi halde "Suit & Tie" gibi anahtarlar hiç tutmuyor.
+    const lower = normalizeKworbTitle(liveTitle);
     for (const key in YTD_2026_BASELINE.tracks) {
-        if (key.toLowerCase().trim() === lower) {
+        if (normalizeKworbTitle(key) === lower) {
             return YTD_2026_BASELINE.tracks[key];
         }
     }
     const keys = Object.keys(YTD_2026_BASELINE.tracks).sort((a, b) => b.length - a.length);
     for (const key of keys) {
-        const keyLower = key.toLowerCase().trim();
+        const keyLower = normalizeKworbTitle(key);
         if (lower.includes(keyLower)) {
             if (keyLower === '4 minutes' && lower !== '4 minutes') {
                 continue;
@@ -497,7 +499,12 @@ async function init() {
                 });
             }
 
-            const has4Min = all.some(t => t.title.toLowerCase().includes('4 minutes') && t.title.toLowerCase().includes('justin timberlake') && t.title.toLowerCase().includes('and timbaland'));
+            // normalizeKworbTitle "&" → "and" çevirdiği için Kworb'un hem
+            // "and Timbaland" hem "& Timbaland" adlandırması burada yakalanır.
+            const has4Min = all.some(t => {
+                const n = normalizeKworbTitle(t.title);
+                return n.includes('4 minutes') && n.includes('justin timberlake') && n.includes('and timbaland');
+            });
             if (!has4Min) {
                 const baselineDate = '2026-04-23';
                 const baselineTotal = 102_400_000;

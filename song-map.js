@@ -138,10 +138,19 @@ const SONG_TO_ALBUM_MAP = {
 // Karşılaştırmalar ham string üzerinden yapılırsa aynı şarkı İKİ AYRI track
 // sanılır ve stream'ler çift sayılır (2026-07 → career total +98.9M şişmişti).
 // Bu yüzden TÜM dedupe/lookup karşılaştırmaları bu fonksiyondan geçmeli.
+//
+// 2026-08-14: Kworb "4 Minutes (feat. Justin Timberlake and Timbaland)" kaydını
+// "& Timbaland" olarak yeniden adlandırıp Madonna sayfasındaki varyantla
+// birleştirdi (110.9M → 538.5M). Anahtar artık eşleşmediği için fallback bloğu
+// tetikleniyor ve gerçek sayının ÜZERİNE ~116M sentetik stream ekleniyordu.
+// Bu yüzden "&" → "and" normalizasyonu şart. DİKKAT: bu, "Suit & Tie" gibi
+// başlıkları da "suit and tie" yapar — ham başlıkla karşılaştıran her yer
+// (YTD baseline anahtarları, vault.json başlıkları) bu fonksiyondan geçmeli.
 function normalizeKworbTitle(title) {
     return String(title || '')
         .toLowerCase()
         .replace(/^\s*\*\s*/, '')   // baştaki "* " feature işareti
+        .replace(/\s*&\s*/g, ' and ')
         .replace(/\s+/g, ' ')
         .trim();
 }

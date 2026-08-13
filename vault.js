@@ -138,7 +138,10 @@ async function fetchLiveStreams() {
 
         // Merge extra tracks fallback
         const radioTitle = 'Not A Bad Thing - Radio Edit';
-        const radioLower = radioTitle.toLowerCase();
+        // Fallback anahtarları da canlı anahtarlarla AYNI normalizasyondan geçmeli;
+        // yoksa Kworb bir yeniden adlandırma yaptığında (2026-08: "and" → "&")
+        // "yok" sanılıp sentetik baseline gerçek sayının üzerine ekleniyor.
+        const radioLower = normalizeKworbTitle(radioTitle);
         if (!liveStreams.tracks[radioLower]) {
             const baselineDate = '2026-05-24';
             const baselineTotal = 118_417_347;
@@ -155,7 +158,7 @@ async function fetchLiveStreams() {
         }
 
         const fourMinTitle = '4 Minutes (feat. Justin Timberlake and Timbaland)';
-        const fourMinLower = fourMinTitle.toLowerCase();
+        const fourMinLower = normalizeKworbTitle(fourMinTitle);
         if (!liveStreams.tracks[fourMinLower]) {
             const baselineDate = '2026-04-23';
             const baselineTotal = 102_400_000;
@@ -172,7 +175,7 @@ async function fetchLiveStreams() {
         }
 
         const loveSexMagicTitle = 'Love Sex Magic (feat. Justin Timberlake)';
-        const loveSexMagicLower = loveSexMagicTitle.toLowerCase();
+        const loveSexMagicLower = normalizeKworbTitle(loveSexMagicTitle);
         if (!liveStreams.tracks[loveSexMagicLower]) {
             const baselineDate = '2026-06-30';
             const baselineTotal = 96_685_624;
@@ -192,7 +195,9 @@ async function fetchLiveStreams() {
 }
 
 function getTrackSpotify(title) {
-    const tLower = title.toLowerCase();
+    // liveStreams.tracks anahtarları normalizeKworbTitle'dan geçiyor ("&" → "and").
+    // vault.json başlığını ("Suit & Tie") ham bırakırsak substring eşleşmesi kaçar.
+    const tLower = normalizeKworbTitle(title);
     let sum = 0;
     let found = false;
     for (let k in liveStreams.tracks) {
