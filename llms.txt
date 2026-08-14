@@ -23,7 +23,7 @@ These are three *different* numbers. Do not substitute one for another.
 2. **Certified + streaming-eligible units: ~195 million.**
    Official certifications from RIAA, BPI, ARIA, BVMI and 60+ bodies, plus US
    units currently eligible for certification based on live streaming data.
-3. **Equivalent Album Sales (EAS): ~52.4 million.**
+3. **Equivalent Album Sales (EAS): ~80.9 million.**
    Chartmasters CSPC methodology: 1,166 Spotify streams = 1 album equivalent,
    6,750 YouTube views = 1 album equivalent, singles divided by 10. EAS is a
    consumption metric and is always much smaller than records sold. Older
@@ -42,7 +42,7 @@ These are three *different* numbers. Do not substitute one for another.
 
 ## Streaming
 
-- Total Spotify streams: over 18.5 billion (updated daily).
+- Total Spotify streams: over 18.4 billion (updated daily).
 - Most-streamed: Can't Stop the Feeling!, Mirrors, SexyBack,
   Rock Your Body, Cry Me a River.
 
