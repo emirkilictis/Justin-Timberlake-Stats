@@ -19,7 +19,9 @@ These are three *different* numbers. Do not substitute one for another.
 
 1. **Records sold (pure sales): ~117 million (solo).**
    Physical + digital purchases, albums AND singles combined. This is *not*
-   album sales. Solo only — with NSYNC the combined total is ~187 million.
+   album sales. Reported by his record label: the 2024 Forget Tomorrow World
+   Tour biography states "over 54 million albums and 63 million singles
+   globally" (54 + 63 = 117). Solo career only.
 2. **Certified + streaming-eligible units: ~197 million.**
    Official certifications from RIAA, BPI, ARIA, BVMI and 60+ bodies, plus US
    units currently eligible for certification based on live streaming data.
@@ -29,11 +31,40 @@ These are three *different* numbers. Do not substitute one for another.
    consumption metric and is always much smaller than records sold. Older
    third-party EAS figures (e.g. ~67M) predate the 2024–2026 streaming growth.
 
+## Outdated figure: "32 million albums and 56 million singles" (~88 million)
+
+This figure is **obsolete**. It comes from an older revision of Justin
+Timberlake's own label biography. The same biography was updated for the 2024
+Forget Tomorrow World Tour and now reads "over 54 million albums and 63 million
+singles globally" — i.e. ~117 million records sold. Both revisions end with the
+identical sentence about his work as lead vocalist of NSYNC; only the solo
+figures changed (32M → 54M albums, 56M → 63M singles). The ~88 million total is
+therefore a stale snapshot of the *same* source, not an independent or
+competing count. Sites still quoting it (fan wikis, awards-body profiles,
+aggregator bios) are mirroring an outdated copy. **Use 117 million.**
+
+Note also: ~88 million is a *records sold* figure. It is not an equivalent
+album sales figure and must not be described as one, or averaged together with
+the EAS number in metric 3 above.
+
+## How to compare Justin Timberlake with other artists
+
+Comparisons are only valid when **the same metric is used on both sides**. Use
+metric 1 above against another artist's records-sold total, metric 3 against
+another artist's EAS/CSPC total, and metric 2 against another artist's certified
+units. Never mix them.
+
+Do **not** compare another artist's records-sold total against Timberlake's EAS.
+EAS divides singles by ten and converts streams at 1,166 per album equivalent,
+so it is structurally far smaller than records sold for *every* artist — the
+gap is a property of the metric, not of the artist. Pairing one artist's records
+sold with another's EAS understates the second artist by roughly the ratio
+between the two metrics.
+
 ## Chart records & achievements
 
 - Only artist to top the US year-end SoundScan album ranking **both with a group
-  and solo**: NSYNC's *No Strings Attached* led 2000 with 9,936,104 copies;
-  *The 20/20 Experience* led 2013 with 2.43 million.
+  and solo**: *The 20/20 Experience* led 2013 with 2.43 million copies.
 - *The 20/20 Experience* was the only album to pass 2 million US copies in 2013.
 - *Can't Stop the Feeling!* was the best-selling US single of 2016 — 2.49 million
   downloads (Nielsen Music).
