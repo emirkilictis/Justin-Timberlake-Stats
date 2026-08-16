@@ -331,7 +331,7 @@ function calculateUSALive(item, type = 'song') {
     let effectiveUSShare = US_SHARE;
     const era = type === 'song' ? item.album_id : item.id;
     const pre2016Eras = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience – 2 of 2"];
-    const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Soulmate"];
+    const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Hair Up", "Soulmate"];
 
     if (pre2016Eras.includes(era) || (era === "Orphan" && !post2016Orphans.includes(item.title))) {
         effectiveUSShare = 0.27;
@@ -526,7 +526,7 @@ function computeNonSingles() {
     const TOP_N = 10;
     const vaultTitlesLower = vaultData.songs.map(s => s.title.toLowerCase());
     const pre2016Eras = ["Justified", "FutureSex/LoveSounds", "The 20/20 Experience", "The 20/20 Experience – 2 of 2"];
-    const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Soulmate"];
+    const post2016Orphans = ["Stay With Me", "Better Place", "The Other Side", "True Colors", "Hair Up", "Soulmate"];
     const map = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {};
 
     const out = [];

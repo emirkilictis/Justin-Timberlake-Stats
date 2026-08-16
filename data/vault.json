@@ -223,7 +223,7 @@
       "pure_sales_us": 200000,
       "official_certifications": {
         "USA": "None",
-        "UK": "Silver",
+        "UK": "None",
         "Brazil": "None",
         "Germany": "None",
         "Australia": "None",
@@ -359,7 +359,7 @@
       "pure_sales_us": 60000,
       "official_certifications": {
         "USA": "None",
-        "UK": "Silver",
+        "UK": "None",
         "Brazil": "None",
         "Germany": "None",
         "Australia": "None",
@@ -429,13 +429,28 @@
       ]
     },
     {
+      "id": "hair_up",
+      "title": "Hair Up",
+      "album_id": "Orphan",
+      "pure_sales_us": 0,
+      "official_certifications": {
+        "USA": "None",
+        "UK": "Gold",
+        "Brazil": "None",
+        "Germany": "None",
+        "Australia": "None",
+        "Canada": "None",
+        "World": "None"
+      }
+    },
+    {
       "id": "true_colors",
       "title": "True Colors",
       "album_id": "Orphan",
       "pure_sales_us": 100000,
       "official_certifications": {
         "USA": "None",
-        "UK": "None",
+        "UK": "Gold",
         "Brazil": "1x Platinum",
         "Germany": "None",
         "Australia": "None",
@@ -626,7 +641,7 @@
       "pure_sales_us": 50000,
       "official_certifications": {
         "USA": "None",
-        "UK": "None",
+        "UK": "Silver",
         "Brazil": "None",
         "Germany": "None",
         "Australia": "None",
