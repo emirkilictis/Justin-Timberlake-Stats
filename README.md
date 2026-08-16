@@ -90,7 +90,7 @@ A few problems that turned out to be harder than they look:
 - **RIAA quantization** — official certifications round *down* to the nearest million (3.3M pure sales → 3.0M certified Platinum count). Live streaming additions can re-cross thresholds; the calculator handles both regimes.
 - **Pre-2016 era streaming share** — Justified, FSLS, and 20/20 era tracks have a US share of ~0.27 in their streams (older catalog tilts more international), while post-2016 releases use the modern 0.35. Hardcoded by era.
 - **Streaming-only certifications** — Denmark, Germany, and others use streaming-equivalent thresholds that differ from physical thresholds. Stored as `"NNNN units"` raw counts in the data layer instead of normalized cert strings.
-- **NSYNC scope** — every figure is solo-only by default. NSYNC inclusion is mentioned in SEO copy but not blended into calculations (different rights, different label).
+- **NSYNC scope** — every figure is solo-only, including the SEO copy. The label's 117M records-sold figure is the headline number; NSYNC combined totals are deliberately not quoted anywhere (they dilute the solo narrative and mix different rights/labels).
 - **Year-end stream projection** — weighted blend of weekly (35%), monthly (45%), and YTD (20%) growth rates, recomputed live with sparse Firestore reads (10 key points instead of 30 daily) for performance.
 
 ---
