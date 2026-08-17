@@ -103,6 +103,24 @@ USA için RIAA mantığı: `< 500k → 0`, `500k–1M → 500k`, `≥1M → floo
 ### Bir şarkının sertifikasyonunu güncelleme
 `data/vault.json` içinde ilgili `id`'yi bul, `official_certifications` bloğunu düzenle. Wikipedia certifications tablosu birincil kaynak.
 
+**Değişiklikten sonra mutlaka çalıştır:**
+```bash
+node scripts/validate-certs.js --vault
+```
+
+### Sertifika verisi doğrulama — `scripts/validate-certs.js`
+
+Bir sertifika ünitesi tek bir olgu değil, **iki bağımsız olgunun çarpımıdır**: (a) ödülün seviyesi/çarpanı/tarihi, (b) o seviyenin *o tarihte*, *o format ve repertuar sınıfı için* ne demek olduğu. İkisi ayrı yazılmazsa yanlış eşik kullanıldığı görünmez olur.
+
+- `--vault` modu → `data/vault.json`'ı `vault.js`'in **gerçek** `parseCertString`'ine karşı denetler (fonksiyonu kaynaktan çeker, yeniden yazmaz). 0 ünite sayılan satırları yakalar: eşik tablosu olmayan pazarda isimli seviye, virgüllü ham sayı, tanınmayan seviye.
+- `<dosya.csv>` modu → dışarıdan gelen araştırmayı vault'a girmeden denetler. Zorunlu kolonlar: `country, type, title, level, threshold_at_award, metric, counted_sales_download_units, award_source, threshold_source, status`.
+
+Kurallar:
+- `threshold_at_award` boş olamaz; ülkenin genel tablosu değil **ödül tarihindeki** eşik yazılır.
+- `counted_sales_download_units` = eşik × çarpan. Gerçek satış rakamı biliniyorsa `official_reported_value`'ya yazılır, `counted`'a değil.
+- `metric` `streams` veya `revenue_local_currency` ise `counted` **boş bırakılır** — Danimarka stream eşiği ve Polonya PLN gelir eşiği satış ünitesine çevrilmez.
+- `award_source` ve `threshold_source` ayrı; ikisi aynıysa uyarı verir.
+
 ### Yeni ülke ekleme
 1. `vault.json`'da şarkıya `"ÜlkeAdı": "Nx Platinum"` ekle.
 2. `vault.js` `CERT_MAPPINGS`'te eşikler tanımlı değilse ekle.
