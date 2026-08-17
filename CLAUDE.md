@@ -76,6 +76,10 @@ USA için RIAA mantığı: `< 500k → 0`, `500k–1M → 500k`, `≥1M → floo
         "Denmark": "1800000 units",
         "Others": "243545 units",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2017-09",
+        "Italy": "2024-W49"
       }
     }
   ],
@@ -83,7 +87,9 @@ USA için RIAA mantığı: `< 500k → 0`, `500k–1M → 500k`, `≥1M → floo
 }
 ```
 
+- **`certification_dates`** (opsiyonel): `official_certifications` ile aynı ülke anahtarlarını kullanır, ödül tarihini tutar. Formatlar: `2017-09`, `2024-W49` (FIMI hafta numarası), `2003-06-10`, `2013`. **Hesaba girmez** — motor tarihi okumuyor. Amacı her satırı denetlenebilir kılmak: eşiğin o tarihte geçerli olup olmadığı ancak tarih yazılıysa kontrol edilebilir. Eksik olması sorun değil; tarihi bilinmeyen satırlarda anahtar hiç yazılmaz.
 - **`Others`** anahtarı: belirli bir ülkeye atanmamış birikmiş üniteler için (örn. South Korea, Japan parçaları). `parseCertString` bunu da işler.
+- **Eşik tablosu olmayan pazarlar** (`CERT_MAPPINGS`'te yoksa — Argentina, Finland, Hungary, Russia, South Africa, Ireland, Norway, `Other`, `Others`) için **mutlaka ham ünite** yaz: `"Russia": "200000 units"`. İsimli seviye (`"Diamond"`) bu pazarlarda 0 sayılır. `validate-certs.js --vault` bunu yakalar.
 - **`World`** anahtarı: global IFPI sertifikası varsa (genelde `"None"`).
 
 ## Config & secrets

@@ -32,6 +32,10 @@
         "Denmark": "5x Platinum",
         "World": "None",
         "France": "Gold"
+      },
+      "certification_dates": {
+        "Germany": "2017-09",
+        "France": "2003-06-10"
       }
     },
     {
@@ -48,6 +52,9 @@
         "Canada": "None",
         "New Zealand": "4x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2025-07"
       }
     },
     {
@@ -98,6 +105,10 @@
         "New Zealand": "2x Platinum",
         "Denmark": "2x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2023-02",
+        "Denmark": "2026-07-07"
       }
     },
     {
@@ -149,6 +160,11 @@
         "New Zealand": "4x Platinum",
         "Italy": "1x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2017-09",
+        "Italy": "2024-W49",
+        "Spain": "2024-W23"
       }
     },
     {
@@ -165,6 +181,9 @@
         "Canada": "2x Platinum",
         "New Zealand": "4x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2017-09"
       }
     },
     {
@@ -251,6 +270,9 @@
         "Denmark": "1800000 units",
         "Others": "243545 units",
         "World": "None"
+      },
+      "certification_dates": {
+        "Italy": "2014-W02"
       }
     },
     {
@@ -304,6 +326,9 @@
         "New Zealand": "2x Platinum",
         "World": "None",
         "France": "1x Platinum"
+      },
+      "certification_dates": {
+        "France": "2025-01-16"
       }
     },
     {
@@ -380,7 +405,11 @@
         "Australia": "None",
         "Canada": "1x Platinum",
         "Poland": "Gold",
-        "World": "None"
+        "World": "None",
+        "South Africa": "20000 units"
+      },
+      "certification_dates": {
+        "South Africa": "2024-05-09"
       }
     },
     {
@@ -422,7 +451,15 @@
         "Spain": "3x Platinum",
         "Sweden": "8x Platinum",
         "Switzerland": "2x Platinum",
-        "World": "None"
+        "World": "None",
+        "South Africa": "10000 units"
+      },
+      "certification_dates": {
+        "Italy": "2018-W25",
+        "France": "2016-10-14",
+        "Switzerland": "2017",
+        "Austria": "2017",
+        "South Africa": "2016"
       },
       "youtubeVideoIds": [
         "ru0K8uYEZWw"
@@ -477,6 +514,9 @@
         "New Zealand": "2x Platinum",
         "World": "None"
       },
+      "certification_dates": {
+        "Germany": "2023-05"
+      },
       "youtubeVideoIds": [
         "RgoiSJ23cSc"
       ]
@@ -494,7 +534,11 @@
         "Australia": "3x Platinum",
         "Canada": "3x Platinum",
         "New Zealand": "1x Platinum",
-        "World": "None"
+        "World": "None",
+        "Japan": "Gold"
+      },
+      "certification_dates": {
+        "Japan": "2015-06"
       },
       "youtubeVideoIds": [
         "aAQZPBwz2CI"
@@ -535,6 +579,9 @@
         "New Zealand": "2x Platinum",
         "World": "None"
       },
+      "certification_dates": {
+        "Germany": "2018-04"
+      },
       "youtubeVideoIds": [
         "5RDSkR8_AQ0"
       ]
@@ -553,6 +600,9 @@
         "Canada": "None",
         "New Zealand": "1x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2018-04"
       },
       "youtubeVideoIds": [
         "4kc5_pfNHGk"
@@ -630,6 +680,9 @@
         "New Zealand": "1x Platinum",
         "World": "None"
       },
+      "certification_dates": {
+        "Germany": "2023-06"
+      },
       "youtubeVideoIds": [
         "F0B7HDiY-10"
       ]
@@ -685,6 +738,9 @@
         "Canada": "Gold",
         "New Zealand": "5x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "Germany": "2023-02"
       },
       "youtubeVideoIds": [
         "WpYeekQkAdc"
@@ -745,6 +801,9 @@
         "World": "None",
         "France": "Gold",
         "Other": "380000 units"
+      },
+      "certification_dates": {
+        "France": "2003-06-10"
       }
     },
     {
@@ -761,7 +820,19 @@
         "New Zealand": "6x Platinum",
         "World": "None",
         "France": "Gold",
-        "Other": "600000 units"
+        "Other": "600000 units",
+        "Argentina": "20000 units",
+        "Finland": "15000 units",
+        "Hungary": "3000 units",
+        "Japan": "Gold",
+        "Russia": "200000 units"
+      },
+      "certification_dates": {
+        "Argentina": "2006",
+        "Finland": "2007",
+        "Hungary": "2007",
+        "Japan": "2006-11",
+        "Russia": "2006"
       }
     },
     {
@@ -786,6 +857,10 @@
         "Norway": "15000 units",
         "World": "None",
         "Other": "230000 units"
+      },
+      "certification_dates": {
+        "Switzerland": "2013",
+        "Netherlands": "2013"
       }
     },
     {
