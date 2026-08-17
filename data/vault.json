@@ -31,7 +31,9 @@
         "New Zealand": "3x Platinum",
         "Denmark": "5x Platinum",
         "World": "None",
-        "France": "Gold"
+        "France": "Gold",
+        "Italy": "Gold",
+        "Spain": "Gold"
       },
       "certification_dates": {
         "France": "2003-06-10"
@@ -48,10 +50,10 @@
         "Brazil": "Gold",
         "Germany": {
           "level": "Gold",
-          "units": 150000,
+          "units": 300000,
           "metric": "sales_equivalent",
-          "certified_at": "2025-07",
-          "threshold_basis": "2003 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+          "certified_at": "2025",
+          "threshold_basis": "2025 ödülü → BVMI single 30.06.2023 sonrası ölçek (Gold 300.000)"
         },
         "Australia": "2x Platinum",
         "Canada": "None",
@@ -103,10 +105,10 @@
         "Brazil": "1x Diamond",
         "Germany": {
           "level": "1x Platinum",
-          "units": 300000,
+          "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2023-02",
-          "threshold_basis": "2007 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+          "threshold_basis": "02/2023 ödülü → single 01.06.2014–29.06.2023 ölçeği (Platin 400.000)"
         },
         "Australia": "2x Platinum",
         "Canada": "1x Platinum",
@@ -162,13 +164,28 @@
         "Brazil": "None",
         "Germany": {
           "level": "1x Platinum",
-          "units": 300000,
+          "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2017-09",
-          "threshold_basis": "2006 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+          "threshold_basis": "09/2017 ödülü → single 01.06.2014–29.06.2023 ölçeği (Platin 400.000)"
         },
         "Australia": "5x Platinum",
-        "Canada": "6x Platinum",
+        "Canada": [
+        {
+          "level": "3x Platinum",
+          "units": 240000,
+          "metric": "sales_equivalent",
+          "format": "single",
+          "threshold_basis": "Music Canada single ölçeği (Platinum 80.000), 3 × 80.000"
+        },
+        {
+          "level": "6x Platinum",
+          "units": 240000,
+          "metric": "sales_equivalent",
+          "format": "ringtone",
+          "threshold_basis": "Music Canada Ringtone kategorisi (01.04.2021'de emekliye ayrıldı) — Platinum 40.000, 6 × 40.000. Single sertifikasından AYRI bir üründür, ikisi birlikte sayılır."
+        }
+      ],
         "Spain": "Gold",
         "New Zealand": "4x Platinum",
         "Italy": "1x Platinum",
@@ -190,10 +207,10 @@
         "Brazil": "1x Platinum",
         "Germany": {
           "level": "Gold",
-          "units": 150000,
+          "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2017-09",
-          "threshold_basis": "2006 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+          "threshold_basis": "09/2017 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
         },
         "Australia": "Gold",
         "Canada": "2x Platinum",
@@ -311,13 +328,19 @@
           "units": 300000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "2013 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+          "threshold_basis": "2013 ödülü → single 2003–2014 ölçeği (Platin 300.000)"
         },
-        "Australia": "2x Platinum",
+        "Australia": "3x Platinum",
         "Canada": "3x Platinum",
         "New Zealand": "6x Platinum",
         "World": "None",
-        "Mexico": "1x Platinum"
+        "Mexico": "1x Platinum",
+        "Austria": "Gold",
+        "Italy": "2x Platinum",
+        "Portugal": "Platinum",
+        "Spain": "Platinum",
+        "Sweden": "2x Platinum",
+        "Switzerland": "Platinum"
       }
     },
     {
@@ -352,7 +375,7 @@
           "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2018",
-          "threshold_basis": "2018 çıkışı → BVMI single 2014–2023 ölçeği (Gold 200.000)"
+          "threshold_basis": "2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
         },
         "Australia": "2x Platinum",
         "Canada": "2x Platinum",
@@ -474,17 +497,18 @@
           "units": 1000000,
           "metric": "sales_equivalent",
           "certified_at": "2022",
-          "threshold_basis": "2016 çıkışı → BVMI single 2014–2023 ölçeği (Diamond 1.000.000)"
+          "threshold_basis": "2022 ödülü → single 2014–2023 ölçeği (Diamond 1.000.000)"
         },
         "Australia": "11x Platinum",
         "Canada": "1x Diamond",
         "Denmark": "5x Platinum",
         "Mexico": {
-          "level": "2x Platinum",
-          "units": 120000,
+          "level": "4x Platinum",
+          "units": 240000,
           "metric": "sales_equivalent",
-          "certified_at": "2016-12-22",
-          "threshold_basis": "AMPROFON sicili: PLATINO nivel 2, 22.12.2016 — 2020 öncesi ölçek (Platino 60.000)"
+          "certified_at": "2019",
+          "award_source": "https://www.facebook.com/CertificacionesAmprofon/photos/a.1293366120787996/1314462178678390",
+          "threshold_basis": "2019 ödülü → AMPROFON 01.11.2020 öncesi ölçek (Platino 60.000), 4 × 60.000. Kurumun web sicili bu eseri son olarak 22.12.2016 nivel 2 ile gösteriyor, yani tablo güncel değil; seviye AMPROFON'un resmî sertifika sayfasının duyurusundan."
         },
         "New Zealand": "8x Platinum",
         "France": "Diamond",
@@ -555,10 +579,10 @@
         "Brazil": "None",
         "Germany": {
           "level": "3x Gold",
-          "units": 450000,
+          "units": 600000,
           "metric": "sales_equivalent",
           "certified_at": "2023-05",
-          "threshold_basis": "2007 çıkışı → BVMI single 2003–2014 ölçeği (3 × Gold 150.000)"
+          "threshold_basis": "05/2023 ödülü → single 2014–2023 ölçeği (3 × Gold 200.000)"
         },
         "Australia": "None",
         "Canada": "1x Platinum",
@@ -583,7 +607,7 @@
           "units": 300000,
           "metric": "sales_equivalent",
           "certified_at": "2008",
-          "threshold_basis": "2008 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+          "threshold_basis": "2008 ödülü → single 2003–2014 ölçeği (Platin 300.000)"
         },
         "Australia": "3x Platinum",
         "Canada": "3x Platinum",
@@ -609,10 +633,10 @@
         "Brazil": "3x Platinum",
         "Germany": {
           "level": "1x Platinum",
-          "units": 300000,
+          "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2023",
-          "threshold_basis": "2014-05-02 çıkışı → BVMI single 2003–2014 ölçeği — 1 Haziran 2014 değişikliğinden önce (Platin 300.000)"
+          "threshold_basis": "2023 ödülü → single 2014–2023 ölçeği (Platin 400.000)"
         },
         "Australia": "None",
         "Canada": "2x Platinum",
@@ -635,10 +659,10 @@
         "Brazil": "None",
         "Germany": {
           "level": "Gold",
-          "units": 150000,
+          "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2018-04",
-          "threshold_basis": "2007 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+          "threshold_basis": "04/2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
         },
         "Australia": "3x Platinum",
         "Canada": "None",
@@ -660,10 +684,10 @@
         "Brazil": "None",
         "Germany": {
           "level": "Gold",
-          "units": 150000,
+          "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2018-04",
-          "threshold_basis": "2013 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+          "threshold_basis": "04/2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
         },
         "Australia": "2x Platinum",
         "Canada": "None",
@@ -742,10 +766,10 @@
         "Brazil": "None",
         "Germany": {
           "level": "Gold",
-          "units": 150000,
+          "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2023-06",
-          "threshold_basis": "2005 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+          "threshold_basis": "06/2023 ödülü → single 2014–2023 ölçeği (Gold 200.000); ödül 30.06.2023 sınırına yakın, gün netleşirse 300.000 olabilir"
         },
         "Australia": "None",
         "Canada": "None",
@@ -804,10 +828,10 @@
         "Brazil": "1x Platinum",
         "Germany": {
           "level": "5x Gold",
-          "units": 750000,
+          "units": 1000000,
           "metric": "sales_equivalent",
-          "certified_at": "2023-02",
-          "threshold_basis": "2003 çıkışı → BVMI single 2003–2014 ölçeği (5 × Gold 150.000)"
+          "certified_at": "2023",
+          "threshold_basis": "2023 ödülü → single 2014–2023 ölçeği (5 × Gold 200.000)"
         },
         "Australia": "4x Platinum",
         "Canada": "Gold",
@@ -988,7 +1012,8 @@
         "Canada": "Gold",
         "New Zealand": "Gold",
         "World": "None",
-        "Other": "100000 units"
+        "Other": "100000 units",
+        "Poland": "Platinum"
       }
     },
     {

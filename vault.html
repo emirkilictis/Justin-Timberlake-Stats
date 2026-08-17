@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787002419">
+    <link rel="stylesheet" href="style.css?v=1787004077">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -324,6 +324,7 @@
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Ringtone')" title="Zil sesi (mastertone) sertifikaları — single'dan ayrı bir üründür, kendi eşik tablosu vardır.">📱 Ringtone ⇕</th>
                         </tr>
                     </thead>
                     <tbody id="songs-tbody">
@@ -352,6 +353,7 @@
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Canada')">🇨🇦 Canada ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Mexico')">🇲🇽 Mexico ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Other')">🌍 Other ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Ringtone')" title="Zil sesi (mastertone) sertifikaları — single'dan ayrı bir üründür, kendi eşik tablosu vardır.">📱 Ringtone ⇕</th>
                         </tr>
                     </thead>
                     <tbody id="albums-tbody">
@@ -432,9 +434,9 @@
 
     </div>
 
-    <script src="config.js?v=1787002419" defer></script>
-    <script src="song-map.js?v=1787002419" defer></script>
-    <script src="vault.js?v=1787002419" defer></script>
+    <script src="config.js?v=1787004077" defer></script>
+    <script src="song-map.js?v=1787004077" defer></script>
+    <script src="vault.js?v=1787004077" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();

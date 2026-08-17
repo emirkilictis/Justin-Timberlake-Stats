@@ -62,7 +62,7 @@ const CERT_MAPPINGS = {
     
 };
 
-const COUNTRIES = ["USA", "UK", "Brazil", "Germany", "Australia", "Canada", "Mexico", "Other"];
+const COUNTRIES = ["USA", "UK", "Brazil", "Germany", "Australia", "Canada", "Mexico", "Other", "Ringtone"];
 
 const ALBUM_COLORS = {
     "Justified": "#5dade2", "FutureSex/LoveSounds": "#e74c3c", "The 20/20 Experience": "#d4a853",
@@ -439,15 +439,31 @@ function resolveCert(value, country, itemType = 'song', itemId = '') {
         const units = typeof value.units === 'number'
             ? value.units
             : parseCertString(value.level, country, itemType, itemId);
-        return [{ level: value.level, metric, units, certified_at: value.certified_at }];
+        // format: aynı eserin ayrı ürün olarak sertifikalanmış sürümleri.
+        // "ringtone" (mastertone) kendi eşik tablosuna sahip AYRI bir üründür ve
+        // single sertifikasının yerine geçmez — ikisi birlikte sayılır. Bu yüzden
+        // ringtone ödülleri single eşiğiyle hesaplanmaz, units'leri açık yazılır.
+        const format = value.format || 'single';
+        return [{ level: value.level, metric, units, format, certified_at: value.certified_at }];
     }
     return [];
 }
 
-/** Satış metriğine sahip ödüllerin ünite toplamı. Stream / gelir ödülleri hariç. */
+/**
+ * Ülke kolonuna giren ünite: satış metriği + zil sesi DIŞI formatlar.
+ * Zil sesi ayrı bir ürün olduğu için kendi kolonunda toplanır (bkz. ringtoneUnits),
+ * ama genel toplama yine dahil edilir.
+ */
 function certUnits(value, country, itemType = 'song', itemId = '') {
     return resolveCert(value, country, itemType, itemId)
-        .filter(a => SALES_METRICS.has(a.metric))
+        .filter(a => SALES_METRICS.has(a.metric) && a.format !== 'ringtone')
+        .reduce((sum, a) => sum + a.units, 0);
+}
+
+/** Zil sesi (mastertone) ödüllerinin ünitesi — ayrı kolonda gösterilir. */
+function ringtoneUnits(value, country, itemType = 'song', itemId = '') {
+    return resolveCert(value, country, itemType, itemId)
+        .filter(a => SALES_METRICS.has(a.metric) && a.format === 'ringtone')
         .reduce((sum, a) => sum + a.units, 0);
 }
 
@@ -458,11 +474,17 @@ function nonSalesAwards(value, country, itemType = 'song', itemId = '') {
 }
 
 /** Rozet için okunabilir seviye metni — obje ve dizi biçimlerini de karşılar. */
+const FORMAT_LABELS = { ringtone: 'zil sesi', video: 'video', album: 'albüm' };
+
 function certLabel(value) {
     if (!value || value === 'None') return value;
     if (typeof value === 'string') return value;
     if (Array.isArray(value)) return value.map(certLabel).filter(Boolean).join(' + ');
-    if (typeof value === 'object') return value.level || '';
+    if (typeof value === 'object') {
+        if (value.format === 'ringtone') return '';   // ayrı kolonda gösteriliyor
+        const note = FORMAT_LABELS[value.format];
+        return (value.level || '') + (note ? ` (${note})` : '');
+    }
     return '';
 }
 
@@ -535,6 +557,15 @@ function computeAllData() {
         certTotal += otherVal;
         officialSum += otherVal;
 
+        // Zil sesi (mastertone): ayrı ürün, ayrı kolon — ama genel toplama dahil
+        let ringVal = 0;
+        for (let market in (a.official_certifications || {})) {
+            ringVal += ringtoneUnits(a.official_certifications[market], market, 'album', a.id);
+        }
+        cMap['Ringtone'] = ringVal;
+        certTotal += ringVal;
+        officialSum += ringVal;
+
         // usRaw = yuvarlanmamış güncel USA ünitesi (sadece gösterim; cMap/certTotal'a girmez)
         return { ...a, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap };
     }).filter(a => a.global > 0 && a.id !== "Orphan");
@@ -575,6 +606,15 @@ function computeAllData() {
         cMap['Other'] = otherVal;
         certTotal += otherVal;
         officialSum += otherVal;
+
+        // Zil sesi (mastertone): ayrı ürün, ayrı kolon — ama genel toplama dahil
+        let ringVal = 0;
+        for (let market in (s.official_certifications || {})) {
+            ringVal += ringtoneUnits(s.official_certifications[market], market, 'song', s.id);
+        }
+        cMap['Ringtone'] = ringVal;
+        certTotal += ringVal;
+        officialSum += ringVal;
 
         // usRaw = yuvarlanmamış güncel USA ünitesi (sadece gösterim; cMap/certTotal'a girmez)
         return { ...s, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap };
@@ -818,6 +858,7 @@ function renderTables() {
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Canada)}</td>
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Mexico)}</td>
                 <td class="text-center" style="font-weight:700;color:var(--accent-color)">${a.cMap.Other > 0 ? a.cMap.Other.toLocaleString() : 'None'}</td>
+                <td class="text-center" style="font-weight:700;color:var(--accent-color)">${a.cMap.Ringtone > 0 ? a.cMap.Ringtone.toLocaleString() : '—'}</td>
             </tr>
         `;
         albumTbody.innerHTML += tr;
@@ -852,6 +893,7 @@ function renderTables() {
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Canada)}</td>
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Mexico)}</td>
                 <td class="text-center" style="font-weight:700;color:var(--accent-color)">${s.cMap.Other > 0 ? s.cMap.Other.toLocaleString() : 'None'}</td>
+                <td class="text-center" style="font-weight:700;color:var(--accent-color)">${s.cMap.Ringtone > 0 ? s.cMap.Ringtone.toLocaleString() : '—'}</td>
             </tr>
         `;
         songsTbody.innerHTML += tr;
@@ -871,7 +913,7 @@ function renderTables() {
         const COUNTRY_LABELS = { 
             "USA": "🇺🇸 United States", "UK": "🇬🇧 United Kingdom", "Brazil": "🇧🇷 Brazil", 
             "Germany": "🇩🇪 Germany", "Australia": "🇦🇺 Australia", "Canada": "🇨🇦 Canada", 
-            "Mexico": "🇲🇽 Mexico", "Other": "🌍 Other Markets"
+            "Mexico": "🇲🇽 Mexico", "Other": "🌍 Other Markets", "Ringtone": "📱 Ringtone"
         };
         let grandAlbums = 0, grandSingles = 0;
         
