@@ -42,8 +42,15 @@ const NON_SALES_METRICS = new Set([
 
 const REQUIRED_COLUMNS = [
     'country', 'type', 'title', 'level', 'threshold_at_award',
-    'metric', 'counted_sales_download_units', 'source', 'status'
+    'metric', 'counted_sales_download_units', 'status'
 ];
+
+// Ödülün varlığı ile o tarihteki eşik İKİ AYRI kanıttır ve ayrı
+// kaynaklardan gelir. Tek "source" kolonu ikisini birbirine karıştırır:
+// sicil kaydı doğru olsa bile eşik yanlış rafta aranmış olabilir ve bu
+// tek kolonda görünmez. Yeni dosyalar award_source + threshold_source
+// kullanmalı; tek "source" geriye dönük kabul edilir ama uyarı verir.
+const SOURCE_COLUMNS = ['award_source', 'threshold_source'];
 
 // ── CSV okuma (tırnaklı alanları destekler, bağımlılık yok) ──
 
@@ -97,6 +104,18 @@ function validateCSV(file) {
     if (missingCols.length) {
         errors.push(`Eksik kolon(lar): ${missingCols.join(', ')}`);
         return { rows, errors, warnings };
+    }
+
+    // Kaynak kolonları: ayrık şema mı, eski tek-kolon mu?
+    const hasSplitSources = SOURCE_COLUMNS.every(c => c in rows[0]);
+    const hasLegacySource = 'source' in rows[0];
+    if (!hasSplitSources && !hasLegacySource) {
+        errors.push(`Kaynak kolonu yok: ${SOURCE_COLUMNS.join(' + ')} (veya eski "source")`);
+        return { rows, errors, warnings };
+    }
+    if (!hasSplitSources) {
+        warnings.push(`Dosya tek "source" kolonu kullanıyor. Ödül kaydı ile tarihsel ` +
+            `eşik ayrı kanıtlardır — yeni dosyalarda ${SOURCE_COLUMNS.join(' ve ')} ayrı olmalı.`);
     }
 
     rows.forEach((r, i) => {
@@ -153,12 +172,25 @@ function validateCSV(file) {
             warnings.push(`${at}: sertifika tarihi yok — eşik doğrulaması elle yapılmalı`);
         }
 
-        // 7. Durum
+        // 7. Kaynaklar — ödül ve eşik ayrı ayrı gerekçelendirilmeli
+        if (hasSplitSources) {
+            SOURCE_COLUMNS.forEach(col => {
+                if (!(r[col] || '').trim()) errors.push(`${at}: ${col} boş`);
+            });
+            if (r.award_source && r.award_source === r.threshold_source) {
+                warnings.push(`${at}: ödül ve eşik aynı kaynağı gösteriyor — ` +
+                    `tek kanıt iki olguyu birden desteklemiş oluyor, teyide değer`);
+            }
+        } else if (!(r.source || '').trim()) {
+            errors.push(`${at}: source boş`);
+        }
+
+        // 8. Durum
         if (!/^confirmed/.test(r.status || '')) {
             warnings.push(`${at}: status "${r.status}" — teyitli değil, işlemeden önce bak`);
         }
 
-        // 8. Mükerrer
+        // 9. Mükerrer
         const key = [r.country, r.type, r.title].join('|').toLowerCase();
         if (seen.has(key)) {
             errors.push(`${at}: aynı ülke+eser ${seen.get(key)}. satırda da var`);
