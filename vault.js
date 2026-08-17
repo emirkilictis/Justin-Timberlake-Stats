@@ -277,11 +277,13 @@ async function fetchRealYouTubeViews(ids) {
 function parseCertString(certStr, country, itemType = 'song', itemId = '') {
     if (!certStr || certStr === "None") return 0;
     
+    // NOT: mapping burada yoksa erken çıkılmaz. "Other", "Others", "Ireland",
+    // "Norway" gibi eşik tablosu olmayan pazarlar ham "NNNN units" yazıyor ve
+    // erken return o değerleri sessizce 0'a düşürüyordu.
     let mapping = CERT_MAPPINGS[country];
-    if (!mapping) return 0;
 
     // Generic threshold selection for countries with album/song distinction
-    if (mapping.album && mapping.song) {
+    if (mapping && mapping.album && mapping.song) {
         mapping = mapping[itemType] || mapping['song'];
     }
 
@@ -303,6 +305,9 @@ function parseCertString(certStr, country, itemType = 'song', itemId = '') {
             totalUnits += val;
             return;
         }
+
+        // İsimli seviye ("Gold", "2x Platinum") ancak eşik tablosu varsa çözülebilir
+        if (!mapping) return;
 
         let multiplier = 1;
         let type = part;
