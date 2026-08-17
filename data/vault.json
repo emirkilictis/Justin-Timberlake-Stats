@@ -310,6 +310,7 @@
           "level": "1x Platinum",
           "units": 300000,
           "metric": "sales_equivalent",
+          "certified_at": "2013",
           "threshold_basis": "2013 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
         },
         "Australia": "2x Platinum",
@@ -350,6 +351,7 @@
           "level": "Gold",
           "units": 200000,
           "metric": "sales_equivalent",
+          "certified_at": "2018",
           "threshold_basis": "2018 çıkışı → BVMI single 2014–2023 ölçeği (Gold 200.000)"
         },
         "Australia": "2x Platinum",
@@ -471,6 +473,7 @@
           "level": "1x Diamond",
           "units": 1000000,
           "metric": "sales_equivalent",
+          "certified_at": "2022",
           "threshold_basis": "2016 çıkışı → BVMI single 2014–2023 ölçeği (Diamond 1.000.000)"
         },
         "Australia": "11x Platinum",
@@ -570,10 +573,11 @@
         "UK": "Platinum",
         "Brazil": "1x Platinum",
         "Germany": {
-          "level": "3x Gold",
-          "units": 450000,
+          "level": "1x Platinum",
+          "units": 300000,
           "metric": "sales_equivalent",
-          "threshold_basis": "2008 çıkışı → BVMI single 2003–2014 ölçeği (3 × Gold 150.000)"
+          "certified_at": "2008",
+          "threshold_basis": "2008 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
         },
         "Australia": "3x Platinum",
         "Canada": "3x Platinum",
@@ -601,6 +605,7 @@
           "level": "1x Platinum",
           "units": 300000,
           "metric": "sales_equivalent",
+          "certified_at": "2023",
           "threshold_basis": "2014-05-02 çıkışı → BVMI single 2003–2014 ölçeği — 1 Haziran 2014 değişikliğinden önce (Platin 300.000)"
         },
         "Australia": "None",
@@ -859,6 +864,7 @@
           "level": "1x Platinum",
           "units": 300000,
           "metric": "sales_equivalent",
+          "certified_at": "2003",
           "threshold_basis": "2002-11-05 çıkışı → BVMI albüm 1999-09-25–2002-12-31 ölçeği (Platin 300.000)"
         },
         "Australia": "5x Platinum",
@@ -884,6 +890,7 @@
           "level": "2x Platinum",
           "units": 400000,
           "metric": "sales_equivalent",
+          "certified_at": "2008",
           "threshold_basis": "2006 çıkışı → BVMI albüm 2003–2023 ölçeği (2 × Platin 200.000)"
         },
         "Australia": "6x Platinum",
@@ -918,6 +925,7 @@
           "level": "Gold",
           "units": 100000,
           "metric": "sales_equivalent",
+          "certified_at": "2013",
           "threshold_basis": "2013 çıkışı → BVMI albüm 2003–2023 ölçeği (Gold 100.000)"
         },
         "Australia": "1x Platinum",
