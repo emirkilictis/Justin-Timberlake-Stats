@@ -10,9 +10,12 @@ const CERT_MAPPINGS = {
         "album": { "Silver": 60000, "Gold": 100000, "Platinum": 300000 },
         "song": { "Silver": 200000, "Gold": 400000, "Platinum": 600000 }
     },
+    // Pro-Música Brasil'in NACIONAL ve INTERNACIONAL için ayrı ölçekleri var;
+    // JT uluslararası repertuar olduğu için her iki tablo da INTERNACIONAL.
+    // Kaynak: pro-musicabr.org.br "Tabela de Níveis de Certificação"
     "Brazil": {
         "album": { "Gold": 20000, "Platinum": 40000, "Diamond": 160000 },
-        "song":  { "Gold": 30000, "Platinum": 60000, "Diamond": 250000 }
+        "song":  { "Gold": 20000, "Platinum": 40000, "Diamond": 160000 }
     },
     "Germany": { 
         "album": { "Gold": 100000, "Platinum": 200000, "Diamond": 750000 },
