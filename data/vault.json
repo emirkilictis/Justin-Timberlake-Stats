@@ -282,7 +282,13 @@
         "Italy": "Gold",
         "Poland": "2x Platinum",
         "New Zealand": "1x Platinum",
-        "Denmark": "1800000 units",
+        "Denmark": {
+          "level": "Platinum",
+          "units": 18000,
+          "metric": "sales_equivalent",
+          "certified_at": "2013",
+          "threshold_basis": "2013 ödülü → o dönemin IFPI Danmark streaming Platin eşiği 1.800.000 stream; 1 download = 100 birim olduğundan 18.000 download-eşdeğeri"
+        },
         "Others": "243545 units",
         "World": "None"
       },
