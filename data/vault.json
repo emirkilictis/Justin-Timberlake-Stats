@@ -479,7 +479,13 @@
         "Australia": "11x Platinum",
         "Canada": "1x Diamond",
         "Denmark": "5x Platinum",
-        "Mexico": "4x Platinum",
+        "Mexico": {
+          "level": "2x Platinum",
+          "units": 120000,
+          "metric": "sales_equivalent",
+          "certified_at": "2016-12-22",
+          "threshold_basis": "AMPROFON sicili: PLATINO nivel 2, 22.12.2016 — 2020 öncesi ölçek (Platino 60.000)"
+        },
         "New Zealand": "8x Platinum",
         "France": "Diamond",
         "Austria": "Platinum",
