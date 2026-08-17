@@ -202,48 +202,94 @@ function validateCSV(file) {
 
 // ── vault.json denetimi ──────────────────────────────────────
 
-/** vault.js'ten gerçek CERT_MAPPINGS ve parseCertString'i çeker */
+/** vault.js'ten gerçek hesap fonksiyonlarını çeker — yeniden yazmaz ki sapma olmasın */
 function loadVaultEngine() {
     const src = fs.readFileSync(path.join(ROOT, 'vault.js'), 'utf8');
-    const mappings = src.match(/const CERT_MAPPINGS[\s\S]*?\n};/);
-    const parser = src.match(/function parseCertString[\s\S]*?\n}/);
-    if (!mappings || !parser) throw new Error('vault.js içinden CERT_MAPPINGS / parseCertString çıkarılamadı');
-    return new Function(`${mappings[0]}\n${parser[0]}\nreturn { CERT_MAPPINGS, parseCertString };`)();
+    const grab = (re, name) => {
+        const m = src.match(re);
+        if (!m) throw new Error(`vault.js içinden ${name} çıkarılamadı`);
+        return m[0];
+    };
+    const parts = [
+        grab(/const CERT_MAPPINGS[\s\S]*?\n};/, 'CERT_MAPPINGS'),
+        grab(/function parseCertString[\s\S]*?\n}/, 'parseCertString'),
+        grab(/const SALES_METRICS[\s\S]*?\n\]\);/, 'SALES_METRICS'),
+        grab(/function resolveCert[\s\S]*?\n}/, 'resolveCert'),
+        grab(/function certUnits[\s\S]*?\n}/, 'certUnits')
+    ];
+    return new Function(parts.join('\n') +
+        '\nreturn { CERT_MAPPINGS, SALES_METRICS, parseCertString, resolveCert, certUnits };')();
 }
 
 function validateVault() {
-    const { CERT_MAPPINGS, parseCertString } = loadVaultEngine();
+    const { CERT_MAPPINGS, SALES_METRICS, resolveCert, certUnits } = loadVaultEngine();
     const vault = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/vault.json'), 'utf8'));
     const errors = [], warnings = [];
-    let checked = 0;
+    let checked = 0, objectForm = 0, nonSales = 0;
 
     const walk = (items, type) => items.forEach(item => {
         const certs = item.official_certifications || {};
+        const dates = item.certification_dates || {};
+
         for (const [country, value] of Object.entries(certs)) {
             if (!value || value === 'None') continue;
             checked++;
             const at = `${type} "${item.title}" · ${country}`;
-            const units = parseCertString(value, country, type, item.id);
 
-            // Virgüllü ham sayı: "243,545" sessizce 0 olur
-            if (/^[\d.,]+$/.test(value)) {
+            // Eski biçim: virgüllü ham sayı sessizce 0 olur
+            if (typeof value === 'string' && /^[\d.,]+$/.test(value)) {
                 errors.push(`${at}: "${value}" ham sayı gibi yazılmış — ` +
                     `"NNNN units" formatı gerekiyor, aksi halde 0 sayılır`);
                 continue;
             }
 
-            if (units === 0) {
-                const known = !!CERT_MAPPINGS[country];
-                errors.push(`${at}: "${value}" → 0 ünite. ` + (known
-                    ? `"${country}" eşik tablosunda var ama bu seviye tanınmıyor`
-                    : `"${country}" CERT_MAPPINGS'te yok — isimli seviye yerine "NNNN units" yaz`));
+            const awards = resolveCert(value, country, type, item.id);
+            if (typeof value !== 'string') objectForm++;
+
+            awards.forEach(a => {
+                if (!a.level) {
+                    errors.push(`${at}: ödül nesnesinde "level" yok`);
+                }
+                if (!SALES_METRICS.has(a.metric)) {
+                    nonSales++;
+                    if (typeof a.units !== 'number') {
+                        errors.push(`${at}: metric "${a.metric}" için units sayı olmalı`);
+                    }
+                    // Satış dışı ödül toplama girmemeli — motorun bunu yaptığını burada teyit et
+                    return;
+                }
+                if (a.units === 0) {
+                    const known = !!CERT_MAPPINGS[country];
+                    errors.push(`${at}: "${a.level}" → 0 ünite. ` + (known
+                        ? `"${country}" eşik tablosunda var ama bu seviye tanınmıyor`
+                        : `"${country}" CERT_MAPPINGS'te yok — isimli seviye yerine "NNNN units" yaz`));
+                }
+            });
+
+            // Obje biçiminde certified_at varken certification_dates'te de olması mükerrer
+            if (typeof value === 'object' && !Array.isArray(value)
+                && value.certified_at && dates[country]) {
+                warnings.push(`${at}: tarih hem ödül nesnesinde hem certification_dates'te var`);
+            }
+        }
+
+        // Öksüz tarih: karşılığında sertifika olmayan tarih
+        for (const country of Object.keys(dates)) {
+            const v = certs[country];
+            if (!v || v === 'None') {
+                errors.push(`${type} "${item.title}" · ${country}: certification_dates var ama sertifika yok`);
             }
         }
     });
 
     walk(vault.songs || [], 'song');
     walk(vault.albums || [], 'album');
-    return { checked, errors, warnings };
+
+    if (nonSales) {
+        warnings.push(`${nonSales} ödül satış dışı metrikte (stream / gelir) — ` +
+            `ünite toplamına katılmadı, bu beklenen davranış`);
+    }
+    return { checked, objectForm, errors, warnings };
 }
 
 // ── Çalıştırma ───────────────────────────────────────────────
@@ -269,7 +315,7 @@ function main() {
     let failed = 0;
     if (arg === '--vault') {
         const res = validateVault();
-        failed = report(`vault.json — ${res.checked} sertifika satırı`, res, 'Hepsi sayılıyor.');
+        failed = report(`vault.json — ${res.checked} sertifika satırı (${res.objectForm} obje biçiminde)`, res, "Hepsi sayılıyor.");
     } else {
         if (!fs.existsSync(arg)) { console.error(`Dosya yok: ${arg}`); process.exit(2); }
         const res = validateCSV(arg);

@@ -34,7 +34,6 @@
         "France": "Gold"
       },
       "certification_dates": {
-        "Germany": "2017-09",
         "France": "2003-06-10"
       }
     },
@@ -47,14 +46,17 @@
         "USA": "Gold",
         "UK": "2x Platinum",
         "Brazil": "Gold",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 150000,
+          "metric": "sales_equivalent",
+          "certified_at": "2025-07",
+          "threshold_basis": "2003 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+        },
         "Australia": "2x Platinum",
         "Canada": "None",
         "New Zealand": "4x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2025-07"
       }
     },
     {
@@ -99,7 +101,13 @@
         "USA": "1x Platinum",
         "UK": "Platinum",
         "Brazil": "1x Diamond",
-        "Germany": "1x Platinum",
+        "Germany": {
+          "level": "1x Platinum",
+          "units": 300000,
+          "metric": "sales_equivalent",
+          "certified_at": "2023-02",
+          "threshold_basis": "2007 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+        },
         "Australia": "2x Platinum",
         "Canada": "1x Platinum",
         "New Zealand": "2x Platinum",
@@ -107,7 +115,6 @@
         "World": "None"
       },
       "certification_dates": {
-        "Germany": "2023-02",
         "Denmark": "2026-07-07"
       }
     },
@@ -153,7 +160,13 @@
         "USA": "3x Platinum",
         "UK": "3x Platinum",
         "Brazil": "None",
-        "Germany": "1x Platinum",
+        "Germany": {
+          "level": "1x Platinum",
+          "units": 300000,
+          "metric": "sales_equivalent",
+          "certified_at": "2017-09",
+          "threshold_basis": "2006 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+        },
         "Australia": "5x Platinum",
         "Canada": "6x Platinum",
         "Spain": "Gold",
@@ -162,7 +175,6 @@
         "World": "None"
       },
       "certification_dates": {
-        "Germany": "2017-09",
         "Italy": "2024-W49",
         "Spain": "2024-W23"
       }
@@ -176,14 +188,17 @@
         "USA": "1x Platinum",
         "UK": "Platinum",
         "Brazil": "1x Platinum",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 150000,
+          "metric": "sales_equivalent",
+          "certified_at": "2017-09",
+          "threshold_basis": "2006 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+        },
         "Australia": "Gold",
         "Canada": "2x Platinum",
         "New Zealand": "4x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2017-09"
       }
     },
     {
@@ -285,7 +300,12 @@
         "USA": "",
         "UK": "3x Platinum",
         "Brazil": "3x Diamond",
-        "Germany": "1x Platinum",
+        "Germany": {
+          "level": "1x Platinum",
+          "units": 300000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2013 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)"
+        },
         "Australia": "2x Platinum",
         "Canada": "3x Platinum",
         "New Zealand": "6x Platinum",
@@ -320,7 +340,12 @@
         "USA": "1x Platinum",
         "UK": "Platinum",
         "Brazil": "1x Diamond",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 200000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2018 çıkışı → BVMI single 2014–2023 ölçeği (Gold 200.000)"
+        },
         "Australia": "2x Platinum",
         "Canada": "2x Platinum",
         "New Zealand": "2x Platinum",
@@ -436,7 +461,12 @@
         "USA": "14x Platinum",
         "UK": "5x Platinum",
         "Brazil": "3x Diamond",
-        "Germany": "1x Diamond",
+        "Germany": {
+          "level": "1x Diamond",
+          "units": 1000000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2016 çıkışı → BVMI single 2014–2023 ölçeği (Diamond 1.000.000)"
+        },
         "Australia": "11x Platinum",
         "Canada": "1x Diamond",
         "Denmark": "5x Platinum",
@@ -508,14 +538,17 @@
         "USA": "3x Platinum",
         "UK": "Platinum",
         "Brazil": "None",
-        "Germany": "3x Gold",
+        "Germany": {
+          "level": "3x Gold",
+          "units": 450000,
+          "metric": "sales_equivalent",
+          "certified_at": "2023-05",
+          "threshold_basis": "2007 çıkışı → BVMI single 2003–2014 ölçeği (3 × Gold 150.000)"
+        },
         "Australia": "None",
         "Canada": "1x Platinum",
         "New Zealand": "2x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2023-05"
       },
       "youtubeVideoIds": [
         "RgoiSJ23cSc"
@@ -530,7 +563,12 @@
         "USA": "2x Platinum",
         "UK": "Platinum",
         "Brazil": "1x Platinum",
-        "Germany": "3x Gold",
+        "Germany": {
+          "level": "3x Gold",
+          "units": 450000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2008 çıkışı → BVMI single 2003–2014 ölçeği (3 × Gold 150.000)"
+        },
         "Australia": "3x Platinum",
         "Canada": "3x Platinum",
         "New Zealand": "1x Platinum",
@@ -553,7 +591,12 @@
         "USA": "6x Platinum",
         "UK": "Platinum",
         "Brazil": "3x Platinum",
-        "Germany": "1x Platinum",
+        "Germany": {
+          "level": "1x Platinum",
+          "units": 300000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2014-05-02 çıkışı → BVMI single 2003–2014 ölçeği — 1 Haziran 2014 değişikliğinden önce (Platin 300.000)"
+        },
         "Australia": "None",
         "Canada": "2x Platinum",
         "Mexico": "Platinum + Gold",
@@ -573,14 +616,17 @@
         "USA": "None",
         "UK": "Platinum",
         "Brazil": "None",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 150000,
+          "metric": "sales_equivalent",
+          "certified_at": "2018-04",
+          "threshold_basis": "2007 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+        },
         "Australia": "3x Platinum",
         "Canada": "None",
         "New Zealand": "2x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2018-04"
       },
       "youtubeVideoIds": [
         "5RDSkR8_AQ0"
@@ -595,14 +641,17 @@
         "USA": "6x Platinum",
         "UK": "Platinum",
         "Brazil": "None",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 150000,
+          "metric": "sales_equivalent",
+          "certified_at": "2018-04",
+          "threshold_basis": "2013 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+        },
         "Australia": "2x Platinum",
         "Canada": "None",
         "New Zealand": "1x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2018-04"
       },
       "youtubeVideoIds": [
         "4kc5_pfNHGk"
@@ -674,14 +723,17 @@
         "USA": "None",
         "UK": "Platinum",
         "Brazil": "None",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 150000,
+          "metric": "sales_equivalent",
+          "certified_at": "2023-06",
+          "threshold_basis": "2005 çıkışı → BVMI single 2003–2014 ölçeği (Gold 150.000)"
+        },
         "Australia": "None",
         "Canada": "None",
         "New Zealand": "1x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2023-06"
       },
       "youtubeVideoIds": [
         "F0B7HDiY-10"
@@ -733,14 +785,17 @@
         "USA": "5x Platinum",
         "UK": "4x Platinum",
         "Brazil": "1x Platinum",
-        "Germany": "5x Gold",
+        "Germany": {
+          "level": "5x Gold",
+          "units": 750000,
+          "metric": "sales_equivalent",
+          "certified_at": "2023-02",
+          "threshold_basis": "2003 çıkışı → BVMI single 2003–2014 ölçeği (5 × Gold 150.000)"
+        },
         "Australia": "4x Platinum",
         "Canada": "Gold",
         "New Zealand": "5x Platinum",
         "World": "None"
-      },
-      "certification_dates": {
-        "Germany": "2023-02"
       },
       "youtubeVideoIds": [
         "WpYeekQkAdc"
@@ -794,7 +849,12 @@
         "USA": "3x Platinum",
         "UK": "7x Platinum",
         "Brazil": "None",
-        "Germany": "1x Platinum",
+        "Germany": {
+          "level": "1x Platinum",
+          "units": 300000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2002-11-05 çıkışı → BVMI albüm 1999-09-25–2002-12-31 ölçeği (Platin 300.000)"
+        },
         "Australia": "5x Platinum",
         "Canada": "2x Platinum",
         "New Zealand": "2x Platinum",
@@ -814,7 +874,12 @@
         "USA": "8x Platinum",
         "UK": "4x Platinum",
         "Brazil": "1x Platinum",
-        "Germany": "2x Platinum",
+        "Germany": {
+          "level": "2x Platinum",
+          "units": 400000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2006 çıkışı → BVMI albüm 2003–2023 ölçeği (2 × Platin 200.000)"
+        },
         "Australia": "6x Platinum",
         "Canada": "7x Platinum",
         "New Zealand": "6x Platinum",
@@ -843,7 +908,12 @@
         "USA": "2x Platinum",
         "UK": "1x Platinum + Silver",
         "Brazil": "2x Platinum",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 100000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2013 çıkışı → BVMI albüm 2003–2023 ölçeği (Gold 100.000)"
+        },
         "Australia": "1x Platinum",
         "Canada": "2x Platinum",
         "Denmark": "5x Platinum",
@@ -888,7 +958,12 @@
         "USA": "Gold",
         "UK": "Silver",
         "Brazil": "None",
-        "Germany": "Gold",
+        "Germany": {
+          "level": "Gold",
+          "units": 100000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "2018 çıkışı → BVMI albüm 2003–2023 ölçeği (Gold 100.000)"
+        },
         "Australia": "2x Platinum",
         "Canada": "Gold",
         "New Zealand": "Gold",

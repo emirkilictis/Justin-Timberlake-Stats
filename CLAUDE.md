@@ -87,6 +87,27 @@ USA için RIAA mantığı: `< 500k → 0`, `500k–1M → 500k`, `≥1M → floo
 }
 ```
 
+### Sertifika değerinin üç biçimi
+
+`official_certifications` içindeki bir ülke değeri şunlardan biri olabilir:
+
+```json
+"UK": "3x Platinum",                                    // eski biçim: eşik tablosundan hesaplanır
+"Germany": { "level": "1x Platinum", "units": 300000,   // resmî ünite saklanır, eşik tablosu kullanılmaz
+             "metric": "sales_equivalent",
+             "certified_at": "2017-09",
+             "threshold_basis": "2006 çıkışı → BVMI single 2003–2014 ölçeği (Platin 300.000)" },
+"Denmark": [ { ... }, { ... } ]                         // aynı ülkede birden fazla ödül
+```
+
+- **`units` doluysa `CERT_MAPPINGS` hiç kullanılmaz.** Sebebi: eşikler ülkeye değil, **ülke × format × dönem**'e bağlı. Almanya'da eşik eserin **çıkış tarihine** göre belirlenir — BVMI: *"Die Auszeichnungsschwellen richten sich nach dem Veröffentlichungsdatum des Tonträgers, nicht nach dem Zertifizierungsdatum."* Tek düz tabloyla doğru sonuç alınamaz.
+- **`metric`** satış tipi değilse (`streams`, `revenue_local_currency`) ödül **ünite toplamına girmez**; saklanır ve rozette görünür ama satış ünitesi gibi toplanmaz. Satış tipleri: `sales_equivalent`, `paid_downloads`, `physical_units`, `raw_units`.
+- **`threshold_basis`** hangi dönem eşiğinin neden seçildiğini yazar. Sonradan denetlenebilmesi için zorunlu sayılmalı.
+
+İlgili fonksiyonlar `vault.js`'te: `resolveCert` (üç biçimi normalize eder), `certUnits` (yalnızca satış metriklerini toplar), `nonSalesAwards`, `certLabel` (rozet metni).
+
+**Alman single eşikleri, çıkış tarihine göre:** 2003-01-01–2014-05-31 → Gold 150.000 / Platin 300.000 · 2014-06-01–2023-06-29 → 200.000 / 400.000 / Diamond 1.000.000 · 2023-06-30 sonrası → 300.000 / 600.000. Albüm: 1999-09-25–2002-12-31 → 150.000 / 300.000 · 2003-01-01–2023-06-29 → 100.000 / 200.000.
+
 - **`certification_dates`** (opsiyonel): `official_certifications` ile aynı ülke anahtarlarını kullanır, ödül tarihini tutar. Formatlar: `2017-09`, `2024-W49` (FIMI hafta numarası), `2003-06-10`, `2013`. **Hesaba girmez** — motor tarihi okumuyor. Amacı her satırı denetlenebilir kılmak: eşiğin o tarihte geçerli olup olmadığı ancak tarih yazılıysa kontrol edilebilir. Eksik olması sorun değil; tarihi bilinmeyen satırlarda anahtar hiç yazılmaz.
 - **`Others`** anahtarı: belirli bir ülkeye atanmamış birikmiş üniteler için (örn. South Korea, Japan parçaları). `parseCertString` bunu da işler.
 - **Eşik tablosu olmayan pazarlar** (`CERT_MAPPINGS`'te yoksa — Argentina, Finland, Hungary, Russia, South Africa, Ireland, Norway, `Other`, `Others`) için **mutlaka ham ünite** yaz: `"Russia": "200000 units"`. İsimli seviye (`"Diamond"`) bu pazarlarda 0 sayılır. `validate-certs.js --vault` bunu yakalar.

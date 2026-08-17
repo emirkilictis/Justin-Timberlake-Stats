@@ -400,7 +400,71 @@ function quantizeRIAAUnits(units) {
     return Math.floor(units / 1000000) * 1000000;
 }
 
-function getBadgeHTML(certStr, _isLive = false, isDiamondActive = false, platCount = 0) {
+// ── Sertifika değeri çözümleme ───────────────────────────────
+//
+// official_certifications içindeki bir ülke değeri üç biçimden biri olabilir:
+//
+//   "Gold"                                          eski biçim, eşik tablosundan hesaplanır
+//   { level, units, metric, certified_at }          ödülün resmî ünite değeri saklanır
+//   [ {...}, {...} ]                                aynı ülkede birden fazla ödül
+//
+// `units` doluysa eşik tablosu HİÇ kullanılmaz. Bunun sebebi eşiklerin
+// ülkeye değil, ülke × format × dönem'e bağlı olması: Almanya'da eşik
+// eserin ÇIKIŞ tarihine göre belirlenir (BVMI: "Die Auszeichnungsschwellen
+// richten sich nach dem Veröffentlichungsdatum des Tonträgers, nicht nach
+// dem Zertifizierungsdatum"), tek düz tabloyla doğru sonuç alınamaz.
+//
+// `metric` satış tipi değilse (stream ödülü, PLN gelir eşiği) ünite
+// toplamına GİRMEZ — ödül olarak saklanır ve gösterilir, ama satış
+// ünitesiymiş gibi toplanmaz.
+
+const SALES_METRICS = new Set([
+    'sales_equivalent', 'paid_downloads', 'physical_units', 'raw_units'
+]);
+
+function resolveCert(value, country, itemType = 'song', itemId = '') {
+    if (!value || value === 'None') return [];
+    if (typeof value === 'string') {
+        return [{ level: value, metric: 'sales_equivalent',
+                  units: parseCertString(value, country, itemType, itemId) }];
+    }
+    if (Array.isArray(value)) {
+        return value.flatMap(v => resolveCert(v, country, itemType, itemId));
+    }
+    if (typeof value === 'object') {
+        const metric = value.metric || 'sales_equivalent';
+        const units = typeof value.units === 'number'
+            ? value.units
+            : parseCertString(value.level, country, itemType, itemId);
+        return [{ level: value.level, metric, units, certified_at: value.certified_at }];
+    }
+    return [];
+}
+
+/** Satış metriğine sahip ödüllerin ünite toplamı. Stream / gelir ödülleri hariç. */
+function certUnits(value, country, itemType = 'song', itemId = '') {
+    return resolveCert(value, country, itemType, itemId)
+        .filter(a => SALES_METRICS.has(a.metric))
+        .reduce((sum, a) => sum + a.units, 0);
+}
+
+/** Toplama girmeyen ödüller (stream eşiği, gelir eşiği). Ayrı gösterilir. */
+function nonSalesAwards(value, country, itemType = 'song', itemId = '') {
+    return resolveCert(value, country, itemType, itemId)
+        .filter(a => !SALES_METRICS.has(a.metric));
+}
+
+/** Rozet için okunabilir seviye metni — obje ve dizi biçimlerini de karşılar. */
+function certLabel(value) {
+    if (!value || value === 'None') return value;
+    if (typeof value === 'string') return value;
+    if (Array.isArray(value)) return value.map(certLabel).filter(Boolean).join(' + ');
+    if (typeof value === 'object') return value.level || '';
+    return '';
+}
+
+function getBadgeHTML(certValue, _isLive = false, isDiamondActive = false, platCount = 0) {
+    const certStr = certLabel(certValue);
     if (!certStr || certStr === "None" || certStr === "") return `<span class="badge badge-none">—</span>`;
     
     let cls = "badge-platinum";
@@ -447,7 +511,7 @@ function computeAllData() {
 
         // Process Other Major Countries
         MAIN_7.filter(c => c !== 'USA').forEach(c => {
-            let val = parseCertString((a.official_certifications || {})[c], c, 'album', a.id);
+            let val = certUnits((a.official_certifications || {})[c], c, 'album', a.id);
             cMap[c] = val;
             certTotal += val;
             officialSum += val;
@@ -457,12 +521,12 @@ function computeAllData() {
         let otherVal = 0;
         for (let market in (a.official_certifications || {})) {
             if (!MAIN_7.includes(market) && market !== 'Other' && market !== 'World') {
-                otherVal += parseCertString(a.official_certifications[market], market, 'album', a.id);
+                otherVal += certUnits(a.official_certifications[market], market, 'album', a.id);
             }
         }
         // Add manual World/Other if it exists
-        if (a.official_certifications.World) otherVal += parseCertString(a.official_certifications.World, 'World', 'album', a.id);
-        if (a.official_certifications.Other) otherVal += parseCertString(a.official_certifications.Other, 'Other', 'album', a.id);
+        if (a.official_certifications.World) otherVal += certUnits(a.official_certifications.World, 'World', 'album', a.id);
+        if (a.official_certifications.Other) otherVal += certUnits(a.official_certifications.Other, 'Other', 'album', a.id);
         
         cMap['Other'] = otherVal;
         certTotal += otherVal;
@@ -489,7 +553,7 @@ function computeAllData() {
         certTotal += usaFinal;
 
         MAIN_7.filter(c => c !== 'USA').forEach(c => {
-            let val = parseCertString((s.official_certifications || {})[c], c, 'song', s.id);
+            let val = certUnits((s.official_certifications || {})[c], c, 'song', s.id);
             cMap[c] = val;
             certTotal += val;
             officialSum += val;
@@ -499,11 +563,11 @@ function computeAllData() {
         let otherVal = 0;
         for (let market in (s.official_certifications || {})) {
             if (!MAIN_7.includes(market) && market !== 'Other' && market !== 'World') {
-                otherVal += parseCertString(s.official_certifications[market], market, 'song', s.id);
+                otherVal += certUnits(s.official_certifications[market], market, 'song', s.id);
             }
         }
-        if (s.official_certifications.World) otherVal += parseCertString(s.official_certifications.World, 'World', 'song', s.id);
-        if (s.official_certifications.Other) otherVal += parseCertString(s.official_certifications.Other, 'Other', 'song', s.id);
+        if (s.official_certifications.World) otherVal += certUnits(s.official_certifications.World, 'World', 'song', s.id);
+        if (s.official_certifications.Other) otherVal += certUnits(s.official_certifications.Other, 'Other', 'song', s.id);
 
         cMap['Other'] = otherVal;
         certTotal += otherVal;
