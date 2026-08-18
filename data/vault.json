@@ -60,7 +60,9 @@
         "Australia": "2x Platinum",
         "Canada": "None",
         "New Zealand": "4x Platinum",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Platinum",
+        "Italy": "Gold"
       }
     },
     {
@@ -92,7 +94,8 @@
         "Australia": "1x Platinum",
         "Canada": "None",
         "New Zealand": "Gold",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Gold"
       }
     },
     {
@@ -693,7 +696,12 @@
         "Canada": "3x Platinum",
         "New Zealand": "1x Platinum",
         "World": "None",
-        "Japan": "Gold"
+        "Japan": "Gold",
+        "Belgium": "Gold",
+        "Denmark": "2x Platinum",
+        "Italy": "Gold",
+        "Spain": "3x Platinum",
+        "Sweden": "Gold"
       },
       "certification_dates": {
         "Japan": "2015-06"
@@ -736,7 +744,7 @@
       "official_certifications": {
         "USA": "None",
         "UK": "Platinum",
-        "Brazil": "None",
+        "Brazil": "2x Platinum",
         "Germany": {
           "level": "Gold",
           "units": 200000,
@@ -747,7 +755,8 @@
         "Australia": "3x Platinum",
         "Canada": "None",
         "New Zealand": "2x Platinum",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Gold"
       },
       "youtubeVideoIds": [
         "5RDSkR8_AQ0"
@@ -784,7 +793,16 @@
       "album_id": "Orphan",
       "pure_sales_us": 3500000,
       "official_certifications": {
-        "USA": "5x Platinum",
+        "USA": [
+          "5x Platinum",
+          {
+            "level": "Gold",
+            "units": 500000,
+            "metric": "sales_equivalent",
+            "format": "ringtone",
+            "threshold_basis": "RIAA Mastertone ödülü (kategori sicilden kaldırıldı) — eşikler single ile aynı: Gold 500.000 / Platinum 1.000.000"
+          }
+        ],
         "UK": "Platinum",
         "Brazil": "None",
         "Germany": "None",
