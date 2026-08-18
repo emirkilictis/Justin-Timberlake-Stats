@@ -33,6 +33,11 @@ const CERT_MAPPINGS = {
         "song": { "Gold": 45000, "Platinum": 90000, "Diamond": 450000 }
     },
     "Poland": { "Gold": 10000, "Platinum": 20000, "Diamond": 100000 },
+    // PROMUSICAE eşikleri dönemlere göre değişmiş; aşağıdaki tablo yalnızca
+    // FALLBACK'tir (album 2009–2011, song 2009–2022 bandı). Tarihi bilinen
+    // ödüllerde satır bazında "units" yazılmalı.
+    //   Album : <2005-11 50k/100k · <2009-09 40k/80k · <2011-11 30k/60k · 2011-11+ 20k/40k
+    //   Single: 2008 10k/20k · 2009+ 20k/40k · 2022+ 30k/60k · 2025-04+ 50k/100k
     "Spain": {
         "album": { "Gold": 30000, "Platinum": 60000, "Diamond": 600000 },
         "song":  { "Gold": 20000, "Platinum": 40000, "Diamond": 400000 }

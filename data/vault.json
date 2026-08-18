@@ -243,14 +243,19 @@
             "threshold_basis": "Music Canada Ringtone kategorisi (01.04.2021'de emekliye ayrıldı) — Platinum 40.000, 6 × 40.000. Single sertifikasından AYRI bir üründür, ikisi birlikte sayılır."
           }
         ],
-        "Spain": "Gold",
+        "Spain": {
+          "level": "Gold",
+          "units": 30000,
+          "metric": "sales_equivalent",
+          "certified_at": "2024-W23",
+          "threshold_basis": "2024 ödülü → PROMUSICAE single 2022'den geçerli band (Gold 30.000). Sitedeki genel İspanya tablosu 2009–2022 bandı (20.000), bu ödüle uymuyor."
+        },
         "New Zealand": "4x Platinum",
         "Italy": "1x Platinum",
         "World": "None"
       },
       "certification_dates": {
-        "Italy": "2024-W49",
-        "Spain": "2024-W23"
+        "Italy": "2024-W49"
       }
     },
     {
@@ -670,7 +675,8 @@
         "World": "None",
         "Belgium": "Gold",
         "Denmark": "Platinum",
-        "Switzerland": "Platinum"
+        "Switzerland": "Platinum",
+        "Norway": "5000 units"
       },
       "youtubeVideoIds": [
         "RgoiSJ23cSc"
@@ -700,8 +706,33 @@
         "Belgium": "Gold",
         "Denmark": "2x Platinum",
         "Italy": "Gold",
-        "Spain": "3x Platinum",
-        "Sweden": "Gold"
+        "Spain": [
+          {
+            "level": "3x Platinum",
+            "units": 60000,
+            "metric": "sales_equivalent",
+            "certified_at": "2008",
+            "threshold_basis": "2008 ödülü → PROMUSICAE dijital single 2008 bandı (Platinum 20.000), 3 × 20.000. Wikipedia sertifika tablosu da 60.000* veriyor."
+          },
+          {
+            "level": "2x Platinum",
+            "units": 40000,
+            "metric": "sales_equivalent",
+            "format": "ringtone",
+            "threshold_basis": "PROMUSICAE ringtone — Wikipedia sertifika tablosu 2x Platinum = 40.000* (eşikten türetilmiş), yani ringtone Platinum 20.000"
+          }
+        ],
+        "Sweden": "Gold",
+        "Norway": "30000 units",
+        "Mexico": [
+          {
+            "level": "2x Gold",
+            "units": 20000,
+            "metric": "sales_equivalent",
+            "format": "ringtone",
+            "threshold_basis": "AMPROFON master ringtone — Wikipedia sertifika tablosu 2x Gold = 20.000* (eşikten türetilmiş), yani ringtone Gold 10.000"
+          }
+        ]
       },
       "certification_dates": {
         "Japan": "2015-06"
