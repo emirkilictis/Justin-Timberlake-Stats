@@ -527,7 +527,7 @@ function computeAllData() {
         const MAIN_7 = ["USA", "UK", "Brazil", "Germany", "Australia", "Canada", "Mexico"];
         
         // Use higher of live eligibility or official certification for USA
-        const officialUSA = parseCertString((a.official_certifications || {})['USA'], 'USA', 'album', a.id);
+        const officialUSA = certUnits((a.official_certifications || {})['USA'], 'USA', 'album', a.id);
         const usaMax = Math.max(rawUsLive, officialUSA);
         const usaFinal = quantizeRIAAUnits(usaMax);
 
@@ -579,7 +579,7 @@ function computeAllData() {
         
         const MAIN_7 = ["USA", "UK", "Brazil", "Germany", "Australia", "Canada", "Mexico"];
 
-        const officialUSA = parseCertString((s.official_certifications || {})['USA'], 'USA', 'song', s.id);
+        const officialUSA = certUnits((s.official_certifications || {})['USA'], 'USA', 'song', s.id);
         const usaMax = Math.max(rawUsLive, officialUSA);
         const usaFinal = quantizeRIAAUnits(usaMax);
 
