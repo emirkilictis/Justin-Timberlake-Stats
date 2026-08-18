@@ -35,7 +35,14 @@
         "World": "None",
         "France": "Gold",
         "Italy": "Gold",
-        "Spain": "Gold"
+        "Spain": {
+          "level": "Gold",
+          "units": 30000,
+          "metric": "sales_equivalent",
+          "certified_at": "2024-W31",
+          "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE",
+          "threshold_basis": "PROMUSICAE sicili: Gold ödülü, 2024 hafta 31 → 2022'den geçerli band (Gold 30.000)"
+        }
       },
       "certification_dates": {
         "France": "2003-06-10"
@@ -248,7 +255,8 @@
           "units": 30000,
           "metric": "sales_equivalent",
           "certified_at": "2024-W23",
-          "threshold_basis": "2024 ödülü → PROMUSICAE single 2022'den geçerli band (Gold 30.000). Sitedeki genel İspanya tablosu 2009–2022 bandı (20.000), bu ödüle uymuyor."
+          "threshold_basis": "2024 ödülü → PROMUSICAE single 2022'den geçerli band (Gold 30.000). Sitedeki genel İspanya tablosu 2009–2022 bandı (20.000), bu ödüle uymuyor.",
+          "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE"
         },
         "New Zealand": "4x Platinum",
         "Italy": "1x Platinum",
@@ -417,7 +425,14 @@
         "Austria": "Gold",
         "Italy": "2x Platinum",
         "Portugal": "Platinum",
-        "Spain": "Platinum",
+        "Spain": {
+          "level": "Platinum",
+          "units": 60000,
+          "metric": "sales_equivalent",
+          "certified_at": "2024-W01",
+          "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE",
+          "threshold_basis": "PROMUSICAE sicili: Platinum ödülü, 2024 hafta 1 → 2022'den geçerli band (Platinum 60.000)"
+        },
         "Sweden": "2x Platinum",
         "Switzerland": "Platinum"
       }
@@ -1131,12 +1146,7 @@
         "USA": "Gold",
         "UK": "Silver",
         "Brazil": "1x Platinum",
-        "Germany": {
-          "level": "Gold",
-          "units": 100000,
-          "metric": "sales_equivalent",
-          "threshold_basis": "2018 çıkışı → BVMI albüm 2003–2023 ölçeği (Gold 100.000)"
-        },
+        "Germany": "None",
         "Australia": "2x Platinum",
         "Canada": "Gold",
         "New Zealand": "Gold",
