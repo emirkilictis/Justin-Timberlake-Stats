@@ -768,8 +768,8 @@
           "level": "Gold",
           "units": 200000,
           "metric": "sales_equivalent",
-          "certified_at": "2023-06",
-          "threshold_basis": "06/2023 ödülü → single 2014–2023 ölçeği (Gold 200.000); ödül 30.06.2023 sınırına yakın, gün netleşirse 300.000 olabilir"
+          "certified_at": "2023",
+          "threshold_basis": "2023 ödülü → BVMI single 01.06.2014–29.06.2023 ölçeği (Gold 200.000). BVMI sicili yalnızca yılı veriyor, ayı yok; ödül 30.06.2023'ten sonra verildiyse yeni ölçekle 300.000 olur."
         },
         "Australia": "None",
         "Canada": "None",
