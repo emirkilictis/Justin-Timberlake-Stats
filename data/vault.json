@@ -332,7 +332,8 @@
         "Australia": "1x Platinum",
         "Canada": "None",
         "New Zealand": "1x Platinum",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Gold"
       }
     },
     {
@@ -479,7 +480,18 @@
         "Canada": "2x Platinum",
         "New Zealand": "2x Platinum",
         "World": "None",
-        "France": "1x Platinum"
+        "France": "1x Platinum",
+        "Belgium": "Gold",
+        "Denmark": "Platinum",
+        "Poland": "2x Platinum",
+        "Switzerland": {
+          "level": "Platinum",
+          "units": 20000,
+          "metric": "sales_equivalent",
+          "award_source": "https://www.ifpi.ch/post/anpassung-der-edelmetall-mindestgrenzen-von-singles-per-1-7-23",
+          "threshold_basis": "IFPI Schweiz duyurusu (30.06.2023): 1.7.2023 ÖNCESİ Single Platin 20.000. Ödül 2018-19 dönemine denk geliyor. Sitedeki düz İsviçre tablosu (30.000) 2023 sonrası single ölçeğidir, bu ödüle uymaz."
+        },
+        "Italy": "Platinum"
       },
       "certification_dates": {
         "France": "2025-01-16"
@@ -776,7 +788,18 @@
         "Canada": "2x Platinum",
         "Mexico": "Platinum + Gold",
         "New Zealand": "2x Platinum",
-        "World": "None"
+        "World": "None",
+        "Belgium": "Gold",
+        "Denmark": "Platinum",
+        "Spain": "Gold",
+        "Italy": {
+          "level": "Platinum",
+          "units": 30000,
+          "metric": "sales_equivalent",
+          "certified_at": "2014",
+          "award_source": "https://www.fimi.it/top-of-the-music/music/?title=Love%20Never%20Felt%20So%20Good",
+          "threshold_basis": "FIMI sicilinde dört ödülün de yılı 2014 (yıl filtresiyle doğrulandı). 2014 FIMI single bandı Platinum 30.000; sitedeki düz İtalya tablosu (50.000) 2018-2019 bandıdır."
+        }
       },
       "youtubeVideoIds": [
         "oG08ukJPtR8"
@@ -825,9 +848,11 @@
           "threshold_basis": "04/2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
         },
         "Australia": "2x Platinum",
-        "Canada": "None",
+        "Canada": "Platinum",
         "New Zealand": "1x Platinum",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Gold",
+        "Sweden": "2x Platinum"
       },
       "youtubeVideoIds": [
         "4kc5_pfNHGk"
@@ -872,7 +897,7 @@
         "Brazil": "None",
         "Germany": "None",
         "Australia": "None",
-        "Canada": "None",
+        "Canada": "Platinum",
         "New Zealand": "1x Platinum",
         "World": "None"
       },
@@ -915,10 +940,11 @@
           "certified_at": "2023",
           "threshold_basis": "2023 ödülü → BVMI single 01.06.2014–29.06.2023 ölçeği (Gold 200.000). BVMI sicili yalnızca yılı veriyor, ayı yok; ödül 30.06.2023'ten sonra verildiyse yeni ölçekle 300.000 olur."
         },
-        "Australia": "None",
+        "Australia": "Gold",
         "Canada": "None",
         "New Zealand": "1x Platinum",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Gold"
       },
       "youtubeVideoIds": [
         "F0B7HDiY-10"
