@@ -493,6 +493,18 @@ function certLabel(value) {
     return '';
 }
 
+// ABD dışı sertifikalı ünite. USA kolonunu düşmek yetmiyor: Ringtone kolonu
+// ayrı bir kolon ama içeriğinin 6,1M'i ABD Mastertone ödülü. Onu da düşmezsek
+// "ABD dışı" dediğimiz rakam ABD satışı taşır.
+function outsideUS(items, itemType) {
+    return items.reduce((sum, i) => {
+        let row = 0;
+        COUNTRIES.forEach(c => { if (c !== 'USA') row += i.cMap[c] || 0; });
+        row -= ringtoneUnits((i.official_certifications || {})['USA'], 'USA', itemType, i.id);
+        return sum + row;
+    }, 0);
+}
+
 // ── "Other" kolonu dökümü ──
 // Other tek bir sayı olarak 20+ pazarı gizliyor. Hücre tıklanınca satırın
 // altına hangi ülkeden kaç ünite geldiğini listeleyen bir detay satırı açılır.
@@ -973,6 +985,13 @@ function renderTables() {
 
     renderNonSingles();
 
+    // Alt bilgi şeridi: ABD dışı sertifikalı ünite
+    const exUsEl = document.getElementById('ex-us-total');
+    if (exUsEl) {
+        exUsEl.textContent = (outsideUS(computedData.albums, 'album') +
+                              outsideUS(computedData.songs, 'song')).toLocaleString();
+    }
+
     // Country Summary Table
     const summaryTbody = document.getElementById('country-summary-tbody');
     if (summaryTbody) {
@@ -999,6 +1018,17 @@ function renderTables() {
             </tr>`;
         }).join('');
         
+        // ABD dışı ara toplam: USA kolonu canlı eligible rakam olduğu için
+        // toplamın büyük kısmını tek başına taşıyor; geri kalanı ayrı görünsün.
+        const exUsAlbums = outsideUS(computedData.albums, 'album');
+        const exUsSingles = outsideUS(computedData.songs, 'song');
+        summaryTbody.innerHTML += `<tr class="summary-subtotal">
+            <td class="font-bold">🌐 Outside the USA<span class="subtotal-note">every market except the US, US ringtone awards excluded</span></td>
+            <td class="text-center">${exUsAlbums.toLocaleString()}</td>
+            <td class="text-center">${exUsSingles.toLocaleString()}</td>
+            <td class="text-right font-bold" style="color:var(--accent-color)">${(exUsAlbums + exUsSingles).toLocaleString()}</td>
+        </tr>`;
+
         // Grand total row
         summaryTbody.innerHTML += `<tr style="background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.1);">
             <td style="font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-color);padding:16px;">Grand Total</td>

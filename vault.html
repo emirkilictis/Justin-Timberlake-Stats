@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787165930">
+    <link rel="stylesheet" href="style.css?v=1787166704">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -193,6 +193,29 @@
             font-size: 2rem;
             font-weight: 800;
             color: var(--accent-color);
+        }
+        .vault-grand-total.vault-subtotal {
+            margin-top: 0;
+            padding-top: 16px;
+            padding-bottom: 8px;
+            border-top: none;
+        }
+        .vault-grand-total.vault-subtotal .value {
+            font-size: 1.35rem;
+            color: rgba(255,255,255,0.7);
+        }
+        .summary-subtotal td {
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .subtotal-note {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            color: rgba(255,255,255,0.3);
+            text-transform: none;
+            margin-top: 2px;
         }
         .vault-grand-total .sub {
             font-size: 0.7rem;
@@ -642,12 +665,21 @@
                 <div id="grand-total-odometer" class="value">—</div>
             </div>
         </div>
+        <div class="vault-grand-total vault-subtotal">
+            <div>
+                <div class="label">Certified Outside the USA</div>
+                <div class="sub">Every market except the US — US ringtone awards excluded</div>
+            </div>
+            <div>
+                <div id="ex-us-total" class="value">—</div>
+            </div>
+        </div>
 
     </div>
 
-    <script src="config.js?v=1787165930" defer></script>
-    <script src="song-map.js?v=1787165930" defer></script>
-    <script src="vault.js?v=1787165930" defer></script>
+    <script src="config.js?v=1787166704" defer></script>
+    <script src="song-map.js?v=1787166704" defer></script>
+    <script src="vault.js?v=1787166704" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
