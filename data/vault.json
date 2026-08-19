@@ -261,11 +261,15 @@
           "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE"
         },
         "New Zealand": "4x Platinum",
-        "Italy": "1x Platinum",
+        "Italy": {
+          "level": "1x Platinum",
+          "units": 100000,
+          "metric": "sales_equivalent",
+          "certified_at": "2024",
+          "award_source": "https://www.fimi.it/news/certificazioni-singoli-fimi-gfk-nuove-soglie-di-vendita-a-partire-dal-2022/",
+          "threshold_basis": "FIMI sicilinde ödül yılı 2024 (2018'de Oro) (yıl filtresiyle doğrulandı). FIMI'nin kendi duyurusu: week 01/2022'den itibaren single ORO 50.000 / PLATINO 100.000. Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir, single'lara uymaz."
+        },
         "World": "None"
-      },
-      "certification_dates": {
-        "Italy": "2024-W49"
       }
     },
     {
@@ -1012,7 +1016,15 @@
         "Belgium": "Gold",
         "Denmark": "2x Platinum",
         "Sweden": "Platinum",
-        "Norway": "10000 units"
+        "Norway": "10000 units",
+        "Italy": {
+          "level": "2x Platinum",
+          "units": 200000,
+          "metric": "sales_equivalent",
+          "certified_at": "2024",
+          "award_source": "https://www.fimi.it/news/certificazioni-singoli-fimi-gfk-nuove-soglie-di-vendita-a-partire-dal-2022/",
+          "threshold_basis": "FIMI sicilinde ödül yılı 2024 (2015 Oro, 2017 Platino) (yıl filtresiyle doğrulandı). FIMI'nin kendi duyurusu: week 01/2022'den itibaren single ORO 50.000 / PLATINO 100.000. Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir, single'lara uymaz."
+        }
       },
       "youtubeVideoIds": [
         "WpYeekQkAdc"
