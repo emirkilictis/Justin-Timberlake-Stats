@@ -500,7 +500,13 @@
         "France": "1x Platinum",
         "Belgium": "Gold",
         "Denmark": "Platinum",
-        "Poland": "2x Platinum",
+        "Poland": {
+          "level": "2x Platinum",
+          "units": 40000,
+          "metric": "sales_equivalent",
+          "award_source": "https://zpav.pl/aktualnosc.php?idaktualnosci=1481",
+          "threshold_basis": "ZPAV bu ödülü 01.03.2017'den geçerli GELİR kriteriyle verdi (Złota 20.000 zł / Platynowa 40.000 zł / Diamentowa 200.000 zł; kaynak: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV bu eşikler için ünite karşılığı yayınlamıyor. Buradaki ünite, sektörün ve arşivlerin kullanmayı sürdürdüğü 2017 ÖNCESİ ölçek (Gold 10.000 / Platinum 20.000 / Diamond 100.000) — ZPAV'ın açıkladığı bir değer değil, karşılaştırılabilirlik için korunan konvansiyondur."
+        },
         "Switzerland": {
           "level": "Platinum",
           "units": 20000,
@@ -589,7 +595,13 @@
         "Germany": "None",
         "Australia": "None",
         "Canada": "1x Platinum",
-        "Poland": "Gold",
+        "Poland": {
+          "level": "Gold",
+          "units": 10000,
+          "metric": "sales_equivalent",
+          "award_source": "https://zpav.pl/aktualnosc.php?idaktualnosci=1481",
+          "threshold_basis": "ZPAV bu ödülü 01.03.2017'den geçerli GELİR kriteriyle verdi (Złota 20.000 zł / Platynowa 40.000 zł / Diamentowa 200.000 zł; kaynak: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV bu eşikler için ünite karşılığı yayınlamıyor. Buradaki ünite, sektörün ve arşivlerin kullanmayı sürdürdüğü 2017 ÖNCESİ ölçek (Gold 10.000 / Platinum 20.000 / Diamond 100.000) — ZPAV'ın açıkladığı bir değer değil, karşılaştırılabilirlik için korunan konvansiyondur."
+        },
         "World": "None",
         "South Africa": "20000 units"
       },
@@ -644,7 +656,14 @@
         "Austria": "Platinum",
         "Belgium": "4x Platinum",
         "Italy": "5x Platinum",
-        "Poland": "Diamond",
+        "Poland": {
+          "level": "Diamond",
+          "units": 100000,
+          "metric": "sales_equivalent",
+          "certified_at": "2017-03",
+          "award_source": "https://zpav.pl/aktualnosc.php?idaktualnosci=1481",
+          "threshold_basis": "ZPAV bu ödülü 01.03.2017'den geçerli GELİR kriteriyle verdi (Złota 20.000 zł / Platynowa 40.000 zł / Diamentowa 200.000 zł; kaynak: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV bu eşikler için ünite karşılığı yayınlamıyor. Buradaki ünite, sektörün ve arşivlerin kullanmayı sürdürdüğü 2017 ÖNCESİ ölçek (Gold 10.000 / Platinum 20.000 / Diamond 100.000) — ZPAV'ın açıkladığı bir değer değil, karşılaştırılabilirlik için korunan konvansiyondur."
+        },
         "Portugal": "Platinum",
         "Spain": "3x Platinum",
         "Sweden": "8x Platinum",
