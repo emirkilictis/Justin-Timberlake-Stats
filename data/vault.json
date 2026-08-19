@@ -12,7 +12,8 @@
         "Germany": "None",
         "Australia": "1x Platinum",
         "Canada": "None",
-        "World": "None"
+        "World": "None",
+        "New Zealand": "Gold"
       }
     },
     {
@@ -85,7 +86,8 @@
         "Australia": "1x Platinum",
         "Canada": "None",
         "New Zealand": "1x Platinum",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Gold"
       }
     },
     {
@@ -540,7 +542,7 @@
         "UK": "Silver",
         "Brazil": "Gold",
         "Germany": "None",
-        "Australia": "None",
+        "Australia": "Gold",
         "Canada": "1x Platinum",
         "World": "None"
       }
