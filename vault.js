@@ -1529,7 +1529,7 @@ function renderFullReport() {
         `USA is the live streaming-eligible figure; every other column is an official certification. ` +
         `Ringtones sit in their own column but count toward the total. Where an award was granted on a ` +
         `stream threshold (Denmark) or a revenue threshold (Poland), the unit basis used is spelled out ` +
-        `in the detailed CSV's “Threshold basis” column.`;
+        `in the “Threshold basis” column of the export.`;
 }
 
 function filterFullReport(q) {
