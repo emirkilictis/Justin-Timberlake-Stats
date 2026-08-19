@@ -1046,7 +1046,23 @@
         "New Zealand": "2x Platinum",
         "World": "None",
         "France": "Gold",
-        "Other": "380000 units"
+        "Other": "10000 units",
+        "Austria": "Gold",
+        "Denmark": "5x Platinum",
+        "Netherlands": "2x Platinum",
+        "Sweden": "Gold",
+        "Belgium": {
+          "level": "Gold",
+          "units": 25000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "BRMA — sertifikanın kendi belirttiği ünite 25.000. Sitedeki Belçika albüm tablosu (Gold 15.000) 2002 dönemine uymuyor."
+        },
+        "Switzerland": {
+          "level": "Platinum",
+          "units": 40000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "IFPI Schweiz — sertifikanın kendi belirttiği ünite 40.000. Sitedeki İsviçre tablosu (Platinum 30.000) 2003 dönemine uymuyor."
+        }
       },
       "certification_dates": {
         "France": "2003-06-10"
@@ -1071,13 +1087,41 @@
         "Canada": "7x Platinum",
         "New Zealand": "6x Platinum",
         "World": "None",
-        "France": "Gold",
-        "Other": "600000 units",
+        "France": {
+          "level": "Platinum",
+          "units": 200000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "SNEP — sertifika Platinum, kendi belirttiği ünite 200.000. Vault'ta Gold yazıyordu."
+        },
+        "Other": "120000 units",
         "Argentina": "20000 units",
         "Finland": "15000 units",
-        "Hungary": "3000 units",
+        "Hungary": "5000 units",
         "Japan": "Gold",
-        "Russia": "200000 units"
+        "Russia": "200000 units",
+        "Austria": "Gold",
+        "Denmark": "7x Platinum",
+        "Italy": "Gold",
+        "Poland": "2x Platinum",
+        "Switzerland": "2x Platinum",
+        "Belgium": {
+          "level": "2x Platinum",
+          "units": 100000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "BRMA — sertifikanın kendi belirttiği ünite 100.000. Sitedeki Belçika albüm tablosu (Platinum 30.000) 2006 dönemine uymuyor."
+        },
+        "Ireland": {
+          "level": "6x Platinum",
+          "units": 90000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "IRMA — sertifikanın kendi belirttiği ünite 90.000. İrlanda CERT_MAPPINGS'te yok, isimli seviye 0 sayılırdı."
+        },
+        "Portugal": {
+          "level": "Gold",
+          "units": 10000,
+          "metric": "sales_equivalent",
+          "threshold_basis": "AFP — sertifikanın kendi belirttiği ünite 10.000. Sitedeki Portekiz albüm tablosu (Gold 7.500) bu ödüle uymuyor."
+        }
       },
       "certification_dates": {
         "Argentina": "2006",
