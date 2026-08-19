@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787166704">
+    <link rel="stylesheet" href="style.css?v=1787175254">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -437,6 +437,13 @@
             letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
         }
         .fr-dl:hover { background: rgba(212, 168, 83, 0.22); }
+        .fr-dl-primary {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: #16130c;
+            font-weight: 700;
+        }
+        .fr-dl-primary:hover { background: #e2bd6d; border-color: #e2bd6d; }
         .fr-body { overflow: auto; flex: 1 1 auto; }
         .fr-table { border-collapse: collapse; font-size: 11px; white-space: nowrap; }
         .fr-table th, .fr-table td { padding: 6px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
@@ -677,9 +684,10 @@
 
     </div>
 
-    <script src="config.js?v=1787166704" defer></script>
-    <script src="song-map.js?v=1787166704" defer></script>
-    <script src="vault.js?v=1787166704" defer></script>
+    <script src="xlsx.js?v=1787175254" defer></script>
+    <script src="config.js?v=1787175254" defer></script>
+    <script src="song-map.js?v=1787175254" defer></script>
+    <script src="vault.js?v=1787175254" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
@@ -720,6 +728,7 @@
             <div class="fr-tools">
                 <input type="search" id="fr-search" placeholder="Filter by title or country…" oninput="filterFullReport(this.value)">
                 <span class="fr-spacer"></span>
+                <button type="button" class="fr-dl fr-dl-primary" onclick="downloadXlsx()">Excel (.xlsx)</button>
                 <button type="button" class="fr-dl" onclick="downloadReport('matrix')">Matrix CSV</button>
                 <button type="button" class="fr-dl" onclick="downloadReport('long')">Detailed CSV</button>
             </div>

@@ -1398,6 +1398,92 @@ function downloadReport(kind) {
         ])));
 }
 
+// ── Excel çıktısı ──
+// CSV biçimlendirme taşımadığı için okunması zordu: 33 kolonluk matriste başlık
+// da eser adı da kayıp gidiyordu. Aynı iki tablo tek .xlsx dosyasında, başlık ve
+// eser kolonu donmuş, filtreli, binlik ayraçlı ve TOTAL satırı kalın.
+function downloadXlsx() {
+    const stamp = new Date().toISOString().slice(0, 10);
+    const { rows, markets, totals, ringtoneTotal } = buildMatrix();
+
+    // Sheet 1 — Matrix: her eser × her pazar, seviyesiyle birlikte
+    const matrixCols = [
+        { header: 'Type', width: 9 },
+        { header: 'Title', width: 30 },
+        { header: 'Era', width: 26 },
+        ...markets.map(m => ({ header: m === 'USA' ? 'USA (eligible)' : m, width: 15, type: 'number' })),
+        { header: 'Ringtone', width: 15, type: 'number' },
+        { header: 'Total', width: 15, type: 'number' }
+    ];
+    // Seviyeyi aynı hücreye yazmak sayıyı metne çevirir ve Excel'de toplam
+    // alınamaz hale gelir. Bu yüzden üniteler burada, seviyeler birebir aynı
+    // ızgarayla ikinci sayfada.
+    const matrixRows = rows.map(r => {
+        const cells = markets.map(m => r.markets[m] || '');
+        const total = markets.reduce((a, m) => a + (r.markets[m] || 0), 0) + r.ringtone;
+        return [r.item.kind, r.item.title, reportEra(r.item), ...cells, r.ringtone || '', total];
+    });
+    const grand = markets.reduce((a, m) => a + totals[m], 0) + ringtoneTotal;
+    matrixRows.push(['TOTAL', 'All items', '', ...markets.map(m => totals[m]), ringtoneTotal, grand]);
+
+    // Sheet 2 — Levels: matrisin aynısı, ama ünite yerine ödül seviyesi
+    const levelCols = [
+        { header: 'Type', width: 9 },
+        { header: 'Title', width: 30 },
+        { header: 'Era', width: 26 },
+        ...markets.map(m => ({ header: m === 'USA' ? 'USA (eligible)' : m, width: 15 })),
+        { header: 'Ringtone', width: 15 }
+    ];
+    const levelRows = rows.map(r => [
+        r.item.kind, r.item.title, reportEra(r.item),
+        ...markets.map(m => r.levels[m] || ''), r.ringtoneLevel || ''
+    ]);
+
+    // Sheet 3 — Detailed: ödül başına bir satır
+    const long = buildLongRows();
+    const detailCols = [
+        { header: 'Type', width: 9 },
+        { header: 'Title', width: 28 },
+        { header: 'Era', width: 26 },
+        { header: 'Country', width: 15 },
+        { header: 'Level', width: 18 },
+        { header: 'Units', width: 13, type: 'number' },
+        { header: 'Format', width: 10 },
+        { header: 'Certified at', width: 12 },
+        { header: 'Metric', width: 14 },
+        { header: 'Counted units', width: 13, type: 'number' },
+        { header: 'Award source', width: 34, wrap: true },
+        { header: 'Official reported value', width: 22, wrap: true },
+        { header: 'Threshold basis', width: 70, wrap: true }
+    ];
+    const detailRows = long.map(r => [
+        r.type, r.title, r.era, r.country, r.level, r.units,
+        r.format === 'ringtone' ? 'ringtone' : '',
+        r.certified_at,
+        r.metric === 'sales_equivalent' ? '' : r.metric,
+        r.counted_units === r.units ? '' : r.counted_units,
+        r.award_source, r.official_reported_value, r.threshold_basis
+    ]);
+
+    const blob = buildXlsxBlob([
+        { name: 'Matrix', columns: matrixCols, rows: matrixRows,
+          freeze: { rows: 1, cols: 3 }, autoFilter: true, totalRow: true },
+        { name: 'Levels', columns: levelCols, rows: levelRows,
+          freeze: { rows: 1, cols: 3 }, autoFilter: true },
+        { name: 'Detailed', columns: detailCols, rows: detailRows,
+          freeze: { rows: 1, cols: 2 }, autoFilter: true }
+    ]);
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `timberlake-certifications-${stamp}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function renderFullReport() {
     const { rows, markets, totals, ringtoneTotal } = buildMatrix();
     const flagHead = (flag, name) => `<span class="fr-flag">${flag}</span>${name}`;
