@@ -70,7 +70,14 @@
         "New Zealand": "4x Platinum",
         "World": "None",
         "Denmark": "Platinum",
-        "Italy": "Gold"
+        "Italy": {
+          "level": "Gold",
+          "units": 50000,
+          "metric": "sales_equivalent",
+          "certified_at": "2024",
+          "award_source": "https://www.fimi.it/top-of-the-music/music/",
+          "threshold_basis": "FIMI sicilinde ödül yılı 2024 (yıl filtresiyle doğrulandı). O dönem FIMI single Oro 50.000 (2022–2024 bandı). Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir."
+        }
       }
     },
     {
@@ -388,7 +395,14 @@
         "Australia": "1x Platinum",
         "Canada": "2x Platinum",
         "Mexico": "1x Platinum",
-        "Italy": "Gold",
+        "Italy": {
+          "level": "Gold",
+          "units": 15000,
+          "metric": "sales_equivalent",
+          "certified_at": "2014",
+          "award_source": "https://www.fimi.it/top-of-the-music/music/",
+          "threshold_basis": "FIMI sicilinde ödül yılı 2014 (yıl filtresiyle doğrulandı). O dönem FIMI single Oro 15.000. Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir."
+        },
         "Poland": "2x Platinum",
         "New Zealand": "1x Platinum",
         "Denmark": {
@@ -400,9 +414,6 @@
         },
         "Others": "243545 units",
         "World": "None"
-      },
-      "certification_dates": {
-        "Italy": "2014-W02"
       }
     },
     {
@@ -738,7 +749,14 @@
         "Japan": "Gold",
         "Belgium": "Gold",
         "Denmark": "2x Platinum",
-        "Italy": "Gold",
+        "Italy": {
+          "level": "Gold",
+          "units": 50000,
+          "metric": "sales_equivalent",
+          "certified_at": "2023",
+          "award_source": "https://www.fimi.it/top-of-the-music/music/",
+          "threshold_basis": "FIMI sicilinde ödül yılı 2023 (yıl filtresiyle doğrulandı). O dönem FIMI single Oro 50.000 (2022–2024 bandı). Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir."
+        },
         "Spain": [
           {
             "level": "3x Platinum",
