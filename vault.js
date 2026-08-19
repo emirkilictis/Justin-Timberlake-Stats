@@ -508,7 +508,7 @@ function otherCell(item, kind) {
     return `<td class="text-center" style="${style}">
         <button type="button" class="other-toggle" data-key="${key}"
                 onclick="toggleOtherBreakdown(this)"
-                title="${n} pazar — dökümü aç">${val.toLocaleString()}<span class="other-caret">▾</span></button>
+                title="${n} markets — show breakdown">${val.toLocaleString()}<span class="other-caret">▾</span></button>
     </td>`;
 }
 
@@ -531,7 +531,7 @@ function toggleOtherBreakdown(btn) {
     detail.className = 'other-detail-row';
     detail.innerHTML = `<td colspan="${row.children.length}">
         <div class="other-detail">
-            <div class="odt-head">“Other” dökümü — ${parts.length} pazar</div>
+            <div class="odt-head">“Other” breakdown — ${parts.length} markets</div>
             <ul class="odt-list">${items}</ul>
         </div>
     </td>`;
@@ -610,7 +610,7 @@ function computeAllData() {
             if (!a.official_certifications[key]) continue;
             const kv = certUnits(a.official_certifications[key], key, 'album', a.id);
             otherVal += kv;
-            if (kv > 0) otherParts.push({ country: key === 'Other' ? 'Diğer pazarlar' : key, label: certLabel(a.official_certifications[key]), units: kv });
+            if (kv > 0) otherParts.push({ country: key === 'Other' ? 'Unattributed' : key, label: certLabel(a.official_certifications[key]), units: kv });
         }
         
         cMap['Other'] = otherVal;
@@ -670,7 +670,7 @@ function computeAllData() {
             if (!s.official_certifications[key]) continue;
             const kv = certUnits(s.official_certifications[key], key, 'song', s.id);
             otherVal += kv;
-            if (kv > 0) otherParts.push({ country: key === 'Other' ? 'Diğer pazarlar' : key, label: certLabel(s.official_certifications[key]), units: kv });
+            if (kv > 0) otherParts.push({ country: key === 'Other' ? 'Unattributed' : key, label: certLabel(s.official_certifications[key]), units: kv });
         }
 
         cMap['Other'] = otherVal;
@@ -1161,11 +1161,6 @@ function flagFor(country) {
     return COUNTRY_FLAGS[country] || '\u{1F3F3}\uFE0F';
 }
 
-// "🇩🇪 Germany" — bayrak yoksa sadece isim.
-function flagLabel(country) {
-    return `${flagFor(country)} ${country}`;
-}
-
 // Bir ülke değerini ham ödül nesnelerine ayırır (string / obje / dizi).
 function reportAwards(value) {
     if (!value || value === 'None') return [];
@@ -1189,11 +1184,46 @@ function reportItems() {
     ];
 }
 
+// Bir ülke değerindeki ödül seviyelerini metin olarak verir ("5x Platinum").
+function awardLevels(value, country, type, id, wantRingtone) {
+    return resolveCert(value, country, type, id)
+        .filter(a => SALES_METRICS.has(a.metric) &&
+                     (a.format === 'ringtone') === !!wantRingtone && a.level)
+        .map(a => a.level)
+        .join(' + ');
+}
+
+// "5x Platinum" → "5×P", "Gold" → "G", "Platinum + Gold" → "P+G".
+// Ham ünite yazan satırlarda ("10000 units") seviye yoktur, boş döner.
+const LEVEL_ABBR = { silver: 'S', gold: 'G', platinum: 'P', diamond: 'D' };
+const LEVEL_RANK = { S: 1, G: 2, P: 3, D: 4 };
+
+function abbrevLevel(level) {
+    if (!level) return '';
+    return (level.split('+').map(part => {
+        const m = part.trim().match(/^(?:(\d+)\s*x\s*)?(silver|gold|platinum|diamond)$/i);
+        if (!m) return '';
+        const n = m[1] && Number(m[1]) > 1 ? m[1] + '\u00D7' : '';
+        return n + LEVEL_ABBR[m[2].toLowerCase()];
+    }).filter(Boolean)).join('+');
+}
+
+// Rozetin rengi en yüksek seviyeye göre.
+function levelClass(abbr) {
+    let best = '';
+    (abbr.match(/[SGPD]/g) || []).forEach(c => {
+        if (!best || LEVEL_RANK[c] > LEVEL_RANK[best]) best = c;
+    });
+    return best ? 'lvl-' + best.toLowerCase() : '';
+}
+
 // Her eser için pazar → sayılan ünite (satış metrikleri; zil sesi ayrı).
 function reportRow(item) {
     const type = item.kind === 'Album' ? 'album' : 'song';
     const markets = {};
+    const levels = {};
     let ringtone = 0;
+    let ringtoneLevel = '';
     for (const country in (item.official_certifications || {})) {
         const val = item.official_certifications[country];
         const sales = certUnits(val, country, type, item.id);
@@ -1202,15 +1232,29 @@ function reportRow(item) {
         // atanmamış birikmiş üniteler. Matriste tek kolonda birleşiyorlar;
         // ham anahtar detaylı CSV'de olduğu gibi kalır.
         const key = (country === 'Other' || country === 'Others') ? 'Unattributed' : country;
-        if (sales > 0) markets[key] = (markets[key] || 0) + sales;
+        if (sales > 0) {
+            markets[key] = (markets[key] || 0) + sales;
+            const lv = awardLevels(val, country, type, item.id, false);
+            if (lv) levels[key] = levels[key] ? levels[key] + ' + ' + lv : lv;
+        }
         ringtone += ring;
+        if (ring > 0) {
+            const rl = awardLevels(val, country, type, item.id, true);
+            if (rl) ringtoneLevel = ringtoneLevel ? ringtoneLevel + ' + ' + rl : rl;
+        }
     }
     // USA kolonu sitedeki ile aynı olmalı: saklı sertifika değil, canlı
     // stream'lerle güncel *uygun (eligible)* ünite. Aksi halde raporun toplamı
     // vault tablosunun toplamını tutmaz. Saklı ödül detaylı CSV'de duruyor.
-    if (item.cMap && typeof item.cMap.USA === 'number') markets['USA'] = item.cMap.USA;
+    if (item.cMap && typeof item.cMap.USA === 'number') {
+        markets['USA'] = item.cMap.USA;
+        // Seviye de bu rakamla uyumlu olmalı: saklı RIAA ödülü değil, canlı
+        // rakamın karşılık geldiği eligible seviye.
+        const el = getRiaalEligibility(item.cMap.USA);
+        levels['USA'] = el.label === 'None' ? '' : el.label;
+    }
     if (!markets['USA']) delete markets['USA'];
-    return { item, markets, ringtone };
+    return { item, markets, levels, ringtone, ringtoneLevel };
 }
 
 function buildMatrix() {
@@ -1295,8 +1339,7 @@ function downloadReport(kind) {
     if (kind === 'matrix') {
         const { rows, markets, totals, ringtoneTotal } = buildMatrix();
         const headers = ['Type', 'Title', 'Era',
-            ...markets.map(m => flagLabel(m) + (m === 'USA' ? ' (eligible)' : '')),
-            flagLabel('Ringtone'), 'Total'];
+            ...markets.map(m => m === 'USA' ? 'USA (eligible)' : m), 'Ringtone', 'Total'];
         // Sıfırlar boş bırakılıyor: 29 kolonluk sayfada 0'lar okumayı zorlaştırıyor.
         const body = rows.map(r => {
             const cells = markets.map(m => r.markets[m] || 0);
@@ -1316,7 +1359,7 @@ function downloadReport(kind) {
                      'Official reported value', 'Threshold basis'];
     saveCSV(`timberlake-certifications-detailed-${stamp}.csv`,
         toCSV(headers, long.map(r => [
-            r.type, r.title, r.era, flagLabel(r.country), r.level, r.units,
+            r.type, r.title, r.era, r.country, r.level, r.units,
             r.format === 'ringtone' ? 'ringtone' : '',
             r.certified_at,
             r.metric === 'sales_equivalent' ? '' : r.metric,
@@ -1342,10 +1385,18 @@ function renderFullReport() {
         }
         const cells = markets.map(m => r.markets[m] || 0);
         const total = cells.reduce((a, b) => a + b, 0) + r.ringtone;
+        const cell = (v, level) => {
+            if (!v) return '<td class="zero">·</td>';
+            const abbr = abbrevLevel(level);
+            const badge = abbr
+                ? `<span class="fr-lvl ${levelClass(abbr)}" title="${level}">${abbr}</span>`
+                : '';
+            return `<td>${v.toLocaleString()}${badge}</td>`;
+        };
         html += `<tr data-search="${(r.item.title + ' ' + Object.keys(r.markets).join(' ')).toLowerCase().replace(/"/g, '')}">
             <td>${r.item.title}<span class="fr-item-era">${r.item.album_id || ''}</span></td>
-            ${cells.map(v => `<td class="${v ? '' : 'zero'}">${v ? v.toLocaleString() : '·'}</td>`).join('')}
-            <td class="${r.ringtone ? '' : 'zero'}">${r.ringtone ? r.ringtone.toLocaleString() : '·'}</td>
+            ${markets.map(m => cell(r.markets[m] || 0, r.levels[m])).join('')}
+            ${cell(r.ringtone, r.ringtoneLevel)}
             <td>${total.toLocaleString()}</td>
         </tr>`;
     });
@@ -1356,11 +1407,13 @@ function renderFullReport() {
 
     document.getElementById('fr-body').innerHTML =
         `<table class="fr-table"><thead><tr>${head}</tr></thead><tbody>${html}</tbody><tfoot>${foot}</tfoot></table>`;
-    document.getElementById('fr-foot').textContent =
-        `${rows.length} eser · ${markets.length} pazar · ${grand.toLocaleString()} sertifikalı ünite. ` +
-        `USA kolonu canlı stream'lerle güncel uygun (eligible) ünite; ülke kolonları resmî sertifikalar. `+
-        `Zil sesi ayrı kolonda ama toplama dahil. Stream (Danimarka) ve PLN gelir (Polonya) eşiğiyle ` +
-        `verilen ödüllerin hangi ünite karşılığıyla sayıldığı detaylı CSV'nin “Threshold basis” kolonunda.`;
+    document.getElementById('fr-foot').innerHTML =
+        `<span class="fr-legend"><b>G</b> Gold · <b>P</b> Platinum · <b>D</b> Diamond · <b>S</b> Silver (UK)</span>` +
+        `${rows.length} items · ${markets.length} markets · ${grand.toLocaleString()} certified units. ` +
+        `USA is the live streaming-eligible figure; every other column is an official certification. ` +
+        `Ringtones sit in their own column but count toward the total. Where an award was granted on a ` +
+        `stream threshold (Denmark) or a revenue threshold (Poland), the unit basis used is spelled out ` +
+        `in the detailed CSV's “Threshold basis” column.`;
 }
 
 function filterFullReport(q) {

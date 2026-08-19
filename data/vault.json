@@ -42,7 +42,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2024-W31",
           "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE",
-          "threshold_basis": "PROMUSICAE sicili: Gold ödülü, 2024 hafta 31 → 2022'den geçerli band (Gold 30.000)"
+          "threshold_basis": "PROMUSICAE register: Gold award, 2024 week 31 → band in force from 2022 (Gold 30,000)"
         }
       },
       "certification_dates": {
@@ -63,7 +63,7 @@
           "units": 300000,
           "metric": "sales_equivalent",
           "certified_at": "2025",
-          "threshold_basis": "2025 ödülü → BVMI single 30.06.2023 sonrası ölçek (Gold 300.000)"
+          "threshold_basis": "Awarded 2025 → BVMI singles scale after 30.06.2023 (Gold 300,000)"
         },
         "Australia": "2x Platinum",
         "Canada": "None",
@@ -76,7 +76,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2024",
           "award_source": "https://www.fimi.it/top-of-the-music/music/",
-          "threshold_basis": "FIMI sicilinde ödül yılı 2024 (yıl filtresiyle doğrulandı). O dönem FIMI single Oro 50.000 (2022–2024 bandı). Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir."
+          "threshold_basis": "FIMI register gives the award year as 2024 (verified with the year filter). FIMI singles Oro was 50,000 at the time (2022–2024 band). The site's Italy table (25,000/50,000) is FIMI's ALBUM scale."
         }
       }
     },
@@ -130,7 +130,7 @@
             "units": 500000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "RIAA Mastertone ödülü (kategori sicilden kaldırıldı) — eşikler single ile aynı: Gold 500.000 / Platinum 1.000.000"
+            "threshold_basis": "RIAA Mastertone award (category retired from the register) — same thresholds as singles: Gold 500,000 / Platinum 1,000,000"
           }
         ],
         "UK": "Platinum",
@@ -140,7 +140,7 @@
           "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2023-02",
-          "threshold_basis": "02/2023 ödülü → single 01.06.2014–29.06.2023 ölçeği (Platin 400.000)"
+          "threshold_basis": "Awarded 02/2023 → singles scale 01.06.2014–29.06.2023 (Platin 400,000)"
         },
         "Australia": "2x Platinum",
         "Canada": [
@@ -150,7 +150,7 @@
             "units": 20000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "Music Canada Ringtone kategorisi (01.04.2021'de emekliye ayrıldı) — Gold 20.000 / Platinum 40.000"
+            "threshold_basis": "Music Canada Ringtone category (retired 01.04.2021) — Gold 20,000 / Platinum 40,000"
           }
         ],
         "New Zealand": "3x Platinum",
@@ -191,7 +191,7 @@
             "units": 500000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "RIAA Mastertone ödülü (kategori sicilden kaldırıldı) — eşikler single ile aynı: Gold 500.000 / Platinum 1.000.000"
+            "threshold_basis": "RIAA Mastertone award (category retired from the register) — same thresholds as singles: Gold 500,000 / Platinum 1,000,000"
           }
         ],
         "UK": "Platinum",
@@ -205,7 +205,7 @@
             "units": 20000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "Music Canada Ringtone kategorisi (01.04.2021'de emekliye ayrıldı) — Gold 20.000 / Platinum 40.000"
+            "threshold_basis": "Music Canada Ringtone category (retired 01.04.2021) — Gold 20,000 / Platinum 40,000"
           }
         ],
         "New Zealand": "2x Platinum",
@@ -228,7 +228,7 @@
             "units": 3600000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "RIAA Mastertone 3x Platinum = 3.000.000 sertifika tabanı; sayılan değer ChartMasters'ın raporladığı gerçek satış: \"the song sold 4,9 million downloads and 3,6 million ringtones in the US alone\". Zil sesi kapanmış bir format olduğu için yeni sertifika hiç gelmeyecek; eşiğe yuvarlamak kalıcı olarak eksik yazmak olur.",
+            "threshold_basis": "RIAA Mastertone 3x Platinum = a 3,000,000 certified floor; the counted value is the actual sale ChartMasters reports: \"the song sold 4,9 million downloads and 3,6 million ringtones in the US alone\". The ringtone format is closed, so no further certification will ever arrive; rounding down to the threshold would understate it permanently.",
             "official_reported_value": "3.600.000 US ringtone (ChartMasters)",
             "award_source": "https://chartmasters.org/cspc-justin-timberlake-popularity-analysis/"
           }
@@ -240,7 +240,7 @@
           "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2017-09",
-          "threshold_basis": "09/2017 ödülü → single 01.06.2014–29.06.2023 ölçeği (Platin 400.000)"
+          "threshold_basis": "Awarded 09/2017 → singles scale 01.06.2014–29.06.2023 (Platin 400,000)"
         },
         "Australia": "5x Platinum",
         "Canada": [
@@ -249,14 +249,14 @@
             "units": 240000,
             "metric": "sales_equivalent",
             "format": "single",
-            "threshold_basis": "Music Canada single ölçeği (Platinum 80.000), 3 × 80.000"
+            "threshold_basis": "Music Canada singles scale (Platinum 80,000), 3 × 80,000"
           },
           {
             "level": "6x Platinum",
             "units": 240000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "Music Canada Ringtone kategorisi (01.04.2021'de emekliye ayrıldı) — Platinum 40.000, 6 × 40.000. Single sertifikasından AYRI bir üründür, ikisi birlikte sayılır."
+            "threshold_basis": "Music Canada Ringtone category (retired 01.04.2021) — Platinum 40,000, 6 × 40,000. A SEPARATE product from the single certification; both are counted."
           }
         ],
         "Spain": {
@@ -264,7 +264,7 @@
           "units": 30000,
           "metric": "sales_equivalent",
           "certified_at": "2024-W23",
-          "threshold_basis": "2024 ödülü → PROMUSICAE single 2022'den geçerli band (Gold 30.000). Sitedeki genel İspanya tablosu 2009–2022 bandı (20.000), bu ödüle uymuyor.",
+          "threshold_basis": "Awarded 2024 → PROMUSICAE singles band in force from 2022 (Gold 30,000). The site's general Spain table is the 2009–2022 band (20,000) and does not fit this award.",
           "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE"
         },
         "New Zealand": "4x Platinum",
@@ -274,7 +274,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2024",
           "award_source": "https://www.fimi.it/news/certificazioni-singoli-fimi-gfk-nuove-soglie-di-vendita-a-partire-dal-2022/",
-          "threshold_basis": "FIMI sicilinde ödül yılı 2024 (2018'de Oro) (yıl filtresiyle doğrulandı). FIMI'nin kendi duyurusu: week 01/2022'den itibaren single ORO 50.000 / PLATINO 100.000. Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir, single'lara uymaz."
+          "threshold_basis": "FIMI register gives the award year as 2024 (Oro in 2018) (verified with the year filter). FIMI's own announcement: from week 01/2022 singles ORO 50,000 / PLATINO 100,000. The site's Italy table (25,000/50,000) is FIMI's ALBUM scale and does not apply to singles."
         },
         "World": "None"
       }
@@ -292,7 +292,7 @@
             "units": 1000000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "RIAA Mastertone ödülü (kategori sicilden kaldırıldı) — eşikler single ile aynı: Gold 500.000 / Platinum 1.000.000"
+            "threshold_basis": "RIAA Mastertone award (category retired from the register) — same thresholds as singles: Gold 500,000 / Platinum 1,000,000"
           }
         ],
         "UK": "Platinum",
@@ -302,7 +302,7 @@
           "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2017-09",
-          "threshold_basis": "09/2017 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
+          "threshold_basis": "Awarded 09/2017 → singles scale 2014–2023 (Gold 200,000)"
         },
         "Australia": "2x Platinum",
         "Canada": "2x Platinum",
@@ -401,7 +401,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2014",
           "award_source": "https://www.fimi.it/top-of-the-music/music/",
-          "threshold_basis": "FIMI sicilinde ödül yılı 2014 (yıl filtresiyle doğrulandı). O dönem FIMI single Oro 15.000. Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir."
+          "threshold_basis": "FIMI register gives the award year as 2014 (verified with the year filter). FIMI singles Oro was 15,000 at the time. The site's Italy table (25,000/50,000) is FIMI's ALBUM scale."
         },
         "Poland": "2x Platinum",
         "New Zealand": "1x Platinum",
@@ -410,7 +410,7 @@
           "units": 18000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "2013 ödülü → o dönemin IFPI Danmark streaming Platin eşiği 1.800.000 stream; 1 download = 100 birim olduğundan 18.000 download-eşdeğeri"
+          "threshold_basis": "Awarded 2013 → IFPI Danmark's streaming Platin threshold at the time was 1,800,000 streams; at 1 download = 100 units that is 18,000 download-equivalents"
         },
         "Others": "243545 units",
         "World": "None"
@@ -433,7 +433,7 @@
           "units": 300000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "2013 ödülü → single 2003–2014 ölçeği (Platin 300.000)"
+          "threshold_basis": "Awarded 2013 → singles scale 2003–2014 (Platin 300,000)"
         },
         "Australia": "3x Platinum",
         "Canada": "3x Platinum",
@@ -449,7 +449,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2024-W01",
           "award_source": "https://elportaldemusica.es/awards/index?AwardsSearch%5Bartist%5D=JUSTIN+TIMBERLAKE",
-          "threshold_basis": "PROMUSICAE sicili: Platinum ödülü, 2024 hafta 1 → 2022'den geçerli band (Platinum 60.000)"
+          "threshold_basis": "PROMUSICAE register: Platinum award, 2024 week 1 → band in force from 2022 (Platinum 60,000)"
         },
         "Sweden": "2x Platinum",
         "Switzerland": "Platinum"
@@ -491,7 +491,7 @@
           "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2018",
-          "threshold_basis": "2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
+          "threshold_basis": "Awarded 2018 → singles scale 2014–2023 (Gold 200,000)"
         },
         "Australia": "2x Platinum",
         "Canada": "2x Platinum",
@@ -505,14 +505,14 @@
           "units": 40000,
           "metric": "sales_equivalent",
           "award_source": "https://zpav.pl/aktualnosc.php?idaktualnosci=1481",
-          "threshold_basis": "ZPAV bu ödülü 01.03.2017'den geçerli GELİR kriteriyle verdi (Złota 20.000 zł / Platynowa 40.000 zł / Diamentowa 200.000 zł; kaynak: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV bu eşikler için ünite karşılığı yayınlamıyor. Buradaki ünite, sektörün ve arşivlerin kullanmayı sürdürdüğü 2017 ÖNCESİ ölçek (Gold 10.000 / Platinum 20.000 / Diamond 100.000) — ZPAV'ın açıkladığı bir değer değil, karşılaştırılabilirlik için korunan konvansiyondur."
+          "threshold_basis": "ZPAV granted this award under the REVENUE criteria in force from 01.03.2017 (Złota 20,000 zł / Platynowa 40,000 zł / Diamentowa 200,000 zł; source: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV publishes no unit equivalent for those thresholds. The units here are the PRE-2017 scale (Gold 10,000 / Platinum 20,000 / Diamond 100,000) that the industry and the archives still use — not a figure ZPAV has stated, but a convention retained for comparability."
         },
         "Switzerland": {
           "level": "Platinum",
           "units": 20000,
           "metric": "sales_equivalent",
           "award_source": "https://www.ifpi.ch/post/anpassung-der-edelmetall-mindestgrenzen-von-singles-per-1-7-23",
-          "threshold_basis": "IFPI Schweiz duyurusu (30.06.2023): 1.7.2023 ÖNCESİ Single Platin 20.000. Ödül 2018-19 dönemine denk geliyor. Sitedeki düz İsviçre tablosu (30.000) 2023 sonrası single ölçeğidir, bu ödüle uymaz."
+          "threshold_basis": "IFPI Schweiz announcement (30.06.2023): BEFORE 1.7.2023 singles Platin was 20,000. This award falls in the 2018–19 period. The site's flat Switzerland table (30,000) is the post-2023 singles scale and does not fit this award."
         },
         "Italy": "Platinum"
       },
@@ -600,7 +600,7 @@
           "units": 10000,
           "metric": "sales_equivalent",
           "award_source": "https://zpav.pl/aktualnosc.php?idaktualnosci=1481",
-          "threshold_basis": "ZPAV bu ödülü 01.03.2017'den geçerli GELİR kriteriyle verdi (Złota 20.000 zł / Platynowa 40.000 zł / Diamentowa 200.000 zł; kaynak: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV bu eşikler için ünite karşılığı yayınlamıyor. Buradaki ünite, sektörün ve arşivlerin kullanmayı sürdürdüğü 2017 ÖNCESİ ölçek (Gold 10.000 / Platinum 20.000 / Diamond 100.000) — ZPAV'ın açıkladığı bir değer değil, karşılaştırılabilirlik için korunan konvansiyondur."
+          "threshold_basis": "ZPAV granted this award under the REVENUE criteria in force from 01.03.2017 (Złota 20,000 zł / Platynowa 40,000 zł / Diamentowa 200,000 zł; source: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV publishes no unit equivalent for those thresholds. The units here are the PRE-2017 scale (Gold 10,000 / Platinum 20,000 / Diamond 100,000) that the industry and the archives still use — not a figure ZPAV has stated, but a convention retained for comparability."
         },
         "World": "None",
         "South Africa": "20000 units"
@@ -638,7 +638,7 @@
           "units": 1000000,
           "metric": "sales_equivalent",
           "certified_at": "2022",
-          "threshold_basis": "2022 ödülü → single 2014–2023 ölçeği (Diamond 1.000.000)"
+          "threshold_basis": "Awarded 2022 → singles scale 2014–2023 (Diamond 1,000,000)"
         },
         "Australia": "11x Platinum",
         "Canada": "1x Diamond",
@@ -649,7 +649,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2019",
           "award_source": "https://www.facebook.com/CertificacionesAmprofon/photos/a.1293366120787996/1314462178678390",
-          "threshold_basis": "2019 ödülü → AMPROFON 01.11.2020 öncesi ölçek (Platino 60.000), 4 × 60.000. Kurumun web sicili bu eseri son olarak 22.12.2016 nivel 2 ile gösteriyor, yani tablo güncel değil; seviye AMPROFON'un resmî sertifika sayfasının duyurusundan."
+          "threshold_basis": "Awarded 2019 → AMPROFON scale before 01.11.2020 (Platino 60,000), 4 × 60,000. The body's web register still shows this title last at nivel 2 on 22.12.2016, so that table is out of date; the level comes from AMPROFON's official certification page announcement."
         },
         "New Zealand": "8x Platinum",
         "France": "Diamond",
@@ -662,7 +662,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2017-03",
           "award_source": "https://zpav.pl/aktualnosc.php?idaktualnosci=1481",
-          "threshold_basis": "ZPAV bu ödülü 01.03.2017'den geçerli GELİR kriteriyle verdi (Złota 20.000 zł / Platynowa 40.000 zł / Diamentowa 200.000 zł; kaynak: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV bu eşikler için ünite karşılığı yayınlamıyor. Buradaki ünite, sektörün ve arşivlerin kullanmayı sürdürdüğü 2017 ÖNCESİ ölçek (Gold 10.000 / Platinum 20.000 / Diamond 100.000) — ZPAV'ın açıkladığı bir değer değil, karşılaştırılabilirlik için korunan konvansiyondur."
+          "threshold_basis": "ZPAV granted this award under the REVENUE criteria in force from 01.03.2017 (Złota 20,000 zł / Platynowa 40,000 zł / Diamentowa 200,000 zł; source: zpav.pl/aktualnosc.php?idaktualnosci=1481). ZPAV publishes no unit equivalent for those thresholds. The units here are the PRE-2017 scale (Gold 10,000 / Platinum 20,000 / Diamond 100,000) that the industry and the archives still use — not a figure ZPAV has stated, but a convention retained for comparability."
         },
         "Portugal": "Platinum",
         "Spain": "3x Platinum",
@@ -730,7 +730,7 @@
           "units": 600000,
           "metric": "sales_equivalent",
           "certified_at": "2023-05",
-          "threshold_basis": "05/2023 ödülü → single 2014–2023 ölçeği (3 × Gold 200.000)"
+          "threshold_basis": "Awarded 05/2023 → singles scale 2014–2023 (3 × Gold 200,000)"
         },
         "Australia": "None",
         "Canada": "2x Platinum",
@@ -759,7 +759,7 @@
           "units": 300000,
           "metric": "sales_equivalent",
           "certified_at": "2008",
-          "threshold_basis": "2008 ödülü → single 2003–2014 ölçeği (Platin 300.000)"
+          "threshold_basis": "Awarded 2008 → singles scale 2003–2014 (Platin 300,000)"
         },
         "Australia": "3x Platinum",
         "Canada": "3x Platinum",
@@ -774,7 +774,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2023",
           "award_source": "https://www.fimi.it/top-of-the-music/music/",
-          "threshold_basis": "FIMI sicilinde ödül yılı 2023 (yıl filtresiyle doğrulandı). O dönem FIMI single Oro 50.000 (2022–2024 bandı). Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir."
+          "threshold_basis": "FIMI register gives the award year as 2023 (verified with the year filter). FIMI singles Oro was 50,000 at the time (2022–2024 band). The site's Italy table (25,000/50,000) is FIMI's ALBUM scale."
         },
         "Spain": [
           {
@@ -782,14 +782,14 @@
             "units": 60000,
             "metric": "sales_equivalent",
             "certified_at": "2008",
-            "threshold_basis": "2008 ödülü → PROMUSICAE dijital single 2008 bandı (Platinum 20.000), 3 × 20.000. Wikipedia sertifika tablosu da 60.000* veriyor."
+            "threshold_basis": "Awarded 2008 → PROMUSICAE digital singles 2008 band (Platinum 20,000), 3 × 20,000. Wikipedia's certification table also gives 60,000*."
           },
           {
             "level": "2x Platinum",
             "units": 40000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "PROMUSICAE ringtone — Wikipedia sertifika tablosu 2x Platinum = 40.000* (eşikten türetilmiş), yani ringtone Platinum 20.000"
+            "threshold_basis": "PROMUSICAE ringtone — Wikipedia's certification table gives 2x Platinum = 40,000* (derived from the threshold), i.e. ringtone Platinum 20,000"
           }
         ],
         "Sweden": "Gold",
@@ -800,7 +800,7 @@
             "units": 20000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "AMPROFON master ringtone — Wikipedia sertifika tablosu 2x Gold = 20.000* (eşikten türetilmiş), yani ringtone Gold 10.000"
+            "threshold_basis": "AMPROFON master ringtone — Wikipedia's certification table gives 2x Gold = 20,000* (derived from the threshold), i.e. ringtone Gold 10,000"
           }
         ]
       },
@@ -825,7 +825,7 @@
           "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2023",
-          "threshold_basis": "2023 ödülü → single 2014–2023 ölçeği (Platin 400.000)"
+          "threshold_basis": "Awarded 2023 → singles scale 2014–2023 (Platin 400,000)"
         },
         "Australia": "None",
         "Canada": "2x Platinum",
@@ -841,7 +841,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2014",
           "award_source": "https://www.fimi.it/top-of-the-music/music/?title=Love%20Never%20Felt%20So%20Good",
-          "threshold_basis": "FIMI sicilinde dört ödülün de yılı 2014 (yıl filtresiyle doğrulandı). 2014 FIMI single bandı Platinum 30.000; sitedeki düz İtalya tablosu (50.000) 2018-2019 bandıdır."
+          "threshold_basis": "FIMI register gives 2014 as the year for all four awards (verified with the year filter). The 2014 FIMI singles band was Platinum 30,000; the site's flat Italy table (50,000) is the 2018–2019 band."
         }
       },
       "youtubeVideoIds": [
@@ -862,7 +862,7 @@
           "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2018-04",
-          "threshold_basis": "04/2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
+          "threshold_basis": "Awarded 04/2018 → singles scale 2014–2023 (Gold 200,000)"
         },
         "Australia": "3x Platinum",
         "Canada": "None",
@@ -888,7 +888,7 @@
           "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2018-04",
-          "threshold_basis": "04/2018 ödülü → single 2014–2023 ölçeği (Gold 200.000)"
+          "threshold_basis": "Awarded 04/2018 → singles scale 2014–2023 (Gold 200,000)"
         },
         "Australia": "2x Platinum",
         "Canada": "Platinum",
@@ -914,7 +914,7 @@
             "units": 500000,
             "metric": "sales_equivalent",
             "format": "ringtone",
-            "threshold_basis": "RIAA Mastertone ödülü (kategori sicilden kaldırıldı) — eşikler single ile aynı: Gold 500.000 / Platinum 1.000.000"
+            "threshold_basis": "RIAA Mastertone award (category retired from the register) — same thresholds as singles: Gold 500,000 / Platinum 1,000,000"
           }
         ],
         "UK": "Platinum",
@@ -981,7 +981,7 @@
           "units": 200000,
           "metric": "sales_equivalent",
           "certified_at": "2023",
-          "threshold_basis": "2023 ödülü → BVMI single 01.06.2014–29.06.2023 ölçeği (Gold 200.000). BVMI sicili yalnızca yılı veriyor, ayı yok; ödül 30.06.2023'ten sonra verildiyse yeni ölçekle 300.000 olur."
+          "threshold_basis": "Awarded 2023 → BVMI singles scale 01.06.2014–29.06.2023 (Gold 200,000). The BVMI register gives only the year, not the month; if the award came after 30.06.2023 the new scale would make it 300,000."
         },
         "Australia": "Gold",
         "Canada": "None",
@@ -1044,7 +1044,7 @@
           "units": 1000000,
           "metric": "sales_equivalent",
           "certified_at": "2023",
-          "threshold_basis": "2023 ödülü → single 2014–2023 ölçeği (5 × Gold 200.000)"
+          "threshold_basis": "Awarded 2023 → singles scale 2014–2023 (5 × Gold 200,000)"
         },
         "Australia": "4x Platinum",
         "Canada": "Gold",
@@ -1060,7 +1060,7 @@
           "metric": "sales_equivalent",
           "certified_at": "2024",
           "award_source": "https://www.fimi.it/news/certificazioni-singoli-fimi-gfk-nuove-soglie-di-vendita-a-partire-dal-2022/",
-          "threshold_basis": "FIMI sicilinde ödül yılı 2024 (2015 Oro, 2017 Platino) (yıl filtresiyle doğrulandı). FIMI'nin kendi duyurusu: week 01/2022'den itibaren single ORO 50.000 / PLATINO 100.000. Sitedeki İtalya tablosu (25.000/50.000) FIMI'nin ALBÜM ölçeğidir, single'lara uymaz."
+          "threshold_basis": "FIMI register gives the award year as 2024 (Oro 2015, Platino 2017) (verified with the year filter). FIMI's own announcement: from week 01/2022 singles ORO 50,000 / PLATINO 100,000. The site's Italy table (25,000/50,000) is FIMI's ALBUM scale and does not apply to singles."
         }
       },
       "youtubeVideoIds": [
@@ -1122,7 +1122,7 @@
           "units": 300000,
           "metric": "sales_equivalent",
           "certified_at": "2003",
-          "threshold_basis": "2002-11-05 çıkışı → BVMI albüm 1999-09-25–2002-12-31 ölçeği (Platin 300.000)"
+          "threshold_basis": "Released 2002-11-05 → BVMI album scale 1999-09-25–2002-12-31 (Platin 300,000)"
         },
         "Australia": "5x Platinum",
         "Canada": "2x Platinum",
@@ -1138,14 +1138,14 @@
           "level": "Gold",
           "units": 25000,
           "metric": "sales_equivalent",
-          "threshold_basis": "BRMA — sertifikanın kendi belirttiği ünite 25.000. Sitedeki Belçika albüm tablosu (Gold 15.000) 2002 dönemine uymuyor."
+          "threshold_basis": "BRMA — the certification states 25,000 units itself. The site's Belgium album table (Gold 15,000) does not fit the 2002 period."
         },
         "Switzerland": {
           "level": "Platinum",
           "units": 40000,
           "metric": "sales_equivalent",
           "certified_at": "2003",
-          "threshold_basis": "IFPI Schweiz — sertifikanın kendi belirttiği ünite 40.000. Sitedeki düz İsviçre tablosu (Platin 30.000) 2003 albüm dönemine uymuyor."
+          "threshold_basis": "IFPI Schweiz — the certification states 40,000 units itself. The site's flat Switzerland table (Platin 30,000) does not fit the 2003 album period."
         }
       },
       "certification_dates": {
@@ -1165,7 +1165,7 @@
           "units": 400000,
           "metric": "sales_equivalent",
           "certified_at": "2008",
-          "threshold_basis": "2006 çıkışı → BVMI albüm 2003–2023 ölçeği (2 × Platin 200.000)"
+          "threshold_basis": "Released 2006 → BVMI album scale 2003–2023 (2 × Platin 200,000)"
         },
         "Australia": "6x Platinum",
         "Canada": "7x Platinum",
@@ -1175,7 +1175,7 @@
           "level": "Platinum",
           "units": 200000,
           "metric": "sales_equivalent",
-          "threshold_basis": "SNEP — sertifika Platinum, kendi belirttiği ünite 200.000. Vault'ta Gold yazıyordu."
+          "threshold_basis": "SNEP — the certification is Platinum and states 200,000 units itself. The vault previously had Gold."
         },
         "Other": "120000 units",
         "Argentina": "20000 units",
@@ -1192,19 +1192,19 @@
           "level": "2x Platinum",
           "units": 100000,
           "metric": "sales_equivalent",
-          "threshold_basis": "BRMA — sertifikanın kendi belirttiği ünite 100.000. Sitedeki Belçika albüm tablosu (Platinum 30.000) 2006 dönemine uymuyor."
+          "threshold_basis": "BRMA — the certification states 100,000 units itself. The site's Belgium album table (Platinum 30,000) does not fit the 2006 period."
         },
         "Ireland": {
           "level": "6x Platinum",
           "units": 90000,
           "metric": "sales_equivalent",
-          "threshold_basis": "IRMA — sertifikanın kendi belirttiği ünite 90.000. İrlanda CERT_MAPPINGS'te yok, isimli seviye 0 sayılırdı."
+          "threshold_basis": "IRMA — the certification states 90,000 units itself. Ireland is absent from CERT_MAPPINGS, so a named level would have counted as 0."
         },
         "Portugal": {
           "level": "Gold",
           "units": 10000,
           "metric": "sales_equivalent",
-          "threshold_basis": "AFP — sertifikanın kendi belirttiği ünite 10.000. Sitedeki Portekiz albüm tablosu (Gold 7.500) bu ödüle uymuyor."
+          "threshold_basis": "AFP — the certification states 10,000 units itself. The site's Portugal album table (Gold 7,500) does not fit this award."
         }
       },
       "certification_dates": {
@@ -1228,7 +1228,7 @@
           "units": 100000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "2013 çıkışı → BVMI albüm 2003–2023 ölçeği (Gold 100.000)"
+          "threshold_basis": "Released 2013 → BVMI album scale 2003–2023 (Gold 100,000)"
         },
         "Australia": "1x Platinum",
         "Canada": "2x Platinum",
@@ -1241,21 +1241,21 @@
           "units": 25000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "2013 ödülü → NVPI albüm 2009/06–2014/06 bandı (Goud 25.000). Sitedeki düz Hollanda tablosu (40.000) 2000–2005 bandı, bu ödüle uymuyor."
+          "threshold_basis": "Awarded 2013 → NVPI album band 2009/06–2014/06 (Goud 25,000). The site's flat Netherlands table (40,000) is the 2000–2005 band and does not fit this award."
         },
         "Sweden": {
           "level": "Gold",
           "units": 20000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "2013 ödülü → İsveç albüm 2010–2018 bandı (Guld 20.000). Sitedeki İsveç albüm tablosu (30.000) bu döneme uymuyor."
+          "threshold_basis": "Awarded 2013 → Swedish album band 2010–2018 (Guld 20,000). The site's Sweden album table (30,000) does not fit this period."
         },
         "Switzerland": {
           "level": "Gold",
           "units": 10000,
           "metric": "sales_equivalent",
           "certified_at": "2013",
-          "threshold_basis": "IFPI Schweiz — sertifikanın kendi belirttiği ünite 10.000. Sitedeki düz İsviçre tablosu (Gold 15.000) bu albüm ödülüne uymuyor."
+          "threshold_basis": "IFPI Schweiz — the certification states 10,000 units itself. The site's flat Switzerland table (Gold 15,000) does not fit this album award."
         },
         "Ireland": "7500 units",
         "Norway": "15000 units",

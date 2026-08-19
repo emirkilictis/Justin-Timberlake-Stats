@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787165264">
+    <link rel="stylesheet" href="style.css?v=1787165930">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -432,6 +432,26 @@
         .fr-table thead th:first-child { z-index: 3; }
         .fr-table tbody td { text-align: right; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.75); }
         .fr-table tbody td.zero { color: rgba(255, 255, 255, 0.13); }
+        /* Ünitenin altındaki seviye rozeti: G/P/D/S, en yüksek seviyenin rengiyle */
+        .fr-lvl {
+            display: block;
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            margin-top: 1px;
+            opacity: 0.9;
+        }
+        .fr-lvl.lvl-d { color: #7fd8ff; }
+        .fr-lvl.lvl-p { color: #cfd4da; }
+        .fr-lvl.lvl-g { color: #d4a853; }
+        .fr-lvl.lvl-s { color: #9aa3ab; }
+        .fr-legend {
+            display: block;
+            margin-bottom: 6px;
+            color: rgba(255, 255, 255, 0.55);
+            letter-spacing: 0.06em;
+        }
+        .fr-legend b { color: #fff; font-weight: 700; }
         .fr-table tbody tr:hover td { background: rgba(255, 255, 255, 0.03); }
         .fr-table tbody tr:hover td:first-child { background: #1b1b1f; }
         .fr-table tr.fr-group td {
@@ -515,7 +535,7 @@
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Canada')">🇨🇦 Canada ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Mexico')">🇲🇽 Mexico ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Other')">🌍 Other ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Ringtone')" title="Zil sesi (mastertone) sertifikaları — single'dan ayrı bir üründür, kendi eşik tablosu vardır.">📱 Ringtone ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('songs', 'Ringtone')" title="Ringtone (mastertone) certifications — a separate product from the single, with its own threshold table.">📱 Ringtone ⇕</th>
                         </tr>
                     </thead>
                     <tbody id="songs-tbody">
@@ -544,7 +564,7 @@
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Canada')">🇨🇦 Canada ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Mexico')">🇲🇽 Mexico ⇕</th>
                             <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Other')">🌍 Other ⇕</th>
-                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Ringtone')" title="Zil sesi (mastertone) sertifikaları — single'dan ayrı bir üründür, kendi eşik tablosu vardır.">📱 Ringtone ⇕</th>
+                            <th class="text-center cursor-pointer hover:text-white transition-colors" onclick="sortVault('albums', 'Ringtone')" title="Ringtone (mastertone) certifications — a separate product from the single, with its own threshold table.">📱 Ringtone ⇕</th>
                         </tr>
                     </thead>
                     <tbody id="albums-tbody">
@@ -625,9 +645,9 @@
 
     </div>
 
-    <script src="config.js?v=1787165264" defer></script>
-    <script src="song-map.js?v=1787165264" defer></script>
-    <script src="vault.js?v=1787165264" defer></script>
+    <script src="config.js?v=1787165930" defer></script>
+    <script src="song-map.js?v=1787165930" defer></script>
+    <script src="vault.js?v=1787165930" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
@@ -663,7 +683,7 @@
                     <h2 id="fr-title" class="font-playfair">Full certification report</h2>
                     <p class="fr-sub">Every market on record — including the ones the “Other” column folds together.</p>
                 </div>
-                <button type="button" class="fr-close" onclick="closeFullReport()" aria-label="Kapat">&times;</button>
+                <button type="button" class="fr-close" onclick="closeFullReport()" aria-label="Close">&times;</button>
             </div>
             <div class="fr-tools">
                 <input type="search" id="fr-search" placeholder="Filter by title or country…" oninput="filterFullReport(this.value)">
