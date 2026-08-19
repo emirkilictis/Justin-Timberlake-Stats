@@ -1005,8 +1005,12 @@
         },
         "Australia": "4x Platinum",
         "Canada": "Gold",
-        "New Zealand": "5x Platinum",
-        "World": "None"
+        "New Zealand": "6x Platinum",
+        "World": "None",
+        "Belgium": "Gold",
+        "Denmark": "2x Platinum",
+        "Sweden": "Platinum",
+        "Norway": "10000 units"
       },
       "youtubeVideoIds": [
         "WpYeekQkAdc"
@@ -1020,11 +1024,13 @@
       "official_certifications": {
         "USA": "2x Platinum",
         "UK": "Platinum",
-        "Brazil": "None",
+        "Brazil": "1x Diamond",
         "Germany": "None",
-        "Australia": "None",
+        "Australia": "2x Platinum",
         "Canada": "None",
-        "World": "None"
+        "World": "None",
+        "Denmark": "Platinum",
+        "New Zealand": "2x Platinum"
       },
       "streams": {},
       "youtubeVideoIds": [
