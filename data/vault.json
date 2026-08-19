@@ -1152,8 +1152,20 @@
         "Poland": "2x Platinum",
         "Mexico": "Gold",
         "New Zealand": "2x Platinum",
-        "Netherlands": "Gold",
-        "Sweden": "Gold",
+        "Netherlands": {
+          "level": "Gold",
+          "units": 25000,
+          "metric": "sales_equivalent",
+          "certified_at": "2013",
+          "threshold_basis": "2013 ödülü → NVPI albüm 2009/06–2014/06 bandı (Goud 25.000). Sitedeki düz Hollanda tablosu (40.000) 2000–2005 bandı, bu ödüle uymuyor."
+        },
+        "Sweden": {
+          "level": "Gold",
+          "units": 20000,
+          "metric": "sales_equivalent",
+          "certified_at": "2013",
+          "threshold_basis": "2013 ödülü → İsveç albüm 2010–2018 bandı (Guld 20.000). Sitedeki İsveç albüm tablosu (30.000) bu döneme uymuyor."
+        },
         "Switzerland": "Gold",
         "Ireland": "7500 units",
         "Norway": "15000 units",
@@ -1161,8 +1173,7 @@
         "Other": "230000 units"
       },
       "certification_dates": {
-        "Switzerland": "2013",
-        "Netherlands": "2013"
+        "Switzerland": "2013"
       }
     },
     {
