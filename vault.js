@@ -493,6 +493,52 @@ function certLabel(value) {
     return '';
 }
 
+// ── "Other" kolonu dökümü ──
+// Other tek bir sayı olarak 20+ pazarı gizliyor. Hücre tıklanınca satırın
+// altına hangi ülkeden kaç ünite geldiğini listeleyen bir detay satırı açılır.
+const OTHER_BREAKDOWNS = {};
+
+function otherCell(item, kind) {
+    const val = item.cMap.Other;
+    const style = 'font-weight:700;color:var(--accent-color)';
+    if (!(val > 0)) return `<td class="text-center" style="${style}">None</td>`;
+    const key = kind + '::' + (item.id || item.title);
+    OTHER_BREAKDOWNS[key] = item.otherParts || [];
+    const n = OTHER_BREAKDOWNS[key].length;
+    return `<td class="text-center" style="${style}">
+        <button type="button" class="other-toggle" data-key="${key}"
+                onclick="toggleOtherBreakdown(this)"
+                title="${n} pazar — dökümü aç">${val.toLocaleString()}<span class="other-caret">▾</span></button>
+    </td>`;
+}
+
+function toggleOtherBreakdown(btn) {
+    const row = btn.closest('tr');
+    const next = row.nextElementSibling;
+    if (next && next.classList.contains('other-detail-row')) {
+        next.remove();
+        btn.classList.remove('open');
+        return;
+    }
+    const parts = OTHER_BREAKDOWNS[btn.dataset.key] || [];
+    const items = parts.map(p => `
+        <li>
+            <span class="odt-country">${p.country}</span>
+            <span class="odt-level">${p.label && p.label !== 'None' ? p.label : '—'}</span>
+            <span class="odt-units">${p.units.toLocaleString()}</span>
+        </li>`).join('');
+    const detail = document.createElement('tr');
+    detail.className = 'other-detail-row';
+    detail.innerHTML = `<td colspan="${row.children.length}">
+        <div class="other-detail">
+            <div class="odt-head">“Other” dökümü — ${parts.length} pazar</div>
+            <ul class="odt-list">${items}</ul>
+        </div>
+    </td>`;
+    row.after(detail);
+    btn.classList.add('open');
+}
+
 function getBadgeHTML(certValue, _isLive = false, isDiamondActive = false, platCount = 0) {
     const certStr = certLabel(certValue);
     if (!certStr || certStr === "None" || certStr === "") return `<span class="badge badge-none">—</span>`;
@@ -549,16 +595,26 @@ function computeAllData() {
 
         // Other (Aggregation of ALL other markets)
         let otherVal = 0;
+        // Other kolonunun dökümü: hangi ülkeden kaç ünite geldiği tabloda
+        // açılabilsin diye satır bazında saklanıyor (bkz. renderOtherCell).
+        const otherParts = [];
         for (let market in (a.official_certifications || {})) {
             if (!MAIN_7.includes(market) && market !== 'Other' && market !== 'World') {
-                otherVal += certUnits(a.official_certifications[market], market, 'album', a.id);
+                const mv = certUnits(a.official_certifications[market], market, 'album', a.id);
+                otherVal += mv;
+                if (mv > 0) otherParts.push({ country: market, label: certLabel(a.official_certifications[market]), units: mv });
             }
         }
         // Add manual World/Other if it exists
-        if (a.official_certifications.World) otherVal += certUnits(a.official_certifications.World, 'World', 'album', a.id);
-        if (a.official_certifications.Other) otherVal += certUnits(a.official_certifications.Other, 'Other', 'album', a.id);
+        for (const key of ['World', 'Other']) {
+            if (!a.official_certifications[key]) continue;
+            const kv = certUnits(a.official_certifications[key], key, 'album', a.id);
+            otherVal += kv;
+            if (kv > 0) otherParts.push({ country: key === 'Other' ? 'Diğer pazarlar' : key, label: certLabel(a.official_certifications[key]), units: kv });
+        }
         
         cMap['Other'] = otherVal;
+        otherParts.sort((x, y) => y.units - x.units);
         certTotal += otherVal;
         officialSum += otherVal;
 
@@ -572,7 +628,7 @@ function computeAllData() {
         officialSum += ringVal;
 
         // usRaw = yuvarlanmamış güncel USA ünitesi (sadece gösterim; cMap/certTotal'a girmez)
-        return { ...a, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap };
+        return { ...a, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap, otherParts };
     }).filter(a => a.global > 0 && a.id !== "Orphan");
 
     // Songs
@@ -600,15 +656,25 @@ function computeAllData() {
 
         // Other (Aggregation)
         let otherVal = 0;
+        // Other kolonunun dökümü: hangi ülkeden kaç ünite geldiği tabloda
+        // açılabilsin diye satır bazında saklanıyor (bkz. renderOtherCell).
+        const otherParts = [];
         for (let market in (s.official_certifications || {})) {
             if (!MAIN_7.includes(market) && market !== 'Other' && market !== 'World') {
-                otherVal += certUnits(s.official_certifications[market], market, 'song', s.id);
+                const mv = certUnits(s.official_certifications[market], market, 'song', s.id);
+                otherVal += mv;
+                if (mv > 0) otherParts.push({ country: market, label: certLabel(s.official_certifications[market]), units: mv });
             }
         }
-        if (s.official_certifications.World) otherVal += certUnits(s.official_certifications.World, 'World', 'song', s.id);
-        if (s.official_certifications.Other) otherVal += certUnits(s.official_certifications.Other, 'Other', 'song', s.id);
+        for (const key of ['World', 'Other']) {
+            if (!s.official_certifications[key]) continue;
+            const kv = certUnits(s.official_certifications[key], key, 'song', s.id);
+            otherVal += kv;
+            if (kv > 0) otherParts.push({ country: key === 'Other' ? 'Diğer pazarlar' : key, label: certLabel(s.official_certifications[key]), units: kv });
+        }
 
         cMap['Other'] = otherVal;
+        otherParts.sort((x, y) => y.units - x.units);
         certTotal += otherVal;
         officialSum += otherVal;
 
@@ -622,7 +688,7 @@ function computeAllData() {
         officialSum += ringVal;
 
         // usRaw = yuvarlanmamış güncel USA ünitesi (sadece gösterim; cMap/certTotal'a girmez)
-        return { ...s, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap };
+        return { ...s, usLive: usaFinal, usRaw: usaMax, global: usaFinal + officialSum, certTotal, cMap, otherParts };
     }).filter(s => s.global > 0);
 
     computeNonSingles();
@@ -862,7 +928,7 @@ function renderTables() {
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Australia)}</td>
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Canada)}</td>
                 <td class="text-center">${getBadgeHTML(a.official_certifications?.Mexico)}</td>
-                <td class="text-center" style="font-weight:700;color:var(--accent-color)">${a.cMap.Other > 0 ? a.cMap.Other.toLocaleString() : 'None'}</td>
+                ${otherCell(a, 'album')}
                 <td class="text-center" style="font-weight:700;color:var(--accent-color)">${a.cMap.Ringtone > 0 ? a.cMap.Ringtone.toLocaleString() : '—'}</td>
             </tr>
         `;
@@ -897,7 +963,7 @@ function renderTables() {
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Australia)}</td>
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Canada)}</td>
                 <td class="text-center">${getBadgeHTML(s.official_certifications?.Mexico)}</td>
-                <td class="text-center" style="font-weight:700;color:var(--accent-color)">${s.cMap.Other > 0 ? s.cMap.Other.toLocaleString() : 'None'}</td>
+                ${otherCell(s, 'song')}
                 <td class="text-center" style="font-weight:700;color:var(--accent-color)">${s.cMap.Ringtone > 0 ? s.cMap.Ringtone.toLocaleString() : '—'}</td>
             </tr>
         `;

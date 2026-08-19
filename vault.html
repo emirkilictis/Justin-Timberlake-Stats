@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787158977">
+    <link rel="stylesheet" href="style.css?v=1787160204">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -268,6 +268,70 @@
             #era-summary-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        /* ── "Other" kolonu döküm satırı ── */
+        .other-toggle {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.35);
+            line-height: 1.2;
+        }
+        .other-toggle:hover { border-bottom-color: var(--accent-color); }
+        .other-caret {
+            font-size: 9px;
+            opacity: 0.7;
+            transition: transform 0.15s ease;
+        }
+        .other-toggle.open .other-caret { transform: rotate(180deg); }
+
+        .other-detail-row > td {
+            background: rgba(255, 255, 255, 0.035);
+            padding: 12px 18px !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        /* Tablo yatayda kayabildiği için döküm görünür alanda sabit kalsın */
+        .other-detail {
+            position: sticky;
+            left: 0;
+            width: min(880px, calc(100vw - 48px));
+        }
+        .odt-head {
+            font-size: 10px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            opacity: 0.55;
+            margin-bottom: 8px;
+        }
+        .odt-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 4px 22px;
+        }
+        .odt-list li {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 12px;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .odt-country { flex: 0 0 auto; font-weight: 600; }
+        .odt-level { flex: 1 1 auto; opacity: 0.55; font-size: 11px; }
+        .odt-units { flex: 0 0 auto; font-variant-numeric: tabular-nums; color: var(--accent-color); font-weight: 700; }
+
+        @media (max-width: 640px) {
+            .odt-list { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -434,9 +498,9 @@
 
     </div>
 
-    <script src="config.js?v=1787158977" defer></script>
-    <script src="song-map.js?v=1787158977" defer></script>
-    <script src="vault.js?v=1787158977" defer></script>
+    <script src="config.js?v=1787160204" defer></script>
+    <script src="song-map.js?v=1787160204" defer></script>
+    <script src="vault.js?v=1787160204" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
