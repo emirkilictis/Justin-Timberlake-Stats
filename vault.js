@@ -523,7 +523,7 @@ function toggleOtherBreakdown(btn) {
     const parts = OTHER_BREAKDOWNS[btn.dataset.key] || [];
     const items = parts.map(p => `
         <li>
-            <span class="odt-country">${p.country}</span>
+            <span class="odt-country"><span class="odt-flag">${flagFor(p.country)}</span>${p.country}</span>
             <span class="odt-level">${p.label && p.label !== 'None' ? p.label : '—'}</span>
             <span class="odt-units">${p.units.toLocaleString()}</span>
         </li>`).join('');
@@ -1140,6 +1140,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Vault tablosu 7 ülke + "Other" gösteriyor. Buradaki rapor kayıtta ne varsa
 // hepsini açar: matris görünümü + iki CSV (matris ve ödül bazlı döküm).
 
+// Ülke bayrakları. Vault tablosunun başlıklarıyla aynı görsel dil; rapor ve
+// "Other" dökümü de aynı bayrakları kullanıyor.
+const COUNTRY_FLAGS = {
+    "USA": "\u{1F1FA}\u{1F1F8}", "UK": "\u{1F1EC}\u{1F1E7}", "Brazil": "\u{1F1E7}\u{1F1F7}",
+    "Germany": "\u{1F1E9}\u{1F1EA}", "Australia": "\u{1F1E6}\u{1F1FA}", "Canada": "\u{1F1E8}\u{1F1E6}",
+    "Mexico": "\u{1F1F2}\u{1F1FD}", "New Zealand": "\u{1F1F3}\u{1F1FF}", "Denmark": "\u{1F1E9}\u{1F1F0}",
+    "France": "\u{1F1EB}\u{1F1F7}", "Italy": "\u{1F1EE}\u{1F1F9}", "Sweden": "\u{1F1F8}\u{1F1EA}",
+    "Spain": "\u{1F1EA}\u{1F1F8}", "Poland": "\u{1F1F5}\u{1F1F1}", "Belgium": "\u{1F1E7}\u{1F1EA}",
+    "Switzerland": "\u{1F1E8}\u{1F1ED}", "Japan": "\u{1F1EF}\u{1F1F5}", "Russia": "\u{1F1F7}\u{1F1FA}",
+    "Netherlands": "\u{1F1F3}\u{1F1F1}", "Ireland": "\u{1F1EE}\u{1F1EA}", "Austria": "\u{1F1E6}\u{1F1F9}",
+    "Norway": "\u{1F1F3}\u{1F1F4}", "Portugal": "\u{1F1F5}\u{1F1F9}", "South Africa": "\u{1F1FF}\u{1F1E6}",
+    "Argentina": "\u{1F1E6}\u{1F1F7}", "Finland": "\u{1F1EB}\u{1F1EE}", "Hungary": "\u{1F1ED}\u{1F1FA}",
+    "Korea": "\u{1F1F0}\u{1F1F7}", "South Korea": "\u{1F1F0}\u{1F1F7}",
+    "World": "\u{1F310}", "Unattributed": "\u{1F30D}", "Other": "\u{1F30D}", "Others": "\u{1F30D}",
+    "Ringtone": "\u{1F4F1}"
+};
+
+function flagFor(country) {
+    return COUNTRY_FLAGS[country] || '\u{1F3F3}\uFE0F';
+}
+
+// "🇩🇪 Germany" — bayrak yoksa sadece isim.
+function flagLabel(country) {
+    return `${flagFor(country)} ${country}`;
+}
+
 // Bir ülke değerini ham ödül nesnelerine ayırır (string / obje / dizi).
 function reportAwards(value) {
     if (!value || value === 'None') return [];
@@ -1149,9 +1175,10 @@ function reportAwards(value) {
     return [];
 }
 
-// Albümlerin album_id'si yok; pivotlarken boş kalmasın diye kendi adını yazıyoruz.
+// Albümlerde Title zaten albümün adı; Era kolonunu tekrar etmesin diye boş
+// bırakıyoruz — Type kolonu ikisini ayırmaya yetiyor.
 function reportEra(item) {
-    return item.album_id || (item.kind === 'Album' ? item.title : '');
+    return item.album_id || '';
 }
 
 function reportItems() {
@@ -1206,7 +1233,14 @@ function buildLongRows() {
     const out = [];
     reportItems().forEach(item => {
         const type = item.kind === 'Album' ? 'album' : 'song';
-        for (const country in (item.official_certifications || {})) {
+        // Ülkeler JSON'daki yazım sırasına göre değil, ünite büyüklüğüne göre
+        // dizilsin — dosya elle okunabilir olsun diye.
+        const countries = Object.keys(item.official_certifications || {}).sort((a, b) =>
+            certUnits(item.official_certifications[b], b, type, item.id) +
+            ringtoneUnits(item.official_certifications[b], b, type, item.id) -
+            certUnits(item.official_certifications[a], a, type, item.id) -
+            ringtoneUnits(item.official_certifications[a], a, type, item.id));
+        for (const country of countries) {
             reportAwards(item.official_certifications[country]).forEach(aw => {
                 const r = resolveCert(aw, country, type, item.id)[0];
                 if (!r) return;
@@ -1239,7 +1273,10 @@ function toCSV(headers, rows) {
     };
     const lines = [headers.map(esc).join(',')];
     rows.forEach(r => lines.push(r.map(esc).join(',')));
-    return '﻿' + lines.join('\r\n');   // BOM: Excel UTF-8'i doğru okusun
+    // BOM: Excel dosyayı UTF-8 okusun (bayrak emojileri ve Türkçe için şart).
+    // "sep=,": Türkçe Windows/Mac Excel varsayılan ayırıcı olarak ; bekler ve
+    // bu satır olmadan her şeyi tek kolona sıkıştırır.
+    return '﻿' + 'sep=,\r\n' + lines.join('\r\n');
 }
 
 function saveCSV(filename, csv) {
@@ -1258,30 +1295,42 @@ function downloadReport(kind) {
     if (kind === 'matrix') {
         const { rows, markets, totals, ringtoneTotal } = buildMatrix();
         const headers = ['Type', 'Title', 'Era',
-            ...markets.map(m => m === 'USA' ? 'USA (eligible)' : m), 'Ringtone', 'Total'];
+            ...markets.map(m => flagLabel(m) + (m === 'USA' ? ' (eligible)' : '')),
+            flagLabel('Ringtone'), 'Total'];
+        // Sıfırlar boş bırakılıyor: 29 kolonluk sayfada 0'lar okumayı zorlaştırıyor.
         const body = rows.map(r => {
             const cells = markets.map(m => r.markets[m] || 0);
             const total = cells.reduce((a, b) => a + b, 0) + r.ringtone;
-            return [r.item.kind, r.item.title, reportEra(r.item), ...cells, r.ringtone, total];
+            return [r.item.kind, r.item.title, reportEra(r.item),
+                    ...cells.map(v => v || ''), r.ringtone || '', total];
         });
         const grand = markets.reduce((a, m) => a + totals[m], 0) + ringtoneTotal;
-        body.push(['', 'TOTAL', '', ...markets.map(m => totals[m]), ringtoneTotal, grand]);
+        body.push(['TOTAL', 'All items', '', ...markets.map(m => totals[m]), ringtoneTotal, grand]);
         saveCSV(`timberlake-certifications-matrix-${stamp}.csv`, toCSV(headers, body));
         return;
     }
+    // Detaylı döküm: önce okunan kolonlar, uzun gerekçe metinleri en sonda.
     const long = buildLongRows();
-    const headers = ['Type', 'Title', 'Era', 'Country', 'Level', 'Units', 'Counted units',
-                     'Metric', 'Format', 'Certified at', 'Threshold basis', 'Award source',
-                     'Official reported value'];
+    const headers = ['Type', 'Title', 'Era', 'Country', 'Level', 'Units', 'Format',
+                     'Certified at', 'Metric', 'Counted units', 'Award source',
+                     'Official reported value', 'Threshold basis'];
     saveCSV(`timberlake-certifications-detailed-${stamp}.csv`,
-        toCSV(headers, long.map(r => [r.type, r.title, r.era, r.country, r.level, r.units,
-              r.counted_units, r.metric, r.format, r.certified_at, r.threshold_basis,
-              r.award_source, r.official_reported_value])));
+        toCSV(headers, long.map(r => [
+            r.type, r.title, r.era, flagLabel(r.country), r.level, r.units,
+            r.format === 'ringtone' ? 'ringtone' : '',
+            r.certified_at,
+            r.metric === 'sales_equivalent' ? '' : r.metric,
+            r.counted_units === r.units ? '' : r.counted_units,
+            r.award_source, r.official_reported_value, r.threshold_basis
+        ])));
 }
 
 function renderFullReport() {
     const { rows, markets, totals, ringtoneTotal } = buildMatrix();
-    const head = ['Title', ...markets.map(m => m === 'USA' ? 'USA (eligible)' : m), 'Ringtone', 'Total']
+    const flagHead = (flag, name) => `<span class="fr-flag">${flag}</span>${name}`;
+    const head = ['Title',
+        ...markets.map(m => flagHead(flagFor(m), m === 'USA' ? 'USA (eligible)' : m)),
+        flagHead(flagFor('Ringtone'), 'Ringtone'), 'Total']
         .map(h => `<th>${h}</th>`).join('');
 
     let html = '';
