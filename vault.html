@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787160204">
+    <link rel="stylesheet" href="style.css?v=1787160678">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -333,6 +333,125 @@
         @media (max-width: 640px) {
             .odt-list { grid-template-columns: 1fr; }
         }
+
+        /* ── Tam rapor ── */
+        #full-report-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            padding: 9px 20px;
+            color: rgba(255, 255, 255, 0.75);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        #full-report-btn:hover {
+            color: #fff;
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .fr-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1200;   /* sabit nav 999'da; rapor onun da üstünde olmalı */
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .fr-overlay[hidden] { display: none; }
+        .fr-panel {
+            width: min(1180px, 100%);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            background: #0b0b0d;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+        .fr-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .fr-head h2 { font-size: 1.5rem; color: var(--accent-color); }
+        .fr-sub { font-size: 0.75rem; color: rgba(255, 255, 255, 0.4); margin-top: 4px; }
+        .fr-close {
+            background: none; border: none; color: rgba(255, 255, 255, 0.45);
+            font-size: 1.8rem; line-height: 1; cursor: pointer; padding: 0 4px;
+        }
+        .fr-close:hover { color: #fff; }
+        .fr-tools {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            padding: 12px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .fr-spacer { flex: 1 1 auto; }
+        #fr-search {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px; padding: 8px 14px; color: #fff;
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem;
+            outline: none; width: 260px; max-width: 100%;
+        }
+        .fr-dl {
+            background: rgba(212, 168, 83, 0.12);
+            border: 1px solid rgba(212, 168, 83, 0.4);
+            border-radius: 8px; padding: 8px 16px; color: var(--accent-color);
+            font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem;
+            letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+        }
+        .fr-dl:hover { background: rgba(212, 168, 83, 0.22); }
+        .fr-body { overflow: auto; flex: 1 1 auto; }
+        .fr-table { border-collapse: collapse; font-size: 11px; white-space: nowrap; }
+        .fr-table th, .fr-table td { padding: 6px 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .fr-table thead th {
+            position: sticky; top: 0; z-index: 2;
+            background: #131316; color: rgba(255, 255, 255, 0.55);
+            font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+            text-align: right;
+        }
+        .fr-table thead th:first-child, .fr-table tbody td:first-child {
+            position: sticky; left: 0; z-index: 1;
+            background: #131316; text-align: left; min-width: 190px;
+        }
+        .fr-table thead th:first-child { z-index: 3; }
+        .fr-table tbody td { text-align: right; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.75); }
+        .fr-table tbody td.zero { color: rgba(255, 255, 255, 0.13); }
+        .fr-table tbody tr:hover td { background: rgba(255, 255, 255, 0.03); }
+        .fr-table tbody tr:hover td:first-child { background: #1b1b1f; }
+        .fr-table tr.fr-group td {
+            background: rgba(212, 168, 83, 0.08);
+            color: var(--accent-color);
+            font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+            text-align: left;
+        }
+        .fr-table tfoot td {
+            position: sticky; bottom: 0;
+            background: #131316; color: var(--accent-color); font-weight: 700;
+            text-align: right;
+        }
+        .fr-table tfoot td:first-child { text-align: left; z-index: 2; }
+        .fr-item-era { display: block; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.28); }
+        .fr-foot {
+            padding: 10px 24px; border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.7rem; color: rgba(255, 255, 255, 0.35);
+        }
+        @media (max-width: 640px) {
+            .fr-overlay { padding: 0; }
+            .fr-panel { max-height: 100vh; border-radius: 0; border: none; }
+        }
     </style>
 </head>
 
@@ -367,6 +486,11 @@
                     style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 18px;color:#fff;font-family:'Space Grotesk',sans-serif;font-size:0.9rem;outline:none;width:280px;max-width:100%;box-sizing:border-box;">
             </div>
             <div id="vault-count" style="margin-top:8px;font-size:0.75rem;color:#555;font-family:'Space Grotesk',sans-serif;min-height:1.2em;"></div>
+            <div style="margin-top:14px;">
+                <button type="button" id="full-report-btn" onclick="openFullReport()">
+                    Full report — every country
+                </button>
+            </div>
         </div>
 
         <section class="mb-16 bg-black/60 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
@@ -498,12 +622,16 @@
 
     </div>
 
-    <script src="config.js?v=1787160204" defer></script>
-    <script src="song-map.js?v=1787160204" defer></script>
-    <script src="vault.js?v=1787160204" defer></script>
+    <script src="config.js?v=1787160678" defer></script>
+    <script src="song-map.js?v=1787160678" defer></script>
+    <script src="vault.js?v=1787160678" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
+            // Açık "Other" döküm satırları colspan'lı olduğu için filtreden muaf
+            // kalıyor; aramadan önce hepsini kapat.
+            document.querySelectorAll('.other-detail-row').forEach(r => r.remove());
+            document.querySelectorAll('.other-toggle.open').forEach(b => b.classList.remove('open'));
             let shown = 0, total = 0;
             ['albums-tbody', 'songs-tbody', 'nonsingles-tbody'].forEach(id => {
                 const tbody = document.getElementById(id);
@@ -524,6 +652,26 @@
             }
         };
     </script>
+
+    <div id="full-report" class="fr-overlay" hidden>
+        <div class="fr-panel" role="dialog" aria-modal="true" aria-labelledby="fr-title">
+            <div class="fr-head">
+                <div>
+                    <h2 id="fr-title" class="font-playfair">Full certification report</h2>
+                    <p class="fr-sub">Every market on record — including the ones the “Other” column folds together.</p>
+                </div>
+                <button type="button" class="fr-close" onclick="closeFullReport()" aria-label="Kapat">&times;</button>
+            </div>
+            <div class="fr-tools">
+                <input type="search" id="fr-search" placeholder="Filter by title or country…" oninput="filterFullReport(this.value)">
+                <span class="fr-spacer"></span>
+                <button type="button" class="fr-dl" onclick="downloadReport('matrix')">Matrix CSV</button>
+                <button type="button" class="fr-dl" onclick="downloadReport('long')">Detailed CSV</button>
+            </div>
+            <div class="fr-body" id="fr-body"></div>
+            <div class="fr-foot" id="fr-foot"></div>
+        </div>
+    </div>
 
 <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
     <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">

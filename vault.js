@@ -1135,3 +1135,207 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.documentElement.style.setProperty('--accent-color', ALBUM_COLORS[window.currentEra]);
     }
 });
+
+// ── 8. FULL REPORT — her eser × her pazar ──
+// Vault tablosu 7 ülke + "Other" gösteriyor. Buradaki rapor kayıtta ne varsa
+// hepsini açar: matris görünümü + iki CSV (matris ve ödül bazlı döküm).
+
+// Bir ülke değerini ham ödül nesnelerine ayırır (string / obje / dizi).
+function reportAwards(value) {
+    if (!value || value === 'None') return [];
+    if (typeof value === 'string') return [{ level: value }];
+    if (Array.isArray(value)) return value.flatMap(reportAwards);
+    if (typeof value === 'object') return [value];
+    return [];
+}
+
+// Albümlerin album_id'si yok; pivotlarken boş kalmasın diye kendi adını yazıyoruz.
+function reportEra(item) {
+    return item.album_id || (item.kind === 'Album' ? item.title : '');
+}
+
+function reportItems() {
+    return [
+        ...computedData.albums.map(i => ({ ...i, kind: 'Album' })),
+        ...computedData.songs.map(i => ({ ...i, kind: 'Single' })),
+        ...computedData.nonSingles.map(i => ({ ...i, kind: 'Album track' }))
+    ];
+}
+
+// Her eser için pazar → sayılan ünite (satış metrikleri; zil sesi ayrı).
+function reportRow(item) {
+    const type = item.kind === 'Album' ? 'album' : 'song';
+    const markets = {};
+    let ringtone = 0;
+    for (const country in (item.official_certifications || {})) {
+        const val = item.official_certifications[country];
+        const sales = certUnits(val, country, type, item.id);
+        const ring = ringtoneUnits(val, country, type, item.id);
+        // "Other" ve "Others" aynı şeyi ifade ediyor: belirli bir ülkeye
+        // atanmamış birikmiş üniteler. Matriste tek kolonda birleşiyorlar;
+        // ham anahtar detaylı CSV'de olduğu gibi kalır.
+        const key = (country === 'Other' || country === 'Others') ? 'Unattributed' : country;
+        if (sales > 0) markets[key] = (markets[key] || 0) + sales;
+        ringtone += ring;
+    }
+    // USA kolonu sitedeki ile aynı olmalı: saklı sertifika değil, canlı
+    // stream'lerle güncel *uygun (eligible)* ünite. Aksi halde raporun toplamı
+    // vault tablosunun toplamını tutmaz. Saklı ödül detaylı CSV'de duruyor.
+    if (item.cMap && typeof item.cMap.USA === 'number') markets['USA'] = item.cMap.USA;
+    if (!markets['USA']) delete markets['USA'];
+    return { item, markets, ringtone };
+}
+
+function buildMatrix() {
+    const rows = reportItems().map(reportRow).filter(r => Object.keys(r.markets).length || r.ringtone);
+    const totals = {};
+    rows.forEach(r => {
+        for (const c in r.markets) totals[c] = (totals[c] || 0) + r.markets[c];
+    });
+    // Kolon sırası: USA önce, sonra ünitesi en büyük pazar
+    const markets = Object.keys(totals).sort((a, b) => {
+        if (a === 'USA') return -1;
+        if (b === 'USA') return 1;
+        return totals[b] - totals[a];
+    });
+    const ringtoneTotal = rows.reduce((a, r) => a + r.ringtone, 0);
+    return { rows, markets, totals, ringtoneTotal };
+}
+
+function buildLongRows() {
+    const out = [];
+    reportItems().forEach(item => {
+        const type = item.kind === 'Album' ? 'album' : 'song';
+        for (const country in (item.official_certifications || {})) {
+            reportAwards(item.official_certifications[country]).forEach(aw => {
+                const r = resolveCert(aw, country, type, item.id)[0];
+                if (!r) return;
+                const counted = SALES_METRICS.has(r.metric) ? r.units : 0;
+                out.push({
+                    type: item.kind,
+                    title: item.title,
+                    era: reportEra(item),
+                    country,
+                    level: r.level || '',
+                    units: r.units || 0,
+                    counted_units: counted,
+                    metric: r.metric || '',
+                    format: aw.format || (item.kind === 'Album' ? 'album' : 'single'),
+                    certified_at: aw.certified_at || (item.certification_dates || {})[country] || '',
+                    threshold_basis: aw.threshold_basis || '',
+                    award_source: aw.award_source || '',
+                    official_reported_value: aw.official_reported_value ?? ''
+                });
+            });
+        }
+    });
+    return out;
+}
+
+function toCSV(headers, rows) {
+    const esc = v => {
+        const s = v === null || v === undefined ? '' : String(v);
+        return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    const lines = [headers.map(esc).join(',')];
+    rows.forEach(r => lines.push(r.map(esc).join(',')));
+    return '﻿' + lines.join('\r\n');   // BOM: Excel UTF-8'i doğru okusun
+}
+
+function saveCSV(filename, csv) {
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function downloadReport(kind) {
+    const stamp = new Date().toISOString().slice(0, 10);
+    if (kind === 'matrix') {
+        const { rows, markets, totals, ringtoneTotal } = buildMatrix();
+        const headers = ['Type', 'Title', 'Era',
+            ...markets.map(m => m === 'USA' ? 'USA (eligible)' : m), 'Ringtone', 'Total'];
+        const body = rows.map(r => {
+            const cells = markets.map(m => r.markets[m] || 0);
+            const total = cells.reduce((a, b) => a + b, 0) + r.ringtone;
+            return [r.item.kind, r.item.title, reportEra(r.item), ...cells, r.ringtone, total];
+        });
+        const grand = markets.reduce((a, m) => a + totals[m], 0) + ringtoneTotal;
+        body.push(['', 'TOTAL', '', ...markets.map(m => totals[m]), ringtoneTotal, grand]);
+        saveCSV(`timberlake-certifications-matrix-${stamp}.csv`, toCSV(headers, body));
+        return;
+    }
+    const long = buildLongRows();
+    const headers = ['Type', 'Title', 'Era', 'Country', 'Level', 'Units', 'Counted units',
+                     'Metric', 'Format', 'Certified at', 'Threshold basis', 'Award source',
+                     'Official reported value'];
+    saveCSV(`timberlake-certifications-detailed-${stamp}.csv`,
+        toCSV(headers, long.map(r => [r.type, r.title, r.era, r.country, r.level, r.units,
+              r.counted_units, r.metric, r.format, r.certified_at, r.threshold_basis,
+              r.award_source, r.official_reported_value])));
+}
+
+function renderFullReport() {
+    const { rows, markets, totals, ringtoneTotal } = buildMatrix();
+    const head = ['Title', ...markets.map(m => m === 'USA' ? 'USA (eligible)' : m), 'Ringtone', 'Total']
+        .map(h => `<th>${h}</th>`).join('');
+
+    let html = '';
+    let lastKind = null;
+    rows.forEach(r => {
+        if (r.item.kind !== lastKind) {
+            lastKind = r.item.kind;
+            html += `<tr class="fr-group"><td colspan="${markets.length + 3}">${lastKind}s</td></tr>`;
+        }
+        const cells = markets.map(m => r.markets[m] || 0);
+        const total = cells.reduce((a, b) => a + b, 0) + r.ringtone;
+        html += `<tr data-search="${(r.item.title + ' ' + Object.keys(r.markets).join(' ')).toLowerCase().replace(/"/g, '')}">
+            <td>${r.item.title}<span class="fr-item-era">${r.item.album_id || ''}</span></td>
+            ${cells.map(v => `<td class="${v ? '' : 'zero'}">${v ? v.toLocaleString() : '·'}</td>`).join('')}
+            <td class="${r.ringtone ? '' : 'zero'}">${r.ringtone ? r.ringtone.toLocaleString() : '·'}</td>
+            <td>${total.toLocaleString()}</td>
+        </tr>`;
+    });
+
+    const grand = markets.reduce((a, m) => a + totals[m], 0) + ringtoneTotal;
+    const foot = `<tr><td>All items</td>${markets.map(m => `<td>${totals[m].toLocaleString()}</td>`).join('')}
+        <td>${ringtoneTotal.toLocaleString()}</td><td>${grand.toLocaleString()}</td></tr>`;
+
+    document.getElementById('fr-body').innerHTML =
+        `<table class="fr-table"><thead><tr>${head}</tr></thead><tbody>${html}</tbody><tfoot>${foot}</tfoot></table>`;
+    document.getElementById('fr-foot').textContent =
+        `${rows.length} eser · ${markets.length} pazar · ${grand.toLocaleString()} sertifikalı ünite. ` +
+        `USA kolonu canlı stream'lerle güncel uygun (eligible) ünite; ülke kolonları resmî sertifikalar. `+
+        `Zil sesi ayrı kolonda ama toplama dahil. Stream (Danimarka) ve PLN gelir (Polonya) eşiğiyle ` +
+        `verilen ödüllerin hangi ünite karşılığıyla sayıldığı detaylı CSV'nin “Threshold basis” kolonunda.`;
+}
+
+function filterFullReport(q) {
+    const term = (q || '').trim().toLowerCase();
+    document.querySelectorAll('#fr-body tbody tr').forEach(tr => {
+        if (tr.classList.contains('fr-group')) { tr.style.display = term ? 'none' : ''; return; }
+        tr.style.display = !term || (tr.dataset.search || '').includes(term) ? '' : 'none';
+    });
+}
+
+function openFullReport() {
+    renderFullReport();
+    document.getElementById('full-report').hidden = false;
+    document.body.style.overflow = 'hidden';
+}
+
+function closeFullReport() {
+    document.getElementById('full-report').hidden = true;
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeFullReport();
+});
+document.addEventListener('click', e => {
+    if (e.target && e.target.id === 'full-report') closeFullReport();
+});
