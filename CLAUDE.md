@@ -9,7 +9,8 @@ Justin Timberlake hayran sitesi — albüm/single satışları, sertifikasyonlar
 - **Veri kaynakları:**
   - `data.json` — albüm-seviye veriler (pure sales, YouTube view'ları, video ID'leri).
   - `data/vault.json` — şarkı/albüm sertifikasyonları (ülke bazlı).
-  - **Kworb proxy** (`MY_DYNAMIC_API`, `config.js`) — canlı Spotify stream sayıları (HTML tablo scrape).
+  - **Kworb proxy** (`MY_DYNAMIC_API`, `config.js`) — canlı Spotify stream sayıları (HTML tablo scrape). Yalnızca JT'nin sanatçı sayfasına sabit; parametre almaz.
+  - **`api/kworb.js`** — izin listesindeki başka bir sanatçının Kworb sayfasını sunucudan çeker (kworb.net CORS vermiyor). Şu an tek kullanıcısı `four-minutes.js`.
   - **YouTube Data API v3** (`YOUTUBE_API_KEY`) — gerçek zamanlı YT görüntüleme sayısı.
   - **Spotify Web API** (`api/spotify.js` proxy üzerinden) — sanatçı bilgisi, top tracks, monthly listeners (LD+JSON scrape).
   - **Firestore** — günlük snapshot geçmişi (`scripts/daily-snapshot.js`).
@@ -166,3 +167,4 @@ Kurallar:
 - `Senorita` ID'si `"señorita"` (Türkçe ñ).
 - `Orphan` albümü `computeAllData` içinde `albums` listesinden filtrelenir (`a.id !== "Orphan"`), ama şarkıları gösterilir.
 - Linter/IDE bazen `vault.json`'da değişiklikleri revert ediyor gibi görünebilir — edit sonrası mutlaka `Read` ile doğrula.
+- **"4 Minutes" altı sürüm, JT'nin Kworb sayfasında ikisi var.** Diğer dördü (112M'lik ikinci yayın + Live/Peter Saves/Junkie XL) yalnızca Madonna'nın sayfasında. `four-minutes.js` bunları `api/kworb.js` üzerinden çekip ekliyor; vault, streams ve album aynı fonksiyonu çağırıyor. Hangi satırın eksik olduğu başlık yazımından (`&` / `and`) **değil**, JT'nin canlı listesiyle farktan belirleniyor — Kworb bir sürümü JT sayfasına eklerse kendiliğinden elenir. `normalizeKworbTitle` `&`→`and` çevirdiği için bu dedupe'ta **kullanılamaz**; `fourMinKey` kullanılır.

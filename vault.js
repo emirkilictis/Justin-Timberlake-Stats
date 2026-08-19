@@ -165,21 +165,20 @@ async function fetchLiveStreams() {
             liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + radioStreams;
         }
 
-        const fourMinTitle = '4 Minutes (feat. Justin Timberlake and Timbaland)';
-        const fourMinLower = normalizeKworbTitle(fourMinTitle);
-        if (!liveStreams.tracks[fourMinLower]) {
-            const baselineDate = '2026-04-23';
-            const baselineTotal = 102_400_000;
-            const dailyGrowth = 120_000;
-            const days = Math.max(0, Math.round(
-                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
-            ));
-            const fourMinStreams = baselineTotal + days * dailyGrowth;
-            liveStreams.tracks[fourMinLower] = fourMinStreams;
-            liveStreams.titles[fourMinLower] = fourMinTitle;
-            
-            const albumName = "Orphan";
-            liveStreams.albums[albumName] = (liveStreams.albums[albumName] || 0) + fourMinStreams;
+        // JT'nin Kworb sayfasında olmayan 4 Minutes sürümleri (bkz. four-minutes.js).
+        // Aynı şarkının stream'i olduğu için mevcut anahtarın ÜZERİNE ekleniyor;
+        // ayrı anahtar açmak normalizeKworbTitle çakışması yüzünden 540M'lik satırı
+        // silerdi.
+        if (typeof fetchFourMinutesExtras === 'function') {
+            const extras = await fetchFourMinutesExtras(Object.values(liveStreams.titles));
+            if (extras.total > 0) {
+                const key = normalizeKworbTitle('4 Minutes (feat. Justin Timberlake and Timbaland)');
+                liveStreams.tracks[key] = (liveStreams.tracks[key] || 0) + extras.total;
+                if (!liveStreams.titles[key]) {
+                    liveStreams.titles[key] = '4 Minutes (feat. Justin Timberlake and Timbaland)';
+                }
+                liveStreams.albums['Orphan'] = (liveStreams.albums['Orphan'] || 0) + extras.total;
+            }
         }
 
         const loveSexMagicTitle = 'Love Sex Magic (feat. Justin Timberlake)';

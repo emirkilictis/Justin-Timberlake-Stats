@@ -979,7 +979,6 @@ async function initStreamsDashboard() {
         // ("Love Sex Magic…") gelebiliyor. Ham string karşılaştırması bunları iki ayrı
         // şarkı sanıp career total'i ~98.9M şişiriyordu → normalizeKworbTitle şart.
         const seenTitles = new Set(liveStats.tracks.map(t => normalizeKworbTitle(t.title)));
-        let has4Min = false;
         let hasRadioEdit = false;
         let hasLSM = false;
         // Bayraklar CANLI listeden de doldurulmalı. Aksi halde Kworb şarkıyı geri
@@ -987,7 +986,6 @@ async function initStreamsDashboard() {
         // döngüsü mükerrer diye atlıyor, bayrak false kalıyor ve aşağıdaki fallback
         // gerçek sayının ÜZERİNE sentetik baseline ekliyordu.
         const markKnownExtras = (normTitle) => {
-            if (normTitle.includes('4 minutes') && normTitle.includes('and timbaland')) has4Min = true;
             if (normTitle.includes('not a bad thing') && normTitle.includes('radio edit')) hasRadioEdit = true;
             if (normTitle.includes('love sex magic')) hasLSM = true;
         };
@@ -1026,7 +1024,6 @@ async function initStreamsDashboard() {
         // Yukarıdaki döngü liveTitles'taki track'lerde `continue` ettiği için bu bayrakları
         // kaçırıyordu → track canlı/snapshot'ta varken fallback ikinci kez ~118M enjekte
         // edip career total'i ve projeksiyonu bozuyordu. Tüm merge edilmiş listeyi tarıyoruz.
-        has4Min      = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('4 minutes') && lc.includes('and timbaland'); });
         hasRadioEdit = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('not a bad thing') && lc.includes('radio edit'); });
         hasLSM       = liveStats.tracks.some(t => { const lc = t.title.toLowerCase(); return lc.includes('love sex magic'); });
 
@@ -1051,25 +1048,23 @@ async function initStreamsDashboard() {
             console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for Love Sex Magic (no Firestore data)`);
         }
 
-        // Fallback: Firestore'da "4 Minutes ... and Timbaland" varyantlari yoksa
-        if (!has4Min) {
-            const baselineDate = '2026-04-23';
-            const baselineTotal = 102_400_000;  // 97.9M + 1.9M + 1.5M + 1.0M
-            const dailyGrowth = 120_000;
-            const days = Math.max(0, Math.round(
-                (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
-            ));
-            const fbTotal = baselineTotal + days * dailyGrowth;
-            liveStats.tracks.push({
-                title: '4 Minutes (feat. Justin Timberlake and Timbaland)',
-                total: fbTotal,
-                daily: dailyGrowth
+        // 4 Minutes: JT'nin Kworb sayfasında olmayan sürümler. Eskiden burada
+        // sentetik bir baseline vardı (102.4M @ 2026-04-23, +120K/gün); artık
+        // Madonna'nın sayfasından gerçek rakam okunuyor ve hangi satırın eksik
+        // olduğu başlık yazımından değil, canlı listeyle farktan belirleniyor.
+        if (typeof fetchFourMinutesExtras === 'function') {
+            const fourMin = await fetchFourMinutesExtras(liveStats.tracks.map(t => t.title));
+            fourMin.tracks.forEach(t => {
+                liveStats.tracks.push({ title: t.title, total: t.total, daily: t.daily });
+                liveStats.TotalSpotify += t.total;
+                liveStats.TotalDaily   += t.daily;
+                liveStats['Orphan'].total += t.total;
+                liveStats['Orphan'].daily += t.daily;
             });
-            liveStats.TotalSpotify += fbTotal;
-            liveStats.TotalDaily   += dailyGrowth;
-            liveStats['Orphan'].total += fbTotal;
-            liveStats['Orphan'].daily += dailyGrowth;
-            console.log(`[streams.js fallback] +${fbTotal.toLocaleString('en-US')} for 4 Minutes (no Firestore data)`);
+            if (fourMin.total > 0) {
+                console.log(`[streams.js] 4 Minutes: +${fourMin.total.toLocaleString('en-US')} ` +
+                            `across ${fourMin.tracks.length} versions (${fourMin.live ? 'live Kworb' : 'fallback'})`);
+            }
         }
 
         // Fallback: Firestore'da "Not A Bad Thing - Radio Edit" varyantlari yoksa

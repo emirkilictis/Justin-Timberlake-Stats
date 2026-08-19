@@ -499,25 +499,12 @@ async function init() {
                 });
             }
 
-            // normalizeKworbTitle "&" → "and" çevirdiği için Kworb'un hem
-            // "and Timbaland" hem "& Timbaland" adlandırması burada yakalanır.
-            const has4Min = all.some(t => {
-                const n = normalizeKworbTitle(t.title);
-                return n.includes('4 minutes') && n.includes('justin timberlake') && n.includes('and timbaland');
-            });
-            if (!has4Min) {
-                const baselineDate = '2026-04-23';
-                const baselineTotal = 102_400_000;
-                const dailyGrowth = 120_000;
-                const days = Math.max(0, Math.round(
-                    (Date.now() - new Date(baselineDate + 'T00:00:00Z').getTime()) / 86400000
-                ));
-                const fourMinStreams = baselineTotal + days * dailyGrowth;
-                all.push({
-                    title: '4 Minutes (feat. Justin Timberlake and Timbaland)',
-                    total: fourMinStreams,
-                    daily: dailyGrowth
-                });
+            // JT'nin Kworb sayfasında olmayan 4 Minutes sürümleri (four-minutes.js).
+            // Eski kontrol normalize başlığa bakıyordu; "&" → "and" çevirisi iki ayrı
+            // track'i tek başlık sanıp eksik sürümleri hiç eklemiyordu.
+            if (typeof fetchFourMinutesExtras === 'function') {
+                const fourMin = await fetchFourMinutesExtras(all.map(t => t.title));
+                fourMin.tracks.forEach(t => all.push({ title: t.title, total: t.total, daily: t.daily }));
             }
 
             const hasLSM = all.some(t => t.title.toLowerCase().includes('love sex magic'));
