@@ -1179,7 +1179,8 @@
         "Mexico": "3x Platinum + Gold",
         "New Zealand": "Gold",
         "World": "None",
-        "Other": "120000 units"
+        "Other": "120000 units",
+        "Portugal": "Gold"
       }
     },
     {
@@ -1196,7 +1197,8 @@
         "New Zealand": "Gold",
         "World": "None",
         "Other": "100000 units",
-        "Poland": "Platinum"
+        "Poland": "Platinum",
+        "Denmark": "Platinum"
       }
     },
     {
@@ -1211,7 +1213,7 @@
         "Australia": "None",
         "Canada": "None",
         "World": "None",
-        "Other": "90000 units"
+        "Other": "None"
       }
     },
     {
