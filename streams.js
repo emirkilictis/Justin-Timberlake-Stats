@@ -1352,8 +1352,8 @@ async function initStreamsDashboard() {
         (async () => {
             try {
                 const [dataJson, vaultJson] = await Promise.all([
-                    fetch('data.json').then(r => r.json()),
-                    fetch('data/vault.json').then(r => r.json()).catch(() => ({ songs: [] }))
+                    fetch('data.json', { cache: 'no-cache' }).then(r => r.json()),
+                    fetch('data/vault.json', { cache: 'no-cache' }).then(r => r.json()).catch(() => ({ songs: [] }))
                 ]);
                 const allIds = new Set();
                 for (const alb of Object.values(dataJson.albums)) {

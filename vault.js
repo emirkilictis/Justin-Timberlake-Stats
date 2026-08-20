@@ -99,8 +99,8 @@ let sortState = {
 async function fetchVaultData() {
     try {
         const [res, jtRes] = await Promise.all([
-            fetch('data/vault.json'),
-            fetch('data.json')
+            fetch('data/vault.json', { cache: 'no-cache' }),
+            fetch('data.json', { cache: 'no-cache' })
         ]);
         if (res.ok) vaultData = await res.json();
         if (jtRes.ok) jtData = await jtRes.json();
@@ -490,6 +490,20 @@ function certLabel(value) {
         return (value.level || '') + (note ? ` (${note})` : '');
     }
     return '';
+}
+
+// Yalnızca GERÇEK ödüller: ABD kolonu canlı stream'lerden türeyen "eligible"
+// rakamı taşıyor ve bunun bir kısmı hiçbir zaman sertifika edilmedi. Karşılaştırma
+// yapılabilir olan sayı budur — başka sanatçıların certified units'i de yalnızca
+// verilmiş ödülleri sayar.
+function certifiedAwardsOnly(items, itemType) {
+    return items.reduce((sum, i) => {
+        let row = 0;
+        COUNTRIES.forEach(c => { if (c !== 'USA') row += i.cMap[c] || 0; });
+        // ABD kolonu yerine ABD'nin SAKLI sertifikası
+        row += certUnits((i.official_certifications || {})['USA'], 'USA', itemType, i.id);
+        return sum + row;
+    }, 0);
 }
 
 // ABD dışı sertifikalı ünite. USA kolonunu düşmek yetmiyor: Ringtone kolonu
@@ -991,6 +1005,12 @@ function renderTables() {
                               outsideUS(computedData.songs, 'song')).toLocaleString();
     }
 
+    const awardsEl = document.getElementById('cert-awards-total');
+    if (awardsEl) {
+        awardsEl.textContent = (certifiedAwardsOnly(computedData.albums, 'album') +
+                                certifiedAwardsOnly(computedData.songs, 'song')).toLocaleString();
+    }
+
     // Country Summary Table
     const summaryTbody = document.getElementById('country-summary-tbody');
     if (summaryTbody) {
@@ -1026,6 +1046,16 @@ function renderTables() {
             <td class="text-center">${exUsAlbums.toLocaleString()}</td>
             <td class="text-center">${exUsSingles.toLocaleString()}</td>
             <td class="text-right font-bold" style="color:var(--accent-color)">${(exUsAlbums + exUsSingles).toLocaleString()}</td>
+        </tr>`;
+
+        // Yalnızca verilmiş ödüller — ABD eligible payı hariç
+        const awardsAlbums = certifiedAwardsOnly(computedData.albums, 'album');
+        const awardsSingles = certifiedAwardsOnly(computedData.songs, 'song');
+        summaryTbody.innerHTML += `<tr class="summary-subtotal">
+            <td class="font-bold">🏆 Certified awards only<span class="subtotal-note">official awards only — excludes US streaming-eligible units</span></td>
+            <td class="text-center">${awardsAlbums.toLocaleString()}</td>
+            <td class="text-center">${awardsSingles.toLocaleString()}</td>
+            <td class="text-right font-bold" style="color:var(--accent-color)">${(awardsAlbums + awardsSingles).toLocaleString()}</td>
         </tr>`;
 
         // Grand total row

@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787249139">
+    <link rel="stylesheet" href="style.css?v=1787249902">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -665,11 +665,20 @@
         <!-- Grand Total Footer — plain, no neon -->
         <div class="vault-grand-total">
             <div>
-                <div class="label">Total Global Certified Units</div>
-                <div class="sub">US Eligible + Global Official Summation</div>
+                <div class="label">Certified + Streaming-Eligible Units</div>
+                <div class="sub">Official awards worldwide, with US units counted at what is currently eligible</div>
             </div>
             <div>
                 <div id="grand-total-odometer" class="value">—</div>
+            </div>
+        </div>
+        <div class="vault-grand-total vault-subtotal">
+            <div>
+                <div class="label">Certified Awards Only</div>
+                <div class="sub">Awards actually granted — excludes US units that are eligible but not yet certified. This is the figure comparable to another artist's certified total.</div>
+            </div>
+            <div>
+                <div id="cert-awards-total" class="value">—</div>
             </div>
         </div>
         <div class="vault-grand-total vault-subtotal">
@@ -684,11 +693,11 @@
 
     </div>
 
-    <script src="xlsx.js?v=1787249139" defer></script>
-    <script src="config.js?v=1787249139" defer></script>
-    <script src="song-map.js?v=1787249139" defer></script>
-    <script src="four-minutes.js?v=1787249139" defer></script>
-    <script src="vault.js?v=1787249139" defer></script>
+    <script src="xlsx.js?v=1787249902" defer></script>
+    <script src="config.js?v=1787249902" defer></script>
+    <script src="song-map.js?v=1787249902" defer></script>
+    <script src="four-minutes.js?v=1787249902" defer></script>
+    <script src="vault.js?v=1787249902" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();

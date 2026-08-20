@@ -212,7 +212,7 @@ let _vaultYtCache = null;
 async function loadVaultSongYtIds() {
     if (_vaultYtCache) return _vaultYtCache;
     try {
-        const res = await fetch('data/vault.json');
+        const res = await fetch('data/vault.json', { cache: 'no-cache' });
         const v = await res.json();
         const map = {};  // albumName -> Set<videoId>
         for (const s of (v.songs || [])) {
@@ -255,7 +255,7 @@ async function fetchAllData() {
         } catch (_) {}
 
         // data.json + vault.json + (cache yoksa) Kworb'u PARALEL başlat — sıralı beklemek yerine.
-        const dataPromise  = fetch('data.json').then(r => r.json());
+        const dataPromise  = fetch('data.json', { cache: 'no-cache' }).then(r => r.json());
         const vaultPromise = loadVaultSongYtIds();
         const kworbPromise = cachedKworb ? null : fetch(MY_DYNAMIC_API).then(r => r.text());
 

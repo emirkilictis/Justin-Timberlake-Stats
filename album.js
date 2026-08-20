@@ -322,7 +322,7 @@ async function getCombinedYtIds(albumId, albumData) {
     const albumIds = albumData?.streams?.youtubeVideoIds || [];
     const combined = new Set(albumIds);
     try {
-        const v = await (await fetch('data/vault.json')).json();
+        const v = await (await fetch('data/vault.json', { cache: 'no-cache' })).json();
         for (const s of (v.songs || [])) {
             const ids = (s.streams && s.streams.youtubeVideoIds) || s.youtubeVideoIds;
             if (!ids || !ids.length) continue;
@@ -470,7 +470,7 @@ async function init() {
 
     try {
         const [dataRes, kworbRes] = await Promise.all([
-            fetch('data.json'),
+            fetch('data.json', { cache: 'no-cache' }),
             MY_API ? fetch(MY_API) : Promise.resolve(null)
         ]);
 

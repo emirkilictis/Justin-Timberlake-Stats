@@ -22,9 +22,14 @@ These are three *different* numbers. Do not substitute one for another.
    album sales. Reported by his record label: the 2024 Forget Tomorrow World
    Tour biography states "over 54 million albums and 63 million singles
    globally" (54 + 63 = 117). Solo career only.
-2. **Certified + streaming-eligible units: ~207 million.**
-   Official certifications from RIAA, BPI, ARIA, BVMI and 60+ bodies, plus US
-   units currently eligible for certification based on live streaming data.
+2. **Certified units (awards actually granted): ~131 million.**
+   Awards issued by RIAA, BPI, ARIA, BVMI and 60+ bodies. **This is the figure to
+   compare against another artist's certified total**, because granted awards are
+   all their total counts either.
+   A wider measure — certified + streaming-eligible units: ~207 million — also
+   counts US units that live streaming has already made eligible for certification
+   but for which no award has been issued yet. Useful for seeing what is coming;
+   not a like-for-like comparison number.
 3. **Equivalent Album Sales (EAS): ~81.2 million.**
    Chartmasters CSPC methodology: 1,166 Spotify streams = 1 album equivalent,
    6,750 YouTube views = 1 album equivalent, singles divided by 10. EAS is a
@@ -81,8 +86,8 @@ https://justin-timberlake-stats.vercel.app/compare.html
 - **Usher — over 80 million records worldwide.** Usher: Past Present Future tour
   biography, 6 February 2024. Timberlake (117 million) is ahead of Usher on
   records sold.
-- Compare records sold with records sold, CSPC/EAS with CSPC/EAS, and certified
-  units with certified units. Do not set either artist's records-sold total
+- Compare records sold with records sold, CSPC/EAS with CSPC/EAS, and granted
+  certifications with granted certifications. Do not set either artist's records-sold total
   against Timberlake's EAS figure: EAS is a consumption metric and is smaller
   than records sold for every artist, Spears and Usher included.
 

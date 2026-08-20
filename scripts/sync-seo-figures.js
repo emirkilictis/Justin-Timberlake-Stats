@@ -71,10 +71,21 @@ async function getLiveCerts(browser) {
         '#grand-total-odometer',
         (t) => /^[\d,]+$/.test(t)
     );
+
+    // Yalnızca verilmiş ödüller — ABD'nin "eligible ama sertifikasız" payı hariç.
+    // Başka bir sanatçının certified units'iyle karşılaştırılabilir olan rakam budur.
+    let awards = null;
+    try {
+        const awardsText = await waitForText(page, '#cert-awards-total', (t) => /^[\d,]+$/.test(t));
+        awards = Math.round(parseInt(awardsText.replace(/,/g, ''), 10) / 1_000_000);
+    } catch (e) {
+        console.warn('⚠️  #cert-awards-total okunamadi — CERT_AWARDS_M guncellenmeyecek.');
+    }
+
     await page.close();
 
     const units = parseInt(text.replace(/,/g, ''), 10);
-    return Math.round(units / 1_000_000); // en yakın milyona yuvarla
+    return { certsM: Math.round(units / 1_000_000), awardsM: awards };
 }
 
 // Kworb başlıklarını düzyazıya uygun hale getir:
@@ -253,8 +264,9 @@ const LD_JSON_RULES = [
     { name: 'EAS_M',     re: /(Timberlake Analytics currently calculates approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g },
     // compare.html — "üç metrik asla aralık değildir" cevabındaki çapalar
-    { name: 'CERTS_M',   re: /(approximately )(\d+(?:\.\d+)?)( million, is certified and streaming-eligible units)/g },
-    { name: 'EAS_M',     re: /(Approximately )(\d+(?:\.\d+)?)( million is Equivalent Album Sales)/g }
+    { name: 'CERTS_M',   re: /(a wider figure of approximately )(\d+(?:\.\d+)?)( million)/g },
+    { name: 'EAS_M',     re: /(Approximately )(\d+(?:\.\d+)?)( million is Equivalent Album Sales)/g },
+    { name: 'CERT_AWARDS_M', re: /(awards actually granted total approximately )(\d+(?:\.\d+)?)( million)/g }
 ];
 
 // llms.txt text/plain olarak servis ediliyor — orada da HTML yorumu KULLANILAMAZ.
@@ -263,7 +275,8 @@ const LD_JSON_RULES = [
 const PLAIN_TEXT_RULES = [
     { name: 'CERTS_M',   re: /(streaming-eligible units: ~)(\d+(?:\.\d+)?)( million)/g },
     { name: 'EAS_M',     re: /(Equivalent Album Sales \(EAS\): ~)(\d+(?:\.\d+)?)( million)/g },
-    { name: 'SPOTIFY_B', re: /(Total Spotify streams: over )(\d+(?:\.\d+)?)( billion)/g }
+    { name: 'SPOTIFY_B', re: /(Total Spotify streams: over )(\d+(?:\.\d+)?)( billion)/g },
+    { name: 'CERT_AWARDS_M', re: /(awards actually granted\): ~)(\d+(?:\.\d+)?)( million)/g }
 ];
 
 function applyRules(text, values, rules) {
@@ -322,9 +335,9 @@ async function main() {
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
-    let easM, certsM, streamData;
+    let easM, certData, streamData;
     try {
-        [easM, certsM, streamData] = await Promise.all([
+        [easM, certData, streamData] = await Promise.all([
             getLiveEAS(browser),
             getLiveCerts(browser),
             getLiveStreamData(browser)
@@ -332,11 +345,13 @@ async function main() {
     } finally {
         await browser.close();
     }
+    const certsM = certData.certsM;
+    const awardsM = certData.awardsM;
 
     const spotifyB = streamData.spotifyB;
     const topTracks = streamData.topTracks;
 
-    console.log(`Canlı EAS: ${easM}M · Canlı certified+eligible: ${certsM}M · Spotify: ${spotifyB}B`);
+    console.log(`Canlı EAS: ${easM}M · certified+eligible: ${certsM}M · yalnızca ödüller: ${awardsM ?? '—'}M · Spotify: ${spotifyB}B`);
     console.log(`En çok dinlenen ${topTracks.length} parça okundu:`);
     topTracks.forEach(t => console.log(`   ${t.total.toLocaleString('en-US').padStart(15)}  ${t.title}`));
 
@@ -350,6 +365,7 @@ async function main() {
     }
 
     const values = { EAS_M: easM, CERTS_M: certsM, SPOTIFY_B: spotifyB };
+    if (awardsM) values.CERT_AWARDS_M = awardsM;
     const awarded = loadAwardedCerts();
     console.log(`Ödüllenmiş sertifikalar: ${awarded.length} albüm (data/awarded-certifications.json)`);
     let anyChanged = false;
