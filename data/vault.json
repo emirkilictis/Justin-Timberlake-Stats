@@ -388,7 +388,7 @@
         "IsUsVbTj2AY"
       ],
       "official_certifications": {
-        "USA": "1x Platinum",
+        "USA": "2x Platinum",
         "UK": "1x Platinum",
         "Brazil": "2x Platinum",
         "Germany": "None",
@@ -414,6 +414,16 @@
         },
         "Others": "243545 units",
         "World": "None"
+      },
+      "certification_dates": {
+        "USA": "2013"
+      },
+      "us_share": {
+        "value": 0.5895,
+        "basis": "luminate_week",
+        "measured_at": "2026-08-20",
+        "evidence": "Luminate, via Billboard: over 915,000 official on-demand U.S. streams in the week of 2026-06-19..25 — a clean week, before the TikTok trend started. Our own Firestore snapshots for the same window give 852,737 global Spotify streams across both versions (304,533,118 + 52,490,775 -> 305,199,868 + 52,676,762). The measured U.S.-to-global-Spotify ratio is therefore 1.073, against the model's ARTIST_RATIO x 0.27 = 0.4914 — a factor of 2.1836. The gap is not video: closing it with YouTube alone would require 262,000 views a day on a clip whose lifetime total after 13.5 years is 203.5M. Cross-check on the viral week 2026-07-31..08-06: over 1,800,000 U.S. streams against a 1,465,115 Spotify delta, ratio 1.229.",
+        "source": "https://www.billboard.com/music/chart-beat/tate-mcrae-lollpalooza-set-new-era-streams-trending-up-1236315069/"
       }
     },
     {
@@ -607,6 +617,13 @@
       },
       "certification_dates": {
         "South Africa": "2024-05-09"
+      },
+      "us_share": {
+        "value": 0.3999,
+        "basis": "riaa_floor",
+        "measured_at": "2026-08-20",
+        "evidence": "RIAA 1x Platinum = 1,000,000 units; pure_sales_us is 100,000, so at least (1,000,000 - 100,000) x 150 = 135,000,000 U.S. streams already existed on the award date. At the era share of 0.35 the model sees only 118,153,078 — a factor of 1.1426. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
+        "source": "RIAA Gold & Platinum register"
       }
     },
     {
@@ -846,7 +863,14 @@
       },
       "youtubeVideoIds": [
         "oG08ukJPtR8"
-      ]
+      ],
+      "us_share": {
+        "value": 0.5597,
+        "basis": "riaa_floor",
+        "measured_at": "2026-08-20",
+        "evidence": "RIAA 6x Platinum = 6,000,000 units; pure_sales_us is 1,000,000, so at least (6,000,000 - 1,000,000) x 150 = 750,000,000 U.S. streams already existed on the award date. At the era share of 0.27 the model sees only 361,766,821 — a factor of 2.0732. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
+        "source": "RIAA Gold & Platinum register"
+      }
     },
     {
       "id": "ayo_technology",
@@ -899,7 +923,14 @@
       },
       "youtubeVideoIds": [
         "4kc5_pfNHGk"
-      ]
+      ],
+      "us_share": {
+        "value": 0.4978,
+        "basis": "riaa_floor",
+        "measured_at": "2026-08-20",
+        "evidence": "RIAA 6x Platinum = 6,000,000 units; pure_sales_us is 3,500,000, so at least (6,000,000 - 3,500,000) x 150 = 375,000,000 U.S. streams already existed on the award date. At the era share of 0.27 the model sees only 203,371,585 — a factor of 1.8439. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
+        "source": "RIAA Gold & Platinum register"
+      }
     },
     {
       "id": "dead_and_gone",
@@ -927,7 +958,14 @@
       },
       "youtubeVideoIds": [
         "6mEx9FtuN0k"
-      ]
+      ],
+      "us_share": {
+        "value": 0.2714,
+        "basis": "riaa_floor",
+        "measured_at": "2026-08-20",
+        "evidence": "RIAA 5x Platinum = 5,000,000 units; pure_sales_us is 3,500,000, so at least (5,000,000 - 3,500,000) x 150 = 225,000,000 U.S. streams already existed on the award date. At the era share of 0.27 the model sees only 223,797,991 — a factor of 1.0054. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
+        "source": "RIAA Gold & Platinum register"
+      }
     },
     {
       "id": "carry_out",
@@ -1028,7 +1066,14 @@
       "youtubeVideoIds": [
         "Ii7aOjjJAxw",
         "k8rpVEzU9do"
-      ]
+      ],
+      "us_share": {
+        "value": 0.3643,
+        "basis": "riaa_floor",
+        "measured_at": "2026-08-20",
+        "evidence": "RIAA 1x Platinum = 1,000,000 units; pure_sales_us is 50,000, so at least (1,000,000 - 50,000) x 150 = 142,500,000 U.S. streams already existed on the award date. At the era share of 0.35 the model sees only 136,871,513 — a factor of 1.0411. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
+        "source": "RIAA Gold & Platinum register"
+      }
     },
     {
       "id": "where_is_the_love",

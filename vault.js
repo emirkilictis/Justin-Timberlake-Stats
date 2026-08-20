@@ -181,6 +181,21 @@ async function fetchLiveStreams() {
             }
         }
 
+        // JT'nin Kworb sayfasında HİÇ satırı olmayan ortak kayıtlar
+        // (Where Is The Love? / Give It To Me / Rehab) — bkz. collab-streams.js.
+        // 4 Minutes'ın aksine burada anahtar yok, o yüzden yenisini açıyoruz.
+        // liveStreams.albums'a bilerek eklenmiyor (gerekçe modülün başında).
+        if (typeof fetchCollabStreams === 'function') {
+            const collabs = await fetchCollabStreams(Object.values(liveStreams.titles));
+            collabs.forEach(c => {
+                if (c.total <= 0) return;
+                const key = normalizeKworbTitle(c.vaultTitle);
+                if (liveStreams.tracks[key]) return;   // JT sayfasında zaten var
+                liveStreams.tracks[key] = c.total;
+                liveStreams.titles[key] = c.vaultTitle;
+            });
+        }
+
         const loveSexMagicTitle = 'Love Sex Magic (feat. Justin Timberlake)';
         const loveSexMagicLower = normalizeKworbTitle(loveSexMagicTitle);
         if (!liveStreams.tracks[loveSexMagicLower]) {
@@ -336,6 +351,51 @@ function parseCertString(certStr, country, itemType = 'song', itemId = '') {
     return totalUnits;
 }
 
+// ── Ölçülmüş ABD payı ────────────────────────────────────
+//
+// US_SHARE / 0.27 dönem sabitleri kataloğun tamamını tarif edemiyor: aynı
+// sanatçının bir kaydı ABD merkezli (Suit & Tie — Jay-Z'li, dışarıda tutmadı),
+// bir başkası küresel (CAN'T STOP THE FEELING! — Trolls). Tek sabit pay
+// ikisini aynı anda anlatamıyor; ABD merkezli olanı sistematik olarak eziyor.
+//
+// Çözüm düz bir çarpan DEĞİL — o, kanıtı olmayan şarkıları da şişirirdi.
+// Çözüm: pay şarkı bazında, ve YALNIZCA ölçümü olan şarkıda yazılır.
+// Kanıtı olmayan her satır dönem sabitinde kalır. İki kanıt sınıfı var:
+//
+//   luminate_week — yayınlanmış MUTLAK ABD haftalık stream sayısı (Billboard/
+//     Luminate). Aynı haftanın global Spotify artışını kendi Firestore
+//     snapshot'larımızdan çıkarıp oranı doğrudan ölçüyoruz. Yüzde değişim
+//     yayınlayan haberler İŞE YARAMAZ; mutlak sayı şart.
+//
+//   riaa_floor — ödülün dayattığı taban. N× Platin "o tarihte en az N milyon
+//     ünite vardı" demek; pure sales çıkarılınca geriye olması ZORUNLU ABD
+//     stream sayısı kalıyor. Model bundan azını görüyorsa düşük hesapladığı
+//     kanıtlanmış olur. Bu bir ALT SINIR: ödül geçmişte verildi (stream'ler o
+//     günden beri büyüdü) ve RIAA YouTube UGC'yi de sayıyor, biz saymıyoruz.
+//
+// Tabanın üstüne çıkılmaz — pay her zaman kanıtın izin verdiği en düşük
+// değere aşağı yuvarlanır. Bu yüzden riaa_floor satırları bugünün ekranını
+// değiştirmez (USA kolonu zaten max(live, cert)); yaptıkları şey o şarkıları
+// donmuş olmaktan çıkarıp bundan sonraki stream'lere kredi vermek.
+//
+// Kanıtsız blok yok sayılır: gerekçesi yazılmamış bir sayı sessizce toplamı
+// oynatmasın. Sertifikalardaki `threshold_basis` kuralının aynısı.
+const US_SHARE_BASES = new Set(['luminate_week', 'riaa_floor']);
+
+function resolveMeasuredUSShare(item) {
+    const ov = item && item.us_share;
+    if (!ov) return null;
+    if (typeof ov.value !== 'number' || !(ov.value > 0) || ov.value > 1) {
+        console.warn('[us_share] geçersiz value, yok sayıldı:', item.id, ov.value);
+        return null;
+    }
+    if (!US_SHARE_BASES.has(ov.basis) || !ov.evidence || !ov.source) {
+        console.warn('[us_share] kanıt eksik (basis/evidence/source), yok sayıldı:', item.id);
+        return null;
+    }
+    return ov.value;
+}
+
 function calculateUSALive(item, type = 'song') {
     const pureSalesUS = item.pure_sales_us || 0;
     
@@ -348,6 +408,10 @@ function calculateUSALive(item, type = 'song') {
     if (pre2016Eras.includes(era) || (era === "Orphan" && !post2016Orphans.includes(item.title))) {
         effectiveUSShare = 0.27;
     }
+
+    // Ölçülmüş pay dönem sabitini geçersiz kılar.
+    const measured = resolveMeasuredUSShare(item);
+    if (measured !== null) effectiveUSShare = measured;
 
     if (type === 'song') {
         const globalSpot = getTrackSpotify(item.title);

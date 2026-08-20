@@ -10,7 +10,7 @@ Justin Timberlake hayran sitesi — albüm/single satışları, sertifikasyonlar
   - `data.json` — albüm-seviye veriler (pure sales, YouTube view'ları, video ID'leri).
   - `data/vault.json` — şarkı/albüm sertifikasyonları (ülke bazlı).
   - **Kworb proxy** (`MY_DYNAMIC_API`, `config.js`) — canlı Spotify stream sayıları (HTML tablo scrape). Yalnızca JT'nin sanatçı sayfasına sabit; parametre almaz.
-  - **`api/kworb.js`** — izin listesindeki başka bir sanatçının Kworb sayfasını sunucudan çeker (kworb.net CORS vermiyor). Şu an tek kullanıcısı `four-minutes.js`.
+  - **`api/kworb.js`** — izin listesindeki başka bir sanatçının Kworb sayfasını sunucudan çeker (kworb.net CORS vermiyor). Kullanıcıları: `four-minutes.js` ve `collab-streams.js`.
   - **YouTube Data API v3** (`YOUTUBE_API_KEY`) — gerçek zamanlı YT görüntüleme sayısı.
   - **Spotify Web API** (`api/spotify.js` proxy üzerinden) — sanatçı bilgisi, top tracks, monthly listeners (LD+JSON scrape).
   - **Firestore** — günlük snapshot geçmişi (`scripts/daily-snapshot.js`).
@@ -59,6 +59,36 @@ USA için RIAA mantığı: `< 500k → 0`, `500k–1M → 500k`, `≥1M → floo
 - `ARTIST_RATIO = 1.82` — Spotify global/AOD multiplier (catalog hits için tune edilmiş).
 - `US_SHARE = 0.35` — yeni eserler için US payı; **pre-2016 eralar (Justified, FSLS, 20/20 1+2) için `0.27`**.
 - Orphan tracks: `post2016Orphans` listesi (Stay With Me, Better Place, vs.) yeni US share kullanır; geri kalanları 0.27.
+- **Şarkı bazlı `us_share`** dönem sabitini geçersiz kılar — aşağıya bak.
+
+### Ölçülmüş ABD payı — `us_share`
+
+Dönem sabitleri (0.27 / 0.35) kataloğun tamamını tarif edemiyor: **Suit & Tie** ABD merkezli (Jay-Z'li, dışarıda tutmadı), **CAN'T STOP THE FEELING!** küresel (Trolls). Tek sabit pay ikisini aynı anda anlatamaz ve ABD merkezli olanı sistematik olarak ezer.
+
+**Çözüm düz bir çarpan DEĞİL** — o, kanıtı olmayan şarkıları da şişirirdi. Pay şarkı bazında ve **yalnızca ölçümü olan şarkıda** yazılır; geri kalan her satır dönem sabitinde kalır.
+
+```json
+"us_share": {
+  "value": 0.5895,
+  "basis": "luminate_week",
+  "measured_at": "2026-08-20",
+  "evidence": "...ölçümün tamamı, sayılarıyla...",
+  "source": "https://www.billboard.com/..."
+}
+```
+
+İki kanıt sınıfı (`US_SHARE_BASES`, `vault.js`):
+
+- **`luminate_week`** — yayınlanmış **mutlak** ABD haftalık stream sayısı (Billboard/Luminate). Aynı haftanın global Spotify artışı kendi Firestore snapshot'larımızdan çıkarılıp oran doğrudan ölçülür. **Yüzde değişim yayınlayan haberler işe yaramaz**, mutlak sayı şart.
+- **`riaa_floor`** — ödülün dayattığı taban. `Nx Platin` = "o tarihte en az N milyon ünite vardı"; `(ödül − pure_sales_us) × 150` o tarihte olması **zorunlu** ABD stream sayısını verir. Model bundan azını görüyorsa düşük hesapladığı kanıtlanmıştır. Bu bir **alt sınır**: ödül geçmişte verildi ve RIAA YouTube UGC'yi de sayıyor, biz saymıyoruz.
+
+Kurallar:
+- Pay her zaman kanıtın izin verdiği **en düşük** değere aşağı yuvarlanır — tabanın üstüne çıkılmaz.
+- `basis` + `evidence` + `source` üçü de zorunlu; eksikse `resolveMeasuredUSShare` bloğu **yok sayar** ve konsola uyarı yazar. Gerekçesiz sayı sessizce toplamı oynatmasın diye.
+- `riaa_floor` satırları bugünün ekranını değiştirmez (USA kolonu zaten `max(live, cert)`); yaptıkları şey o şarkıyı donmuş olmaktan çıkarıp bundan sonraki stream'lere kredi vermek.
+- Stream verisi eksik olan bir şarkıya `riaa_floor` **yazılmaz** — "kanıt" bug'dan gelir. Önce veri düzeltilir, sonra taban yeniden hesaplanır (bkz. `collab-streams.js`).
+
+Şu an kanıtlı satırlar: Suit & Tie (`luminate_week`), Love Never Felt So Good / Holy Grail / Selfish / Better Place / Dead And Gone (`riaa_floor`). **CSTF'e bilerek dokunulmadı** — 14× ödülü 1,530,000,000 stream dayatıyor, model zaten 1,64 milyar görüyor (çarpan 0.93), yani düşük hesapladığımız kanıtlanmıyor.
 
 ## Veri yapısı — `data/vault.json`
 
@@ -167,4 +197,7 @@ Kurallar:
 - `Senorita` ID'si `"señorita"` (Türkçe ñ).
 - `Orphan` albümü `computeAllData` içinde `albums` listesinden filtrelenir (`a.id !== "Orphan"`), ama şarkıları gösterilir.
 - Linter/IDE bazen `vault.json`'da değişiklikleri revert ediyor gibi görünebilir — edit sonrası mutlaka `Read` ile doğrula.
+- **Üç şarkının Kworb'da JT sayfasında hiç satırı yok** — `Where Is The Love?` (Black Eyed Peas), `Give It To Me` (Timbaland), `Rehab` (Rihanna). Vault bunları sıfır Spotify ile hesaplıyordu, yani on yıllık dinlenme yok sayılıyordu; üçü de RIAA ödülünün dayattığı tabanın altına düşüyordu. `collab-streams.js` bunları `api/kworb.js` üzerinden çekiyor. Sayılan satırlar `counted`, atlananlar gerekçesiyle `skipped` içinde tek tek yazılı; **tanınmayan bir sürüm çıkarsa sayılmaz, konsola uyarı düşer**. Dedupe JT'nin canlı listesiyle farktan yapılıyor (`collabKey`, `normalizeKworbTitle` değil) — Kworb satırı JT'ye eklerse kendiliğinden devre dışı kalır.
+  - **Kapsam yalnızca vault.** `streams.html` kariyer toplamı JT'nin *kredili* Spotify kataloğunu sayıyor; Where Is The Love? kredide BEP'in. `liveStreams.albums`'a da eklenmiyor: Orphan'ın albüm toplamı büyürse kendi YT ID'si olmayan tek şarkı olan `Hair Up` sessizce küçülürdü.
+  - **Timbaland'ın Kworb sayfasında `daily` kolonu bozuk** (Promiscuous'a 9.9M/gün yazıyor). Yedek büyüme oranı oradan alınmaz; `Give It To Me` yedeği `daily: 0` ile sabit tutuluyor.
 - **"4 Minutes" altı sürüm, JT'nin Kworb sayfasında ikisi var.** Diğer dördü (112M'lik ikinci yayın + Live/Peter Saves/Junkie XL) yalnızca Madonna'nın sayfasında. `four-minutes.js` bunları `api/kworb.js` üzerinden çekip ekliyor; vault, streams ve album aynı fonksiyonu çağırıyor. Hangi satırın eksik olduğu başlık yazımından (`&` / `and`) **değil**, JT'nin canlı listesiyle farktan belirleniyor — Kworb bir sürümü JT sayfasına eklerse kendiliğinden elenir. `normalizeKworbTitle` `&`→`and` çevirdiği için bu dedupe'ta **kullanılamaz**; `fourMinKey` kullanılır.

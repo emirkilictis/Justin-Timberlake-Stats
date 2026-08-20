@@ -15,7 +15,12 @@
 
 const ALLOWED_ARTISTS = {
     '6tbjWDEIzxoDsBA1FuhfPW': 'Madonna',
-    '31TPClRtHm23RisEBtV3X7': 'Justin Timberlake'
+    '31TPClRtHm23RisEBtV3X7': 'Justin Timberlake',
+    // JT'nin sayfasında hiç görünmeyen ortak kayıtlar (bkz. collab-streams.js):
+    // Where Is The Love? / Give It To Me / Rehab.
+    '1yxSLGMDHlW21z4YXirZDS': 'Black Eyed Peas',
+    '5Y5TRrQiqgUO4S36tzjIRZ': 'Timbaland',
+    '5pKCCKE2ajJHZ9KAiaK11H': 'Rihanna'
 };
 
 function parseSongRows(html) {
