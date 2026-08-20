@@ -266,7 +266,14 @@ const LD_JSON_RULES = [
     // compare.html — "üç metrik asla aralık değildir" cevabındaki çapalar
     { name: 'CERTS_M',   re: /(a wider figure of approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'EAS_M',     re: /(Approximately )(\d+(?:\.\d+)?)( million is Equivalent Album Sales)/g },
-    { name: 'CERT_AWARDS_M', re: /(awards actually granted total approximately )(\d+(?:\.\d+)?)( million)/g }
+    // Cümle başında da geçiyor (vault.html) — büyük harf varyantı kaçmasın.
+    { name: 'CERT_AWARDS_M', re: /([Aa]wards actually granted total approximately )(\d+(?:\.\d+)?)( million)/g },
+    { name: 'CERTS_M',   re: /(A third figure, approximately )(\d+(?:\.\d+)?)( million, is certified and eligible units)/g },
+    // index.html "doğru eşleştirmeler" cevabı — üç rakam da ankrajsızdı,
+    // 2026-08'e kadar 197M/81M'de donmuş kalmıştı.
+    { name: 'CERTS_M',   re: /(approximately )(\d+(?:\.\d+)?)( million certified and eligible units)/g },
+    { name: 'EAS_M',     re: /(Equivalent Album Sales of approximately )(\d+(?:\.\d+)?)( million)/g },
+    { name: 'EAS_M',     re: /(approximately )(\d+(?:\.\d+)?)( million EAS)/g }
 ];
 
 // llms.txt text/plain olarak servis ediliyor — orada da HTML yorumu KULLANILAMAZ.
@@ -278,6 +285,60 @@ const PLAIN_TEXT_RULES = [
     { name: 'SPOTIFY_B', re: /(Total Spotify streams: over )(\d+(?:\.\d+)?)( billion)/g },
     { name: 'CERT_AWARDS_M', re: /(awards actually granted\): ~)(\d+(?:\.\d+)?)( million)/g }
 ];
+
+// ── Kümülatif metrikler geri gidemez ────────────────────────
+//
+// EAS ve toplam Spotify sayısı biriken sayaçlar; düşmeleri fiziksel olarak
+// mümkün değil. Düşük okunuyorsa sorun bizde değil kaynakta — Kworb bir satırı
+// geçici olarak kaybedebiliyor (2026-08-20'de tam olarak bu oldu, EAS 81.2M
+// yerine 80.2M göründü). Böyle bir okumayı statik SEO metnine yazmak geçici
+// bir kaynak hatasını KALICI hale getirir: ertesi gün doğru veri gelse bile
+// dosyadaki sayı düşük kalır ve crawler'lar onu okur.
+//
+// certified/eligible bu listede DEĞİL: o rakam bir veri düzeltmesiyle meşru
+// şekilde düşebilir (ör. yanlış girilmiş bir RIAA seviyesinin düzeltilmesi).
+const MONOTONIC = ['EAS_M', 'SPOTIFY_B'];
+
+// Dosyalarda hâlihazırda yazan en yüksek değeri bulur — hem <!--AUTO:X--> hem
+// de JSON-LD/düz metin çapa kurallarını tarayarak.
+function readCurrentValue(name) {
+    let max = null;
+    const patterns = [
+        new RegExp(`<!--AUTO:${name}-->([\\d.]+)<!--\\/AUTO:${name}-->`, 'g'),
+        ...[...LD_JSON_RULES, ...PLAIN_TEXT_RULES].filter(r => r.name === name).map(r => r.re)
+    ];
+    for (const fname of TARGET_FILES) {
+        const fp = path.join(REPO_ROOT, fname);
+        if (!fs.existsSync(fp)) continue;
+        const text = fs.readFileSync(fp, 'utf-8');
+        for (const re of patterns) {
+            for (const m of text.matchAll(new RegExp(re.source, 'g'))) {
+                // Marker deseninde tek grup var, çapa kurallarında üç — sayıyı
+                // tutan grubu indeksle değil, ilk sayıya çözülen grupla bul.
+                const num = m.slice(1)
+                    .map(gr => parseFloat(gr))
+                    .find(n => Number.isFinite(n));
+                if (num !== undefined && (max === null || num > max)) max = num;
+            }
+        }
+    }
+    return max;
+}
+
+function dropRegressions(values) {
+    for (const name of MONOTONIC) {
+        if (values[name] === undefined) continue;
+        const current = readCurrentValue(name);
+        if (current !== null && values[name] < current) {
+            console.warn(
+                `⚠️  ${name}: canlı okuma ${values[name]} < dosyadaki ${current}. ` +
+                `Kümülatif metrik geri gidemez → kaynak hatası kabul edilip atlanıyor.`
+            );
+            delete values[name];
+        }
+    }
+    return values;
+}
 
 function applyRules(text, values, rules) {
     let out = text;
@@ -366,6 +427,7 @@ async function main() {
 
     const values = { EAS_M: easM, CERTS_M: certsM, SPOTIFY_B: spotifyB };
     if (awardsM) values.CERT_AWARDS_M = awardsM;
+    dropRegressions(values);
     const awarded = loadAwardedCerts();
     console.log(`Ödüllenmiş sertifikalar: ${awarded.length} albüm (data/awarded-certifications.json)`);
     let anyChanged = false;
