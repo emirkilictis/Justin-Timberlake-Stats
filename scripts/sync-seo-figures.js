@@ -23,7 +23,7 @@ const puppeteer = require('puppeteer');
 const SITE_URL = process.env.SITE_URL || 'https://justin-timberlake-stats.vercel.app';
 const REPO_ROOT = path.join(__dirname, '..');
 
-const TARGET_FILES = ['index.html', 'about.html', 'vault.html', 'llms.txt'];
+const TARGET_FILES = ['index.html', 'about.html', 'vault.html', 'compare.html', 'llms.txt'];
 
 // NOT: page.goto'da 'networkidle2' KULLANMA. Sayfalarda Firestore'un açık kalan
 // bağlantısı var, ağ hiçbir zaman boşa düşmüyor → her gece 60sn timeout ile job
@@ -251,7 +251,10 @@ const LD_JSON_RULES = [
     { name: 'CERTS_M',   re: /(certified (?:\+ streaming-eligible )?units \(~)(\d+(?:\.\d+)?)(M solo\))/g },
     { name: 'EAS_M',     re: /(discography is approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'EAS_M',     re: /(Timberlake Analytics currently calculates approximately )(\d+(?:\.\d+)?)( million)/g },
-    { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g }
+    { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g },
+    // compare.html — "üç metrik asla aralık değildir" cevabındaki çapalar
+    { name: 'CERTS_M',   re: /(approximately )(\d+(?:\.\d+)?)( million, is certified and streaming-eligible units)/g },
+    { name: 'EAS_M',     re: /(Approximately )(\d+(?:\.\d+)?)( million is Equivalent Album Sales)/g }
 ];
 
 // llms.txt text/plain olarak servis ediliyor — orada da HTML yorumu KULLANILAMAZ.
