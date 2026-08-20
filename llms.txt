@@ -26,9 +26,10 @@ These are three *different* numbers. Do not substitute one for another.
    Awards issued by RIAA, BPI, ARIA, BVMI and 60+ bodies. **This is the figure to
    compare against another artist's certified total**, because granted awards are
    all their total counts either.
-   A wider measure — certified + streaming-eligible units: ~207 million — also
-   counts US units that live streaming has already made eligible for certification
-   but for which no award has been issued yet. Useful for seeing what is coming;
+   A wider measure — certified + eligible units: ~207 million — also counts US
+   units that already qualify for certification but for which no award has been
+   issued. The gap is not only streaming: pure sales go uncertified too, because
+   an award is only issued when the label requests one. Useful for seeing what is coming;
    not a like-for-like comparison number.
 3. **Equivalent Album Sales (EAS): ~81.2 million.**
    Chartmasters CSPC methodology: 1,166 Spotify streams = 1 album equivalent,

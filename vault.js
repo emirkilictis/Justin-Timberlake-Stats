@@ -1052,7 +1052,7 @@ function renderTables() {
         const awardsAlbums = certifiedAwardsOnly(computedData.albums, 'album');
         const awardsSingles = certifiedAwardsOnly(computedData.songs, 'song');
         summaryTbody.innerHTML += `<tr class="summary-subtotal">
-            <td class="font-bold">🏆 Certified awards only<span class="subtotal-note">official awards only — excludes US streaming-eligible units</span></td>
+            <td class="font-bold">🏆 Certified awards only<span class="subtotal-note">official awards only — excludes US units that qualify but carry no award</span></td>
             <td class="text-center">${awardsAlbums.toLocaleString()}</td>
             <td class="text-center">${awardsSingles.toLocaleString()}</td>
             <td class="text-right font-bold" style="color:var(--accent-color)">${(awardsAlbums + awardsSingles).toLocaleString()}</td>
@@ -1555,7 +1555,7 @@ function renderFullReport() {
     document.getElementById('fr-foot').innerHTML =
         `<span class="fr-legend"><b>G</b> Gold · <b>P</b> Platinum · <b>D</b> Diamond · <b>S</b> Silver (UK)</span>` +
         `${rows.length} items · ${markets.length} markets · ${grand.toLocaleString()} certified units. ` +
-        `USA is the live streaming-eligible figure; every other column is an official certification. ` +
+        `USA is the live eligible figure; every other column is an official certification. ` +
         `Ringtones sit in their own column but count toward the total. Where an award was granted on a ` +
         `stream threshold (Denmark) or a revenue threshold (Poland), the unit basis used is spelled out ` +
         `in the “Threshold basis” column of the export.`;

@@ -259,7 +259,7 @@ function applyMarkers(content, values) {
 const LD_JSON_RULES = [
     { name: 'CERTS_M',   re: /(reach approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'CERTS_M',   re: /(has approximately )(\d+(?:\.\d+)?)( million certified)/g },
-    { name: 'CERTS_M',   re: /(certified (?:\+ streaming-eligible )?units \(~)(\d+(?:\.\d+)?)(M solo\))/g },
+    { name: 'CERTS_M',   re: /(certified (?:\+ eligible )?units \(~)(\d+(?:\.\d+)?)(M solo\))/g },
     { name: 'EAS_M',     re: /(discography is approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'EAS_M',     re: /(Timberlake Analytics currently calculates approximately )(\d+(?:\.\d+)?)( million)/g },
     { name: 'SPOTIFY_B', re: /(over )(\d+(?:\.\d+)?)( billion(?: total)? Spotify streams)/g },
@@ -273,7 +273,7 @@ const LD_JSON_RULES = [
 // HTML'de görünmeyen <!--AUTO:X--> düz metin dosyasında crawler'a birebir görünür
 // ("~<!--AUTO:CERTS_M-->195<!--/AUTO:CERTS_M--> million"). Aynı çapa mantığı.
 const PLAIN_TEXT_RULES = [
-    { name: 'CERTS_M',   re: /(streaming-eligible units: ~)(\d+(?:\.\d+)?)( million)/g },
+    { name: 'CERTS_M',   re: /(certified \+ eligible units: ~)(\d+(?:\.\d+)?)( million)/g },
     { name: 'EAS_M',     re: /(Equivalent Album Sales \(EAS\): ~)(\d+(?:\.\d+)?)( million)/g },
     { name: 'SPOTIFY_B', re: /(Total Spotify streams: over )(\d+(?:\.\d+)?)( billion)/g },
     { name: 'CERT_AWARDS_M', re: /(awards actually granted\): ~)(\d+(?:\.\d+)?)( million)/g }
