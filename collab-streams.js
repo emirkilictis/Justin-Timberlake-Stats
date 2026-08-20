@@ -34,7 +34,7 @@ const COLLAB_TRACKS = [
         // Kworb'da sayılan satırlar. Denetlenebilir olsun diye tek tek yazılı.
         counted: ['Where Is The Love?'],
         skipped: {
-            'Where Is the Love - Live at Live 8, Benjamin Franklin Parkway': 'ayrı bir canlı performans',
+            'Where Is the Love - Live at Live 8, Benjamin Franklin Parkway, Philadelphia, 2nd July 2005': 'ayrı bir canlı performans',
             'Where Is The Love? - Instrumental': 'vokal yok, JT duyulmuyor'
         },
         fallback: { asOf: '2026-08-20', total: 1_469_885_604, daily: 684_076 }
