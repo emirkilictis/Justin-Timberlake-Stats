@@ -1037,27 +1037,6 @@ function renderTables() {
             </tr>`;
         }).join('');
         
-        // ABD dışı ara toplam: USA kolonu canlı eligible rakam olduğu için
-        // toplamın büyük kısmını tek başına taşıyor; geri kalanı ayrı görünsün.
-        const exUsAlbums = outsideUS(computedData.albums, 'album');
-        const exUsSingles = outsideUS(computedData.songs, 'song');
-        summaryTbody.innerHTML += `<tr class="summary-subtotal">
-            <td class="font-bold">🌐 Outside the USA<span class="subtotal-note">every market except the US, US ringtone awards excluded</span></td>
-            <td class="text-center">${exUsAlbums.toLocaleString()}</td>
-            <td class="text-center">${exUsSingles.toLocaleString()}</td>
-            <td class="text-right font-bold" style="color:var(--accent-color)">${(exUsAlbums + exUsSingles).toLocaleString()}</td>
-        </tr>`;
-
-        // Yalnızca verilmiş ödüller — ABD eligible payı hariç
-        const awardsAlbums = certifiedAwardsOnly(computedData.albums, 'album');
-        const awardsSingles = certifiedAwardsOnly(computedData.songs, 'song');
-        summaryTbody.innerHTML += `<tr class="summary-subtotal">
-            <td class="font-bold">🏆 Certified awards only<span class="subtotal-note">official awards only — excludes US units that qualify but carry no award</span></td>
-            <td class="text-center">${awardsAlbums.toLocaleString()}</td>
-            <td class="text-center">${awardsSingles.toLocaleString()}</td>
-            <td class="text-right font-bold" style="color:var(--accent-color)">${(awardsAlbums + awardsSingles).toLocaleString()}</td>
-        </tr>`;
-
         // Grand total row
         summaryTbody.innerHTML += `<tr style="background:rgba(255,255,255,0.03);border-top:1px solid rgba(255,255,255,0.1);">
             <td style="font-weight:900;text-transform:uppercase;letter-spacing:0.1em;color:var(--accent-color);padding:16px;">Grand Total</td>

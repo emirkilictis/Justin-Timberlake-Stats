@@ -111,7 +111,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css?v=1787250321">
+    <link rel="stylesheet" href="style.css?v=1787250442">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -194,6 +194,13 @@
             font-weight: 800;
             color: var(--accent-color);
         }
+        .vault-breakdown-head {
+            padding: 22px 32px 0;
+            font-size: 0.62rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+        }
         .vault-grand-total.vault-subtotal {
             margin-top: 0;
             padding-top: 16px;
@@ -203,19 +210,6 @@
         .vault-grand-total.vault-subtotal .value {
             font-size: 1.35rem;
             color: rgba(255,255,255,0.7);
-        }
-        .summary-subtotal td {
-            background: rgba(255,255,255,0.02);
-            border-top: 1px solid rgba(255,255,255,0.07);
-        }
-        .subtotal-note {
-            display: block;
-            font-size: 0.65rem;
-            font-weight: 400;
-            letter-spacing: 0.05em;
-            color: rgba(255,255,255,0.3);
-            text-transform: none;
-            margin-top: 2px;
         }
         .vault-grand-total .sub {
             font-size: 0.7rem;
@@ -672,6 +666,7 @@
                 <div id="grand-total-odometer" class="value">—</div>
             </div>
         </div>
+        <div class="vault-breakdown-head">Two cuts of the same total</div>
         <div class="vault-grand-total vault-subtotal">
             <div>
                 <div class="label">Certified Awards Only</div>
@@ -693,11 +688,11 @@
 
     </div>
 
-    <script src="xlsx.js?v=1787250321" defer></script>
-    <script src="config.js?v=1787250321" defer></script>
-    <script src="song-map.js?v=1787250321" defer></script>
-    <script src="four-minutes.js?v=1787250321" defer></script>
-    <script src="vault.js?v=1787250321" defer></script>
+    <script src="xlsx.js?v=1787250442" defer></script>
+    <script src="config.js?v=1787250442" defer></script>
+    <script src="song-map.js?v=1787250442" defer></script>
+    <script src="four-minutes.js?v=1787250442" defer></script>
+    <script src="vault.js?v=1787250442" defer></script>
     <script>
         window._vaultSearch = function(val) {
             const q = val.trim().toLowerCase();
