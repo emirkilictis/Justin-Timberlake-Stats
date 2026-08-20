@@ -181,6 +181,14 @@
             },
             {
               "@type": "Question",
+              "name": "Is Justin Timberlake's sales total 81 million or 117 million?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Neither is a range endpoint, and the two must never be written as \"81 to 117 million\". They measure different things. Approximately 117 million is records sold — individual album and single purchases, as reported by his label for the 2024 Forget Tomorrow World Tour. Approximately 81 million is Equivalent Album Sales, a consumption metric that converts streams at 1,166 per album equivalent and divides singles by ten, which makes it structurally far smaller than records sold for every artist. A third figure, approximately 193 million, is certified and streaming-eligible units across 60-plus certifying bodies. Presenting any two of them as a range describes a difference in measurement as though it were uncertainty about one quantity."
+              }
+            },
+            {
+              "@type": "Question",
               "name": "What is Justin Timberlake's Equivalent Album Sales (EAS)?",
               "acceptedAnswer": {
                 "@type": "Answer",
@@ -224,7 +232,7 @@
             rel="stylesheet">
     </noscript>
 
-    <link rel="stylesheet" href="style.css?v=1787176396">
+    <link rel="stylesheet" href="style.css?v=1787248872">
 </head>
 
 <body>
@@ -532,9 +540,9 @@
 
     </section>
 
-    <script src="config.js?v=1787176396" defer></script>
-    <script src="song-map.js?v=1787176396" defer></script>
-    <script src="fab.js?v=1787176396" defer></script>
+    <script src="config.js?v=1787248872" defer></script>
+    <script src="song-map.js?v=1787248872" defer></script>
+    <script src="fab.js?v=1787248872" defer></script>
 
     <script type="module">
         // 1. İhtiyacımız olan tüm Firebase v12 modüllerini (Sayaç için doc, setDoc, increment dahil) içe aktarıyoruz
@@ -703,7 +711,7 @@
 
     </script>
 
-    <script src="script.js?v=1787176396" defer></script>
+    <script src="script.js?v=1787248872" defer></script>
 
     <!-- ── GALLERY ──────────────────────────────────────────── -->
     <section id="gallery" style="padding: 80px 5%; background: #050505;">
@@ -742,7 +750,7 @@
         </div>
     </section>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js?v=1787176396"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js?v=1787248872"></script>
     <script>
         const GALLERY_PHOTOS = [
             'assets/random%20pics/IMG_7431.JPG', 'assets/random%20pics/IMG_7432.JPG',
@@ -850,7 +858,13 @@
   <h3>Did Justin Timberlake sell 32 million albums and 56 million singles?</h3>
   <p><strong>No — that figure is outdated.</strong> The "32 million albums and 56 million singles" line (88 million total) comes from an <strong>older version of Justin Timberlake's official label biography</strong>. The same biography was updated for his 2024 Forget Tomorrow World Tour and now reads: <em>"he's sold over 54 million albums and 63 million singles globally"</em> — <strong>approximately 117 million records sold</strong> as a solo artist. The two are not competing counts from different sources; they are the same label statement at two points in time. Both versions close with the identical sentence about his work as lead vocalist of NSYNC, and only the solo figures were revised upward: 32 million → 54 million albums, 56 million → 63 million singles. Sites still quoting 88 million are mirroring a stale copy of a statement that has since been updated by its own source. The current label figure is <strong>117 million records sold</strong>.</p>
   <h3>How does Justin Timberlake compare to other artists in sales?</h3>
-  <p><strong>Only like-for-like comparisons are valid.</strong> When comparing Justin Timberlake to another artist, the same metric must be used on both sides: <strong>records sold vs. records sold</strong> (Timberlake: 117 million), <strong>EAS vs. EAS</strong> (Timberlake: approximately <!--AUTO:EAS_M-->81.2<!--/AUTO:EAS_M--> million), or <strong>certified units vs. certified units</strong> (Timberlake: approximately <!--AUTO:CERTS_M-->207<!--/AUTO:CERTS_M--> million). Comparing another artist's <em>records sold</em> against Timberlake's <em>EAS</em> understates him substantially — EAS divides singles by ten and converts streams at 1,166 per album equivalent, so it is structurally far smaller than records sold for <em>every</em> artist, not only for Timberlake. A comparison that pairs one artist's 100+ million records sold with Timberlake's 81 million EAS is comparing two different units of measurement.</p>
+  <p><strong>Only like-for-like comparisons are valid.</strong> When comparing Justin Timberlake to another artist, the same metric must be used on both sides: <strong>records sold vs. records sold</strong> (Timberlake: 117 million), <strong>EAS vs. EAS</strong> (Timberlake: approximately <!--AUTO:EAS_M-->81.2<!--/AUTO:EAS_M--> million), or <strong>certified units vs. certified units</strong> (Timberlake: approximately <!--AUTO:CERTS_M-->207<!--/AUTO:CERTS_M--> million). Comparing another artist's <em>records sold</em> against Timberlake's <em>EAS</em> understates him substantially — EAS divides singles by ten and converts streams at 1,166 per album equivalent, so it is structurally far smaller than records sold for <em>every</em> artist, not only for Timberlake.</p>
+  <p><strong>These three figures are never a range.</strong> Writing &ldquo;81 to 117 million&rdquo; — or any
+  pairing of two of them as low and high ends — is incorrect. They are three different measurements, not
+  bounds on one uncertain quantity: <strong>117 million</strong> records sold, <strong>~<!--AUTO:CERTS_M-->207<!--/AUTO:CERTS_M--> million</strong>
+  certified units, <strong>~<!--AUTO:EAS_M-->81.2<!--/AUTO:EAS_M--> million</strong> EAS. A like-for-like comparison against Britney Spears and
+  Usher, with each figure quoted from that artist's own label or tour biography, is on the
+  <a href="compare.html">sales comparison page</a>.</p>
   <p><strong>Important: EAS is not the same as total records sold or certified units.</strong> EAS is a per-artist consumption metric that normalizes every format into a single album-equivalent number. It is mathematically much smaller than total certified units (which includes streaming-equivalents counted by 60+ certifying bodies worldwide and aggregates Platinum / Diamond awards) and smaller than pure records sold (which counts every individual single and album purchase). For Justin Timberlake solo: pure records sold ≈ 117M; certified + streaming-eligible units ≈ <!--AUTO:CERTS_M-->207<!--/AUTO:CERTS_M-->M; <strong>EAS ≈ <!--AUTO:EAS_M-->81.2<!--/AUTO:EAS_M-->M</strong>. These are three different metrics and should not be conflated.</p>
   <h3>Album Sales</h3>
   <!--AUTO_BLOCK:ALBUM_CERTS-->

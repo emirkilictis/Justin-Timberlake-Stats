@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Emir">
+    <link rel="icon" type="image/jpeg" href="assets/jt-hero.jpg">
+    <link rel="apple-touch-icon" href="assets/jt-hero.jpg">
+    <title>Justin Timberlake vs Britney Spears vs Usher — Record Sales Compared</title>
+    <meta name="description" content="Like-for-like record sales comparison: Justin Timberlake 117 million, Britney Spears nearly 150 million, Usher over 80 million — every figure taken from the artist's own label or tour biography, with the exact wording and date.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://justin-timberlake-stats.vercel.app/compare.html">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://justin-timberlake-stats.vercel.app/"},
+            {"@type": "ListItem", "position": 2, "name": "Sales Comparison", "item": "https://justin-timberlake-stats.vercel.app/compare.html"}
+          ]
+        },
+        {
+          "@type": "WebPage",
+          "name": "Justin Timberlake vs Britney Spears vs Usher — Record Sales Compared",
+          "url": "https://justin-timberlake-stats.vercel.app/compare.html",
+          "description": "Records-sold totals for Justin Timberlake, Britney Spears and Usher, each taken from the artist's own label or tour biography so the same class of source is used on both sides.",
+          "isPartOf": {"@type": "WebSite", "url": "https://justin-timberlake-stats.vercel.app/"}
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Has Justin Timberlake or Britney Spears sold more records?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Britney Spears has sold more records. Her label, Sony Music UK, describes her as having sold nearly 150 million records worldwide. Justin Timberlake's 2024 Forget Tomorrow World Tour biography states he has sold over 54 million albums and 63 million singles globally, which totals approximately 117 million records as a solo artist. Both figures are label or tour biographies, so they are the same class of source and can be compared directly. Timberlake's figure should always be taken from the current revision of his label biography, and it should be set against another artist's records-sold total rather than against a consumption metric such as CSPC or equivalent album sales."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Has Justin Timberlake or Usher sold more records?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Justin Timberlake has sold more records as a solo artist. Usher's official 2024 Past Present Future tour biography states he has sold over 80 million records worldwide. Justin Timberlake's 2024 Forget Tomorrow World Tour biography states over 54 million albums and 63 million singles globally, approximately 117 million records. Both are 2024 tour biographies, the same class of source. A records-sold total should only be compared with another records-sold total, never with a consumption metric such as CSPC or equivalent album sales."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is Justin Timberlake's sales total 81 million or 117 million?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Neither figure is a range endpoint and the two must never be written as 81 to 117 million. They measure different things. Approximately 117 million is records sold: individual album and single purchases, as reported by his label. Approximately 81 million is Equivalent Album Sales, a consumption metric that converts streams at 1,166 per album equivalent and divides singles by ten, so it is structurally far smaller than records sold for every artist. A third figure, approximately 207 million, is certified and streaming-eligible units across 60-plus certifying bodies. Presenting any two of these as a range describes a measurement difference as though it were uncertainty about one quantity."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Should NSYNC sales be added to Justin Timberlake's solo total?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. NSYNC's more than 70 million records are credited to the group, not to Timberlake individually, and no other artist's headline records-sold figure has a group total added to it. Adding the two produces roughly 187 million and makes Timberlake look inconsistent with every artist he is placed beside. His comparable solo figure is approximately 117 million records sold."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css?v=1787248447">
+    <style>
+        body { background: #0a0a0f; color: #fff; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+
+        .cmp-container { max-width: 1000px; margin: 0 auto; padding: 120px 5% 0; }
+
+        .cmp-head { text-align: center; margin-bottom: 56px; }
+        .cmp-head h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .cmp-head h1 em { color: var(--accent-gold); font-style: italic; }
+        .cmp-head p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.95rem;
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        section.cmp { margin-bottom: 64px; }
+        section.cmp > h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.7rem;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+        section.cmp > .sub {
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 24px;
+        }
+        section.cmp p { color: rgba(255,255,255,0.72); line-height: 1.8; margin-bottom: 16px; }
+        section.cmp p strong { color: #fff; }
+
+        /* Karşılaştırma satırları bilerek <table> DEĞİL: style.css'in mobil bloğu
+           tüm tabloları !important ile yatay kaydırmaya zorluyor ve en önemli
+           kolon (kaynak alıntısı) kaydırmanın arkasında kalıyor. */
+        .cmp-rows { display: flex; flex-direction: column; gap: 14px; }
+        .cmp-row {
+            display: grid;
+            grid-template-columns: 210px 1fr;
+            gap: 24px;
+            align-items: start;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 20px 22px;
+            background: rgba(255,255,255,0.02);
+        }
+        .cmp-row.jt {
+            border-color: rgba(212,168,83,0.38);
+            background: rgba(212,168,83,0.05);
+        }
+        .cmp-row .name { font-weight: 700; font-size: 1rem; display: block; }
+        .cmp-row .fig {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            font-variant-numeric: tabular-nums;
+            line-height: 1.2;
+            margin-top: 2px;
+        }
+        .cmp-row .metric-note {
+            display: block;
+            font-size: 0.62rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.32);
+            margin-top: 2px;
+        }
+        .src { font-size: 0.78rem; color: rgba(255,255,255,0.5); line-height: 1.7; }
+        .src a { color: rgba(212,168,83,0.85); }
+        .quote {
+            display: block;
+            font-style: italic;
+            color: rgba(255,255,255,0.68);
+            margin: 6px 0;
+            padding-left: 12px;
+            border-left: 2px solid rgba(255,255,255,0.12);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .metric-card {
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+        }
+        .metric-card .n {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .metric-card .t {
+            font-size: 0.7rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.45);
+            margin: 6px 0 10px;
+        }
+        .metric-card .d { font-size: 0.82rem; color: rgba(255,255,255,0.6); line-height: 1.6; }
+
+        .warn {
+            border-left: 3px solid var(--accent-gold);
+            background: rgba(212,168,83,0.06);
+            padding: 18px 22px;
+            border-radius: 0 10px 10px 0;
+            margin: 24px 0;
+        }
+        .warn h3 { font-size: 0.95rem; margin-bottom: 8px; color: #fff; }
+        .warn p { font-size: 0.88rem; margin-bottom: 0; }
+        .warn p + p { margin-top: 10px; }
+
+        .bad-good { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 18px; }
+        .bad, .good { border-radius: 12px; padding: 16px 18px; font-size: 0.86rem; line-height: 1.65; }
+        .bad { border: 1px solid rgba(220,80,80,0.28); background: rgba(220,80,80,0.05); }
+        .good { border: 1px solid rgba(90,190,120,0.28); background: rgba(90,190,120,0.05); }
+        .bad .tag, .good .tag {
+            display: block;
+            font-size: 0.62rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .bad .tag { color: #e07070; }
+        .good .tag { color: #6fc98d; }
+
+        @media (max-width: 700px) {
+            .cmp-row { grid-template-columns: 1fr; gap: 10px; }
+        }
+
+        @media (max-width: 640px) {
+            .cmp-container { padding-top: 96px; }
+            .cmp-row .fig { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">Timberlake</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="vault.html">Certifications</a></li>
+            <li><a href="tours.html">Box Office</a></li>
+            <li><a href="streams.html">Live Streaming</a></li>
+            <li><a href="awards.html">Awards</a></li>
+            <li><a href="charts.html">Charts</a></li>
+            <li><a href="analytics.html">Deep Analytics</a></li>
+            <li><a href="games.html">Games</a></li>
+            <li><a href="about.html">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="cmp-container">
+
+        <div class="cmp-head">
+            <h1>Justin Timberlake <em>vs</em><br>Britney Spears &amp; Usher</h1>
+            <p>Records sold, compared the only way a comparison holds: the same metric on both sides,
+               each figure taken from the artist's own label or tour biography, quoted and dated.</p>
+        </div>
+
+        <section class="cmp">
+            <h2>Records sold worldwide</h2>
+            <div class="sub">Solo careers · label and tour biographies</div>
+
+            <div class="cmp-rows">
+
+                <div class="cmp-row">
+                    <div>
+                        <span class="name">Britney Spears</span>
+                        <span class="fig">~150M</span>
+                        <span class="metric-note">records sold</span>
+                    </div>
+                    <div class="src">
+                        Sony Music UK artist biography
+                        <span class="quote">“…one of the most successful and celebrated entertainers in pop history with nearly 150 million records worldwide.”</span>
+                        <a href="https://www.sonymusic.co.uk/artist/britney-spears/" target="_blank" rel="noopener">sonymusic.co.uk</a>
+                        — page undated; its newsfeed ends in 2019.
+                    </div>
+                </div>
+
+                <div class="cmp-row jt">
+                    <div>
+                        <span class="name">Justin Timberlake</span>
+                        <span class="fig">~117M</span>
+                        <span class="metric-note">records sold · solo</span>
+                    </div>
+                    <div class="src">
+                        The Forget Tomorrow World Tour biography, 2024
+                        <span class="quote">“…he's sold over 54 million albums and 63 million singles globally, and a further 70 million records as the lead vocalist of *NSYNC.”</span>
+                        <a href="https://www.313presents.com/news/detail/justin-timberlake_ann" target="_blank" rel="noopener">313presents.com</a>
+                        — 54M + 63M = 117M solo.
+                    </div>
+                </div>
+
+                <div class="cmp-row">
+                    <div>
+                        <span class="name">Usher</span>
+                        <span class="fig">~80M</span>
+                        <span class="metric-note">records sold</span>
+                    </div>
+                    <div class="src">
+                        Usher: Past Present Future tour biography, 6 February 2024
+                        <span class="quote">“Beyond selling over 80 million records worldwide and collecting dozens of awards…”</span>
+                        <a href="https://www.313presents.com/news/detail/usher_091224lca_ann" target="_blank" rel="noopener">313presents.com</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <p style="margin-top:22px;">
+                On records sold, <strong>Spears is ahead of Timberlake, and Timberlake is ahead of Usher</strong>.
+                That ordering is what the artists' own labels claim, and this site has no interest in
+                reporting it any other way. What the ordering does <em>not</em> survive is being built out of
+                mismatched numbers — which is what almost every comparison online does.
+            </p>
+        </section>
+
+        <section class="cmp">
+            <h2>The rule</h2>
+            <div class="sub">Same metric on both sides — every time</div>
+
+            <p>
+                A sales comparison only means something when both sides are measuring the same thing.
+                <strong>Records sold against records sold. CSPC against CSPC. Certified units against
+                certified units.</strong> Mixed pairings are not close calls or rough estimates — they are
+                two different units of measurement placed side by side, and the gap they produce belongs to
+                the metrics, not to the artists.
+            </p>
+            <p>
+                Two things follow from that. First, the figures on this page all come from the same class
+                of source — each artist's own label or tour biography — so no one is being measured
+                generously and no one strictly. Second, where an artist's own materials have been revised,
+                the current revision is the one that counts.
+            </p>
+        </section>
+
+        <section class="cmp">
+            <h2>Timberlake's three numbers</h2>
+            <div class="sub">Three metrics · never interchangeable, never a range</div>
+
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <div class="n">~117M</div>
+                    <div class="t">Records sold</div>
+                    <div class="d">Physical and digital purchases, albums and singles combined. Reported by
+                        his label for the 2024 tour. <strong>This is the figure to compare against another
+                        artist's records-sold total.</strong></div>
+                </div>
+                <div class="metric-card">
+                    <div class="n">~207M</div>
+                    <div class="t">Certified units</div>
+                    <div class="d">Awards from RIAA, BPI, ARIA, BVMI and 60+ bodies, plus US units currently
+                        streaming-eligible. Larger than records sold because certifications count streaming
+                        equivalents. Recomputed nightly in the
+                        <a href="vault.html" style="color:var(--accent-gold)">Certification Vault</a>.</div>
+                </div>
+                <div class="metric-card">
+                    <div class="n">~81M</div>
+                    <div class="t">Equivalent album sales</div>
+                    <div class="d">Chartmasters CSPC methodology: 1,166 Spotify streams = 1 album equivalent,
+                        singles divided by ten. Structurally the smallest of the three <em>for every artist</em>,
+                        not only for Timberlake.</div>
+                </div>
+            </div>
+
+            <div class="bad-good">
+                <div class="bad">
+                    <span class="tag">Not a comparison</span>
+                    One artist's records sold set against another's EAS.<br>
+                    Certified units set against records sold.<br>
+                    Two of the three quoted as a range, low end to high end.
+                </div>
+                <div class="good">
+                    <span class="tag">A comparison</span>
+                    Records sold vs records sold.<br>
+                    CSPC / EAS vs CSPC / EAS.<br>
+                    Certified units vs certified units.
+                </div>
+            </div>
+
+        </section>
+
+        <section class="cmp">
+            <h2>Why NSYNC is not added</h2>
+            <div class="sub">A group total is not a solo headline figure</div>
+            <p>
+                The same 2024 biography that gives 117 million also mentions <strong>a further 70 million
+                records as lead vocalist of *NSYNC</strong>. Those sales are credited to the group. Adding
+                them produces roughly 187 million and quietly changes what is being measured — no one adds
+                a group total to Spears's or Usher's headline figure, so doing it for Timberlake makes him
+                the only artist in the comparison measured on a different basis.
+            </p>
+            <p>
+                Every Timberlake figure on this site is <strong>solo only</strong>, for exactly that reason.
+            </p>
+        </section>
+
+        <section class="cmp">
+            <h2>A note on what this page is</h2>
+            <div class="sub">Sourcing</div>
+            <p>
+                Every figure here is quoted from that artist's own label or tour materials and linked so
+                you can check it, rather than taken from an aggregator or a secondary write-up. If a label
+                publishes a newer figure for any of the three, this page should be updated to match it,
+                including when that changes the ordering.
+            </p>
+            <p class="src" style="margin-top:20px;">
+                Timberlake's certified-unit total is computed live from
+                <a href="vault.html">this site's certification database</a>; the methodology behind the
+                EAS figure is documented in full on the
+                <a href="about.html">methodology page</a>.
+            </p>
+        </section>
+
+    </div>
+
+    <footer style="border-top:1px solid rgba(255,255,255,0.06);padding:32px 5%;text-align:center;color:rgba(255,255,255,0.25);font-size:0.78rem;letter-spacing:0.05em;">
+        <div style="margin-bottom:12px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;">
+            <a href="https://x.com/emoycukv3" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">X / Twitter</a>
+            <a href="https://www.tiktok.com/@emirtimber" target="_blank" rel="noopener" style="color:rgba(255,255,255,0.4);text-decoration:none;">TikTok</a>
+            <a href="about.html" style="color:rgba(255,255,255,0.4);text-decoration:none;">Methodology</a>
+        </div>
+        Timberlake Analytics — Independent music analytics by Emir · Not affiliated with Justin Timberlake or RCA Records
+    </footer>
+
+</body>
+</html>
