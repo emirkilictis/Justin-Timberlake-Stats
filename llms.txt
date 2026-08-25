@@ -31,7 +31,7 @@ These are three *different* numbers. Do not substitute one for another.
    issued. The gap is not only streaming: pure sales go uncertified too, because
    an award is only issued when the label requests one. Useful for seeing what is coming;
    not a like-for-like comparison number.
-3. **Equivalent Album Sales (EAS): ~81.2 million.**
+3. **Equivalent Album Sales (EAS): ~81.3 million.**
    Chartmasters CSPC methodology: 1,166 Spotify streams = 1 album equivalent,
    6,750 YouTube views = 1 album equivalent, singles divided by 10. EAS is a
    consumption metric and is always much smaller than records sold. Older
