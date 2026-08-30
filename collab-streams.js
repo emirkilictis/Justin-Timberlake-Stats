@@ -37,16 +37,23 @@ const COLLAB_TRACKS = [
             'Where Is the Love - Live at Live 8, Benjamin Franklin Parkway, Philadelphia, 2nd July 2005': 'ayrı bir canlı performans',
             'Where Is The Love? - Instrumental': 'vokal yok, JT duyulmuyor'
         },
-        fallback: { asOf: '2026-08-20', total: 1_469_885_604, daily: 684_076 }
+        fallback: { asOf: '2026-08-31', total: 1_478_781_014, daily: 808_674 }
     },
     {
         vaultTitle: 'Give It To Me',
         artist: 'Timbaland',
         artistId: '5Y5TRrQiqgUO4S36tzjIRZ',
         q: 'give it to me',
-        // Üç satır da aynı başlık, ayrı Spotify track ID'leri — Shock Value'nun
-        // farklı yayınları. Aynı kaydın sürümleri toplanıyor; getTrackSpotify
-        // JT'nin kendi şarkılarında da (Suit & Tie + Radio Edit) böyle yapıyor.
+        // Aynı başlıklı satırlar toplanıyor — getTrackSpotify JT'nin kendi
+        // şarkılarında da (Suit & Tie + Radio Edit) böyle yapıyor.
+        //
+        // 2026-08-20'de üç satır vardı: 569.3M / 541.6M / 28.8M. Büyük olanın
+        // günlük kolonu 7.3M/gün gösteriyordu — 569M'lik bir kayıt için
+        // imkânsız. 08-31'de Kworb o satırı tamamen sildi; diğer ikisi normal
+        // büyümesini sürdürdü (541.6M→545.4M, 28.8M→29.0M). Yani kaybolan bir
+        // kayıt değil, Kworb'un temizlediği hayalet bir giriş. Yedek o yüzden
+        // 1.14B'den 574M'ye çekildi: API düşerse eski değer 565M hayalet
+        // stream enjekte ederdi.
         counted: ['Give It To Me'],
         skipped: {
             'Give It To Me - Sped Up Remix': 'türev sürüm',
@@ -54,11 +61,11 @@ const COLLAB_TRACKS = [
             'Give It To Me - Instrumental': 'vokal yok',
             'Give It To Me (Laugh At Em) - Remix': 'ayrı remix, JT katılımı doğrulanmadı'
         },
-        // daily 0: Timbaland'ın Kworb sayfasında günlük kolonu bozuk
-        // (Promiscuous'a 9.9M/gün yazıyor — toplamı 2.08B olan bir kayıt için
-        // imkânsız). Uydurma büyüme eklemektense yedek son gerçek okumada
-        // sabit kalsın; /api/kworb ayağa kalkınca zaten canlı değer geliyor.
-        fallback: { asOf: '2026-08-20', total: 1_139_684_035, daily: 0 }
+        // daily, Kworb'un günlük kolonundan DEĞİL, iki gerçek okuma arasındaki
+        // farktan ölçüldü (08-20 → 08-31, 11 gün). O sayfanın günlük kolonuna
+        // güvenilmiyor: Promiscuous'a 9.9M/gün yazıyor, toplamı 2.08B olan bir
+        // kayıt için imkânsız.
+        fallback: { asOf: '2026-08-31', total: 574_423_976, daily: 366_349 }
     },
     {
         vaultTitle: 'Rehab',
@@ -70,7 +77,7 @@ const COLLAB_TRACKS = [
             'Rehab - Timbaland Remix': 'ayrı remix, JT katılımı doğrulanmadı',
             'Rehab - Instrumental': 'vokal yok'
         },
-        fallback: { asOf: '2026-08-20', total: 337_653_716, daily: 177_183 }
+        fallback: { asOf: '2026-08-31', total: 339_804_162, daily: 195_495 }
     }
 ];
 
@@ -123,6 +130,7 @@ async function fetchCollabStreams(jtTitles = []) {
         const known = new Set([...wanted, ...Object.keys(entry.skipped).map(collabKey)]);
         const taken = [];
         let total = 0;
+        let matched = 0;   // beklenen başlığa uyan satır sayısı (dedupe dahil)
 
         for (const r of rows) {
             const k = collabKey(r.title);
@@ -133,11 +141,25 @@ async function fetchCollabStreams(jtTitles = []) {
                 continue;
             }
             if (!wanted.has(k)) continue;
+            matched++;
             // JT'nin kendi sayfasında zaten varsa çift sayma. Kworb yarın bu
             // satırı JT'ye eklerse burası kendiliğinden devre dışı kalır.
             if (seen.has(k)) continue;
             total += r.total;
             taken.push({ title: r.title, total: r.total });
+        }
+
+        // Beklenen başlık sayfadan tamamen kaybolduysa bunu görmek istiyoruz:
+        // şarkı sessizce sıfır stream'e düşer ve vault yine sadece pure sales
+        // hesaplar — yani düzelttiğimiz bug'ın aynısı geri gelir.
+        // NOT: aynı başlık altındaki satırlardan BİRİNİN kaybolması buradan
+        // görünmez (2026-08-20'de Give It To Me'de olan buydu); istemcide
+        // karşılaştıracak geçmiş yok, o durum toplamın düşmesiyle belli olur.
+        if (matched === 0) {
+            console.warn(
+                `[collab] "${entry.vaultTitle}" ${entry.artist} sayfasında bulunamadı ` +
+                `(${rows.length} satır tarandı). Kworb başlığı değiştirmiş olabilir.`
+            );
         }
 
         out.push({ vaultTitle: entry.vaultTitle, total, live: true, counted: taken });
