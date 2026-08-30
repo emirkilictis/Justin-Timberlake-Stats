@@ -1331,17 +1331,19 @@
       "title": "Man of the Woods",
       "pure_sales_us": 500000,
       "official_certifications": {
-        "USA": "Gold",
+        "USA": "1x Platinum",
         "UK": "Silver",
         "Brazil": "1x Platinum",
         "Germany": "None",
-        "Australia": "2x Platinum",
         "Canada": "Gold",
         "New Zealand": "Gold",
         "World": "None",
         "Other": "100000 units",
         "Poland": "Platinum",
         "Denmark": "Platinum"
+      },
+      "certification_dates": {
+        "USA": "2021-09"
       }
     },
     {
