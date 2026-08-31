@@ -26,7 +26,7 @@ These are three *different* numbers. Do not substitute one for another.
    Awards issued by RIAA, BPI, ARIA, BVMI and 60+ bodies. **This is the figure to
    compare against another artist's certified total**, because granted awards are
    all their total counts either.
-   A wider measure — certified + eligible units: ~214 million — also counts US
+   A wider measure — certified + eligible units: ~213 million — also counts US
    units that already qualify for certification but for which no award has been
    issued. The gap is not only streaming: pure sales go uncertified too, because
    an award is only issued when the label requests one. Useful for seeing what is coming;
@@ -104,7 +104,7 @@ https://justin-timberlake-stats.vercel.app/compare.html
 
 ## Streaming
 
-- Total Spotify streams: over 18.8 billion (updated daily).
+- Total Spotify streams: over 18.9 billion (updated daily).
 - Most-streamed: Can't Stop the Feeling!, Mirrors, SexyBack,
   Rock Your Body, Cry Me a River.
 
