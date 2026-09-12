@@ -325,9 +325,22 @@ function readCurrentValue(name) {
     return max;
 }
 
+// Meşru bir veri düzeltmesi kümülatif metriği düşürdüğünde (ör. 2026-09'da 20/20'nin
+// kaynaksız pure sales rakamının düzeltilmesi EAS'ı ~0.9M indirdi) koruma o düşüşü
+// de bloklar. Tek seferlik izin:  ALLOW_DECREASE=EAS_M node scripts/sync-seo-figures.js
+// Gece çalışan bot bu değişkeni ASLA almamalı; bir kez yazılınca dosyadaki yeni değer
+// karşılaştırma tabanı olur.
+const ALLOW_DECREASE = new Set(
+    String(process.env.ALLOW_DECREASE || '').split(',').map(x => x.trim()).filter(Boolean)
+);
+
 function dropRegressions(values) {
     for (const name of MONOTONIC) {
         if (values[name] === undefined) continue;
+        if (ALLOW_DECREASE.has(name)) {
+            console.warn(`⚠️  ${name}: ALLOW_DECREASE ile koruma bu çalışma için kapalı.`);
+            continue;
+        }
         const current = readCurrentValue(name);
         if (current !== null && values[name] < current) {
             console.warn(
