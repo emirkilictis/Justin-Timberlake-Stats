@@ -42,7 +42,18 @@ async function waitForText(page, selector, isReady, timeoutMs = 45000) {
         selector,
         isReady.toString()
     );
-    return page.$eval(selector, el => el.textContent.trim());
+    // Sayaçlar animasyonla yükseliyor; ara değerler de "sayı" desenine uyuyor
+    // (2026-09-12'de 212M yerine 39M okundu ve dosyalara yazıldı). Değer
+    // art arda iki okumada aynı kalana kadar bekle.
+    let prev = await page.$eval(selector, el => el.textContent.trim());
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+        await new Promise(r => setTimeout(r, 1500));
+        const cur = await page.$eval(selector, el => el.textContent.trim());
+        if (cur === prev && isReady(cur)) return cur;
+        prev = cur;
+    }
+    throw new Error(`${selector} değeri ${timeoutMs}ms içinde sabitlenmedi`);
 }
 
 async function getLiveEAS(browser) {
@@ -334,7 +345,23 @@ const ALLOW_DECREASE = new Set(
     String(process.env.ALLOW_DECREASE || '').split(',').map(x => x.trim()).filter(Boolean)
 );
 
+// certified/eligible monoton değil (meşru düzeltmeyle düşebilir) ama tek gecede
+// %5'ten fazla düşmesi bir veri düzeltmesi değil, okuma hatasıdır — gerçek
+// düzeltmeler 212M üzerinde 1-2M oynatıyor. ALLOW_DECREASE ile yine aşılabilir.
+const MAX_SINGLE_RUN_DROP = { CERTS_M: 0.05, CERT_AWARDS_M: 0.05 };
+
 function dropRegressions(values) {
+    for (const [name, maxDrop] of Object.entries(MAX_SINGLE_RUN_DROP)) {
+        if (values[name] === undefined || ALLOW_DECREASE.has(name)) continue;
+        const current = readCurrentValue(name);
+        if (current !== null && values[name] < current * (1 - maxDrop)) {
+            console.warn(
+                `⚠️  ${name}: canlı okuma ${values[name]} dosyadaki ${current}'in %${maxDrop * 100}'inden fazla altında. ` +
+                `Okuma hatası kabul edilip atlanıyor.`
+            );
+            delete values[name];
+        }
+    }
     for (const name of MONOTONIC) {
         if (values[name] === undefined) continue;
         if (ALLOW_DECREASE.has(name)) {
