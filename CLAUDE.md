@@ -143,6 +143,8 @@ Kurallar:
 - **`Others`** anahtarı: belirli bir ülkeye atanmamış birikmiş üniteler için (örn. South Korea, Japan parçaları). `parseCertString` bunu da işler.
 - **Eşik tablosu olmayan pazarlar** (`CERT_MAPPINGS`'te yoksa — Argentina, Finland, Hungary, Russia, South Africa, Ireland, Norway, `Other`, `Others`) için **mutlaka ham ünite** yaz: `"Russia": "200000 units"`. İsimli seviye (`"Diamond"`) bu pazarlarda 0 sayılır. `validate-certs.js --vault` bunu yakalar.
 - **`World`** anahtarı: global IFPI sertifikası varsa (genelde `"None"`).
+- **`pure_sales_us_basis`** (opsiyonel, albüm): `pure_sales_us` rakamının nereden geldiğini yazar — `anchor`, `anchor_date`, `trend_per_year`, `trend_type`, `as_of`, `evidence`, `source`. **Hesaba girmez**, motor okumuyor; rakamı denetlenebilir kılar. `trend_type: "ceiling"` ise kaydedilen değer bir üst sınırdır, tahmin değil.
+  - **20/20 tuzağı:** Nielsen SoundScan decade tablosundaki 3,743,000 **iki 20/20 cildinin birleşik** rakamı (ChartMasters 2026-09'da doğruladı). Eskiden part 1'e 3.8M, 2 of 2'ye 1.9M yazılıydı — aynı satışlar iki kez sayılıyordu. Şimdi birleşik rakam kaynaklı iki noktayla bölünüyor ve 2019 sonrası için iki çapa arasından ölçülen hızın tavanı ekleniyor. Tavan da taban da USA kolonunda aynı 4M / 1M'e quantize ediliyor.
 
 ## Config & secrets
 

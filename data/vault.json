@@ -645,7 +645,7 @@
       "id": "cant_stop_the_feeling",
       "title": "CAN'T STOP THE FEELING!",
       "album_id": "Orphan",
-      "pure_sales_us": 3800000,
+      "pure_sales_us": 4000000,
       "official_certifications": {
         "USA": "14x Platinum",
         "UK": "5x Platinum",
@@ -1263,7 +1263,7 @@
     {
       "id": "The 20/20 Experience",
       "title": "The 20/20 Experience",
-      "pure_sales_us": 3800000,
+      "pure_sales_us": 2757000,
       "official_certifications": {
         "USA": "2x Platinum",
         "UK": "1x Platinum + Silver",
@@ -1306,12 +1306,21 @@
         "Norway": "15000 units",
         "World": "None",
         "Other": "230000 units"
+      },
+      "pure_sales_us_basis": {
+        "anchor": 2606000,
+        "anchor_date": "2019-12-31",
+        "trend_per_year": 22512,
+        "trend_type": "ceiling",
+        "as_of": "2026-09-12",
+        "evidence": "Nielsen's SoundScan decade table for 2010-2019 gives The 20/20 Experience 3,743,000 US pure sales; ChartMasters confirmed in correspondence (2026-09) that this Nielsen figure combines both 20/20 volumes. The combined total is split by two sourced points: 2 of 2 at over 1,137,000 US copies as of 2014-06-18 (Billboard), leaving 2,606,000 for part 1 at 2019-12-31 (consistent with part 1's 2,427,000 for calendar 2013 alone). Post-2019 sales: no figure has been published. Growth between the two anchors — at least 3,564,000 combined in mid-2014 (2,427,000 + 1,137,000) and 3,743,000 at the end of 2019 — is at most 179,000 over 5.54 years, i.e. at most 32,334 a year combined. That rate is carried forward 6.70 years to 2026-09-12 (+216,624) and split by the 2019 shares (69.62% / 30.38%). This is a CEILING, not an estimate: the mid-2014 anchor is a lower bound, and 2014-2019 catalogue sales were stronger than 2020s sales. The displayed USA figure does not depend on it — the floor (no post-2019 sales at all) quantises to the same 4M / 1M.",
+        "source": "https://en.wikipedia.org/wiki/List_of_best-selling_albums_in_the_United_States_of_the_Nielsen_SoundScan_era"
       }
     },
     {
       "id": "The 20/20 Experience – 2 of 2",
       "title": "The 20/20 Experience – 2 of 2",
-      "pure_sales_us": 1912000,
+      "pure_sales_us": 1203000,
       "official_certifications": {
         "USA": "1x Platinum",
         "UK": "Gold",
@@ -1324,6 +1333,15 @@
         "World": "None",
         "Other": "120000 units",
         "Portugal": "Gold"
+      },
+      "pure_sales_us_basis": {
+        "anchor": 1137000,
+        "anchor_date": "2014-06-18",
+        "trend_per_year": 9822,
+        "trend_type": "ceiling",
+        "as_of": "2026-09-12",
+        "evidence": "Nielsen's SoundScan decade table for 2010-2019 gives The 20/20 Experience 3,743,000 US pure sales; ChartMasters confirmed in correspondence (2026-09) that this Nielsen figure combines both 20/20 volumes. The combined total is split by two sourced points: 2 of 2 at over 1,137,000 US copies as of 2014-06-18 (Billboard), leaving 2,606,000 for part 1 at 2019-12-31 (consistent with part 1's 2,427,000 for calendar 2013 alone). Post-2019 sales: no figure has been published. Growth between the two anchors — at least 3,564,000 combined in mid-2014 (2,427,000 + 1,137,000) and 3,743,000 at the end of 2019 — is at most 179,000 over 5.54 years, i.e. at most 32,334 a year combined. That rate is carried forward 6.70 years to 2026-09-12 (+216,624) and split by the 2019 shares (69.62% / 30.38%). This is a CEILING, not an estimate: the mid-2014 anchor is a lower bound, and 2014-2019 catalogue sales were stronger than 2020s sales. The displayed USA figure does not depend on it — the floor (no post-2019 sales at all) quantises to the same 4M / 1M.",
+        "source": "https://en.wikipedia.org/wiki/The_20/20_Experience_%E2%80%93_2_of_2"
       }
     },
     {
