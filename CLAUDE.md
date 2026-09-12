@@ -155,8 +155,14 @@ Kurallar:
 ## GitHub Actions
 
 `.github/workflows/`:
-- `daily-snapshot.yml` — her gece 00:05 UTC, Kworb'dan veri çekip Firestore'a kaydeder (`scripts/daily-snapshot.js`).
+- `daily-snapshot.yml` — iki paralel job:
+  - `snapshot` — Kworb'dan veri çekip Firestore'a kaydeder (`scripts/daily-snapshot.js`).
+  - `sync-seo-figures` — canlı siteyi Puppeteer ile açıp EAS / certified units / Spotify rakamlarını statik SEO metnine yazar, `sitemap.xml` lastmod'unu tazeler, commit eder ve IndexNow'a bildirir. **Commit adımındaki dosya listesi `sync-seo-figures.js`'teki `TARGET_FILES` ile aynı olmalı** — compare.html bir ay boyunca listede olmadığı için bot onu güncelleyip commit etmeden atıyordu.
+  - Cron `5 0 * * *` (00:05 UTC) ama GitHub zamanlanmış işleri yoğunlukta geciktiriyor; pratikte **~04:15–04:30 UTC**'de başlıyor. Firestore'da bugünün dokümanı o saatten önce yoksa normal.
+- `indexnow.yml` — main'e her push'ta değişen HTML/`llms.txt`/`data/` sayfalarını IndexNow'a bildirir.
 - `backfill-extra-track.yml` — manuel tetiklenir, eksik track snapshot'larını doldurur.
+
+`sync-seo-figures.js` korumaları: sayaç değeri 1.5 sn arayla iki okumada sabitlenmeden alınmaz (animasyon ara karesi okunmasın); EAS ve Spotify toplamı geri gidemez; certified units tek çalışmada %5'ten fazla düşemez; canlı okuma bir kez tekrar denenir. Meşru bir düşüş için tek seferlik `ALLOW_DECREASE=EAS_M node scripts/sync-seo-figures.js`.
 
 ## Yaygın görevler
 

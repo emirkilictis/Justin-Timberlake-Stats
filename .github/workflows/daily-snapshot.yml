@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Kodu çek
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Node.js 24 kur
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -48,10 +48,10 @@ jobs:
 
     steps:
       - name: Kodu çek
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Node.js 24 kur
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '24'
           cache: 'npm'
@@ -73,10 +73,13 @@ jobs:
         run: node update-sitemap.js
         working-directory: scripts
 
+      # Liste sync-seo-figures.js'teki TARGET_FILES ile AYNI olmalı. compare.html
+      # 2026-08'de hedeflere eklendi ama buraya eklenmedi; bot dosyayı her gece
+      # güncelleyip commit etmeden atıyordu.
       - name: Değişiklik varsa commit + push
         id: commit
         run: |
-          if git diff --quiet -- index.html about.html vault.html llms.txt sitemap.xml; then
+          if git diff --quiet -- index.html about.html vault.html compare.html llms.txt sitemap.xml; then
             echo "Değişiklik yok, commit atlanıyor."
             echo "changed=false" >> $GITHUB_OUTPUT
             exit 0
@@ -84,7 +87,7 @@ jobs:
           echo "changed=true" >> $GITHUB_OUTPUT
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add index.html about.html vault.html llms.txt sitemap.xml
+          git add index.html about.html vault.html compare.html llms.txt sitemap.xml
           git commit -m "chore: sync EAS/certified-units SEO figures with live site [skip ci]"
           # --autostash şart: önceki adımdaki `npm install` scripts/package-lock.json'ı
           # değiştirebiliyor ve rebase "You have unstaged changes" ile düşüyor.
@@ -95,4 +98,4 @@ jobs:
       # bu yüzden bildirimi buradan doğrudan gönderiyoruz.
       - name: Güncellenen sayfaları IndexNow'a bildir
         if: steps.commit.outputs.changed == 'true'
-        run: node scripts/indexnow-ping.js / /about.html /vault.html /llms.txt
+        run: node scripts/indexnow-ping.js / /about.html /vault.html /compare.html /llms.txt

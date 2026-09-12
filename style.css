@@ -673,10 +673,12 @@ nav {
 @media screen and (max-width: 768px) {
 
     /* Base */
+    /* 100% — 100vw DEĞİL: vw dikey scrollbar'ı da genişliğe katıyor, klasik
+       scrollbar'lı dar masaüstü pencerede sayfa 8px taşıyordu. */
     html, body {
         overflow-x: hidden;
-        width: 100vw;
-        max-width: 100vw;
+        width: 100%;
+        max-width: 100%;
     }
 
     body {
@@ -796,7 +798,7 @@ nav {
     /* Other Pages */
     .analytics-container {
         padding: 100px 15px 30px 15px !important;
-        width: 100vw !important;
+        width: 100% !important;
         box-sizing: border-box !important;
     }
 

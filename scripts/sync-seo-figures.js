@@ -429,6 +429,22 @@ function applyMostStreamedLine(content, tracks) {
     return { content: updated, changed: updated !== content };
 }
 
+// Canlı sayfa bazen 45 sn'de hazır olmuyor — Kworb'u çeken Apps Script proxy'si
+// soğuk başlangıçta yavaşlayabiliyor. 2026-09-11 gecesi tam olarak bu yüzden
+// iş düştü ve o geceki SEO güncellemesi atlandı. Tek bir tekrar yeterli; job'un
+// 10 dakikalık zaman aşımına sığsın diye fazlası yok.
+async function withRetry(label, fn, attempts = 2, pauseMs = 15000) {
+    for (let i = 1; i <= attempts; i++) {
+        try {
+            return await fn();
+        } catch (e) {
+            if (i === attempts) throw e;
+            console.warn(`⚠️  ${label}: deneme ${i}/${attempts} başarısız (${String(e.message).split('\n')[0]}), ${pauseMs / 1000} sn sonra tekrar.`);
+            await new Promise(r => setTimeout(r, pauseMs));
+        }
+    }
+}
+
 async function main() {
     console.log(`Canlı site okunuyor: ${SITE_URL}`);
     const browser = await puppeteer.launch({
@@ -439,9 +455,9 @@ async function main() {
     let easM, certData, streamData;
     try {
         [easM, certData, streamData] = await Promise.all([
-            getLiveEAS(browser),
-            getLiveCerts(browser),
-            getLiveStreamData(browser)
+            withRetry('EAS', () => getLiveEAS(browser)),
+            withRetry('certified units', () => getLiveCerts(browser)),
+            withRetry('stream verisi', () => getLiveStreamData(browser))
         ]);
     } finally {
         await browser.close();
