@@ -104,7 +104,7 @@ https://justin-timberlake-stats.vercel.app/compare.html
 
 ## Streaming
 
-- Total Spotify streams: over 18.9 billion (updated daily).
+- Total Spotify streams: over 19 billion (updated daily).
 - Most-streamed: Can't Stop the Feeling!, Mirrors, SexyBack,
   Rock Your Body, My Love.
 
