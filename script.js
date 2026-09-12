@@ -24,20 +24,11 @@ function getTodayUTC() {
     return new Date().toISOString().split('T')[0];
 }
 
-// Kworb'da JT credit'i kalkan track'leri Firestore bugün snapshot'ından merge et.
-// JT'nin kworb sayfasında sadece "&" versiyonları var (504M + 0.7M Bob Sinclar);
-// Madonna sayfasında "and" yazılan 4 versiyon JT total'ında YOK, onları ekleyeceğiz:
-//   "4 Minutes (feat. Justin Timberlake and Timbaland)"          ~98M
-//   "...and Timbaland) - Live"                                    ~1.9M
-//   "...and Timbaland) - Peter Saves New York Edit"               ~1.5M
-//   "...and Timbaland) - Junkie XL Remix Edit"                    ~1.0M
-// "&" versiyonlarını filtre dışı bırakıyoruz (zaten JT total'ında).
-function is4MinTrack(title) {
-    const lc = title.toLowerCase();
-    return lc.includes('4 minutes') &&
-           lc.includes('justin timberlake') &&
-           lc.includes('and timbaland'); // normalizeKworbTitle "& Timbaland"i de buraya çevirir
-}
+// 4 Minutes: JT'nin Kworb sayfasında olmayan sürümler four-minutes.js'ten geliyor
+// (vault/streams/album ile aynı fonksiyon). Eski yerel kontrol normalizeKworbTitle
+// "& Timbaland"ı "and timbaland"a çevirdiği için JT'nin kendi 550M'lik satırını
+// eksik sürüm sanıyor, "zaten var" deyip hiçbir şey eklemiyordu — ana sayfa
+// Spotify toplamı streams sayfasının tam 121M altında kalıyordu.
 
 function isRadioEditTrack(title) {
     const lc = title.toLowerCase();
@@ -45,24 +36,11 @@ function isRadioEditTrack(title) {
 }
 
 // Fallback: Firestore'da bulamazsa son bilinen baseline + tahmini günlük büyüme.
-const FALLBACK_4MIN = {
-    baselineDate: '2026-04-23',
-    baselineTotal: 102_400_000, // 4 versiyon toplamı (97.9M + 1.9M + 1.5M + 1.0M)
-    dailyGrowth: 120_000
-};
-
 const FALLBACK_RADIO_EDIT = {
     baselineDate: '2026-05-24',
     baselineTotal: 118_417_347,
     dailyGrowth: 1_500
 };
-
-function getEstimated4MinTotal() {
-    const days = Math.max(0, Math.round(
-        (Date.now() - new Date(FALLBACK_4MIN.baselineDate + 'T00:00:00Z').getTime()) / 86400000
-    ));
-    return FALLBACK_4MIN.baselineTotal + days * FALLBACK_4MIN.dailyGrowth;
-}
 
 function getEstimatedRadioEditTotal() {
     const days = Math.max(0, Math.round(
@@ -73,52 +51,51 @@ function getEstimatedRadioEditTotal() {
 
 async function mergeExtraTracks(liveStats) {
     const ok = await waitForFirestore(3000);
-    let total4Min = 0;
     let totalRadioEdit = 0;
 
-    // Kworb'un JT sayfasında bu track'ler ZATEN varsa (credit geri geldiyse) tekrar
+    // Kworb'un JT sayfasında Radio Edit ZATEN varsa (credit geri geldiyse) tekrar
     // eklemek career total'i şişirir. Başlıkları normalize ederek kontrol et —
     // Kworb feature'ları "* " ile prefixliyor.
     const liveNorm = new Set((liveStats.trackTitles || []).map(normalizeKworbTitle));
-    const alreadyHas4Min = [...liveNorm].some(is4MinTrack);
     const alreadyHasRadio = [...liveNorm].some(isRadioEditTrack);
 
     if (ok && typeof window.getLatestSnapshot === 'function') {
         const snap = await window.getLatestSnapshot();
         if (snap && snap.tracks) {
-            let temp4Min = 0;
             let tempRadio = 0;
             const seen = new Set();
             for (const [title, vals] of Object.entries(snap.tracks)) {
                 const norm = normalizeKworbTitle(title);
                 if (seen.has(norm)) continue;   // snapshot içi mükerrer kayıtlar
                 seen.add(norm);
-                if (is4MinTrack(norm)) {
-                    temp4Min += Number(vals.total) || 0;
-                }
-                if (isRadioEditTrack(norm)) {
-                    tempRadio += Number(vals.total) || 0;
-                }
+                if (isRadioEditTrack(norm)) tempRadio += Number(vals.total) || 0;
             }
-            total4Min = temp4Min;
             totalRadioEdit = tempRadio;
         }
     }
 
-    const fromFirestore4Min = total4Min > 0;
     const fromFirestoreRadio = totalRadioEdit > 0;
-    if (total4Min <= 0) total4Min = getEstimated4MinTotal();
     if (totalRadioEdit <= 0) totalRadioEdit = getEstimatedRadioEditTotal();
-
-    if (alreadyHas4Min) total4Min = 0;
     if (alreadyHasRadio) totalRadioEdit = 0;
+
+    // 4 Minutes — hangi sürümün eksik olduğu başlık yazımından değil, JT'nin canlı
+    // listesiyle farktan belirleniyor (four-minutes.js). trackTitles HAM başlık
+    // olmalı: fourMinKey "&" ile "and"ı bilerek ayrı tutuyor.
+    let total4Min = 0;
+    let live4Min = false;
+    if (typeof fetchFourMinutesExtras === 'function') {
+        const extras = await fetchFourMinutesExtras(liveStats.trackTitles || []);
+        total4Min = extras.total;
+        live4Min = extras.live;
+    }
+
     if (total4Min === 0 && totalRadioEdit === 0) return;
 
     liveStats.TotalSpotify += (total4Min + totalRadioEdit);
     liveStats['Orphan'] += total4Min;
     // Note: in script.js, Part 2 is merged into "The 20/20 Experience"
     liveStats['The 20/20 Experience'] += totalRadioEdit;
-    console.log(`[mergeExtraTracks] +${total4Min.toLocaleString('en-US')} 4Min (${fromFirestore4Min ? 'firestore' : 'fallback'}), +${totalRadioEdit.toLocaleString('en-US')} RadioEdit (${fromFirestoreRadio ? 'firestore' : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
+    console.log(`[mergeExtraTracks] +${total4Min.toLocaleString('en-US')} 4Min (${live4Min ? 'live Kworb' : 'fallback'}), +${totalRadioEdit.toLocaleString('en-US')} RadioEdit (${fromFirestoreRadio ? 'firestore' : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
 }
 
 // --- 3. AKILLI PARSER ---
