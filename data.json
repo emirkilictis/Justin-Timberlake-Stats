@@ -20,6 +20,7 @@
       "pureSales": 10840000,
       "physicalSinglesEAS": 360000,
       "digitalSinglesEAS": 5250000,
+      "digitalSinglesEAS_basis": "35,000,000 digital single units worldwide, ringtones included (x 1.5/10 = 5,250,000 EAS). Floor from our own US data: FSLS singles' US downloads 14,100,000 (vault pure_sales_us) + US ringtone certifications 5,600,000 = 19,700,000, itself a minimum since ringtone figures are award thresholds. 35M implies the US was ~56% of worldwide digital + ringtone sales. ChartMasters lists 29M (ringtones included) but that figure dates from February 2018 and leaves only 9.3M for everything outside the US. Reviewed and kept by the site owner 2026-09-15.",
       "streams": {
           "spotify": 0,
           "youtubeVideoIds": [
