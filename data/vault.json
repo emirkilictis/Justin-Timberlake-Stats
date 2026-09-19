@@ -313,7 +313,7 @@
     {
       "id": "take_back_the_night",
       "title": "Take Back the Night",
-      "album_id": "The 20/20 Experience",
+      "album_id": "The 20/20 Experience – 2 of 2",
       "pure_sales_us": 500000,
       "youtubeVideoIds": [
         "DEzREJbln-o"
@@ -352,7 +352,7 @@
     {
       "id": "drink_you_away",
       "title": "Drink You Away",
-      "album_id": "The 20/20 Experience",
+      "album_id": "The 20/20 Experience – 2 of 2",
       "pure_sales_us": 620000,
       "official_certifications": {
         "USA": "None",
@@ -435,7 +435,7 @@
         "uuZE_IRwLNI"
       ],
       "official_certifications": {
-        "USA": "",
+        "USA": "2x Platinum",
         "UK": "3x Platinum",
         "Brazil": "3x Diamond",
         "Germany": {
@@ -1195,6 +1195,24 @@
       },
       "certification_dates": {
         "France": "2003-06-10"
+      },
+      "extra_track_sales_us": {
+        "value": 83655,
+        "worldwide_downloads": {
+          "(Oh No) What You Got": 35000,
+          "Take It from Here": 33000,
+          "Last Night": 27000,
+          "Nothin' Else": 21000,
+          "Still on My Brain": 20000,
+          "Never Again": 20000,
+          "Let's Take a Ride": 18000,
+          "(And She Said) Take Me Now": 14000,
+          "Right for Me": 13000
+        },
+        "us_share": 0.4162,
+        "as_of": "2018-02",
+        "evidence": "RIAA album TEA counts every track on the album (10 track sales = 1 album unit); the vault only holds the singles. These are the album's remaining tracks: 201,000 worldwide paid downloads per ChartMasters, converted to US at 41.6% — the album's own US/worldwide pure-sales ratio in our data (vault pure_sales_us 4,400,000 / data.json pureSales 10,572,000). ChartMasters' sales inputs date from its February 2018 study, so post-2018 downloads are not included; this is a floor for those years.",
+        "source": "https://chartmasters.org/album/justin-timberlake/justified/"
       }
     },
     {
@@ -1258,6 +1276,23 @@
         "Hungary": "2007",
         "Japan": "2006-11",
         "Russia": "2006"
+      },
+      "extra_track_sales_us": {
+        "value": 277214,
+        "worldwide_downloads": {
+          "Losing My Way": 126000,
+          "FutureSex/LoveSound": 120000,
+          "Chop Me Up": 99000,
+          "Sexy Ladies / Let Me Talk to You": 97000,
+          "Damn Girl": 73000,
+          "(Another Song) All Over Again": 67000,
+          "Pose": 12000,
+          "Boutique in Heaven": 7000
+        },
+        "us_share": 0.4613,
+        "as_of": "2018-02",
+        "evidence": "RIAA album TEA counts every track on the album (10 track sales = 1 album unit); the vault only holds the singles. These are the album's remaining tracks: 601,000 worldwide paid downloads per ChartMasters, converted to US at 46.1% — the album's own US/worldwide pure-sales ratio in our data (vault pure_sales_us 5,000,000 / data.json pureSales 10,840,000). ChartMasters' sales inputs date from its February 2018 study, so post-2018 downloads are not included; this is a floor for those years.",
+        "source": "https://chartmasters.org/album/justin-timberlake/futuresex-lovesounds/"
       }
     },
     {
@@ -1315,6 +1350,24 @@
         "as_of": "2026-09-12",
         "evidence": "Nielsen's SoundScan decade table for 2010-2019 gives The 20/20 Experience 3,743,000 US pure sales; ChartMasters confirmed in correspondence (2026-09) that this Nielsen figure combines both 20/20 volumes. The combined total is split by two sourced points: 2 of 2 at over 1,137,000 US copies as of 2014-06-18 (Billboard), leaving 2,606,000 for part 1 at 2019-12-31 (consistent with part 1's 2,427,000 for calendar 2013 alone). Post-2019 sales: no figure has been published. Growth between the two anchors — at least 3,564,000 combined in mid-2014 (2,427,000 + 1,137,000) and 3,743,000 at the end of 2019 — is at most 179,000 over 5.54 years, i.e. at most 32,334 a year combined. That rate is carried forward 6.70 years to 2026-09-12 (+216,624) and split by the 2019 shares (69.62% / 30.38%). This is a CEILING, not an estimate: the mid-2014 anchor is a lower bound, and 2014-2019 catalogue sales were stronger than 2020s sales. The displayed USA figure does not depend on it — the floor (no post-2019 sales at all) quantises to the same 4M / 1M.",
         "source": "https://en.wikipedia.org/wiki/List_of_best-selling_albums_in_the_United_States_of_the_Nielsen_SoundScan_era"
+      },
+      "extra_track_sales_us": {
+        "value": 361152,
+        "worldwide_downloads": {
+          "Pusher Love Girl": 155000,
+          "That Girl": 105000,
+          "Strawberry Bubblegum": 101000,
+          "Don't Hold the Wall": 84000,
+          "Let the Groove Get In": 75000,
+          "Blue Ocean Floor": 74000,
+          "Spaceship Coupe": 59000,
+          "Dress On": 19000,
+          "Body Count": 12000
+        },
+        "us_share": 0.528,
+        "as_of": "2018-02",
+        "evidence": "RIAA album TEA counts every track on the album (10 track sales = 1 album unit); the vault only holds the singles. These are the album's remaining tracks: 684,000 worldwide paid downloads per ChartMasters, converted to US at 52.8% — the combined 20/20 US/worldwide pure-sales ratio in our data (vault pure_sales_us 2,757,000 + 1,203,000 = 3,960,000 / data.json pureSales 7,500,000, which covers both volumes). ChartMasters' sales inputs date from its February 2018 study, so post-2018 downloads are not included; this is a floor for those years.",
+        "source": "https://chartmasters.org/album/justin-timberlake/the-20-20-experience/"
       }
     },
     {
@@ -1342,6 +1395,24 @@
         "as_of": "2026-09-12",
         "evidence": "Nielsen's SoundScan decade table for 2010-2019 gives The 20/20 Experience 3,743,000 US pure sales; ChartMasters confirmed in correspondence (2026-09) that this Nielsen figure combines both 20/20 volumes. The combined total is split by two sourced points: 2 of 2 at over 1,137,000 US copies as of 2014-06-18 (Billboard), leaving 2,606,000 for part 1 at 2019-12-31 (consistent with part 1's 2,427,000 for calendar 2013 alone). Post-2019 sales: no figure has been published. Growth between the two anchors — at least 3,564,000 combined in mid-2014 (2,427,000 + 1,137,000) and 3,743,000 at the end of 2019 — is at most 179,000 over 5.54 years, i.e. at most 32,334 a year combined. That rate is carried forward 6.70 years to 2026-09-12 (+216,624) and split by the 2019 shares (69.62% / 30.38%). This is a CEILING, not an estimate: the mid-2014 anchor is a lower bound, and 2014-2019 catalogue sales were stronger than 2020s sales. The displayed USA figure does not depend on it — the floor (no post-2019 sales at all) quantises to the same 4M / 1M.",
         "source": "https://en.wikipedia.org/wiki/The_20/20_Experience_%E2%80%93_2_of_2"
+      },
+      "extra_track_sales_us": {
+        "value": 157872,
+        "worldwide_downloads": {
+          "Cabaret": 51000,
+          "Murder": 49000,
+          "Gimme What I Don't Know (I Want)": 42000,
+          "You Got It On": 41000,
+          "Amnesia": 38000,
+          "True Blood": 33000,
+          "Only When I Walk Away": 32000,
+          "Blindness": 7000,
+          "Electric Lady": 6000
+        },
+        "us_share": 0.528,
+        "as_of": "2018-02",
+        "evidence": "RIAA album TEA counts every track on the album (10 track sales = 1 album unit); the vault only holds the singles. These are the album's remaining tracks: 299,000 worldwide paid downloads per ChartMasters, converted to US at 52.8% — the combined 20/20 US/worldwide pure-sales ratio in our data (vault pure_sales_us 2,757,000 + 1,203,000 = 3,960,000 / data.json pureSales 7,500,000, which covers both volumes). ChartMasters' sales inputs date from its February 2018 study, so post-2018 downloads are not included; this is a floor for those years.",
+        "source": "https://chartmasters.org/album/justin-timberlake/the-20-20-experience-5lyzregzcsnf0gx47wm6qu/"
       }
     },
     {
@@ -1362,6 +1433,27 @@
       },
       "certification_dates": {
         "USA": "2021-09"
+      },
+      "extra_track_sales_us": {
+        "value": 11667,
+        "worldwide_downloads": {
+          "Midnight Summer Jam": 3000,
+          "Sauce": 3000,
+          "Higher, Higher": 3000,
+          "Morning Light": 3000,
+          "Wave": 2000,
+          "Hers (Interlude)": 2000,
+          "Flannel": 2000,
+          "Montana": 2000,
+          "Breeze Off the Pond": 2000,
+          "Livin' Off the Land": 2000,
+          "The Hard Stuff": 2000,
+          "Young Man": 2000
+        },
+        "us_share": 0.4167,
+        "as_of": "2018-02",
+        "evidence": "RIAA album TEA counts every track on the album (10 track sales = 1 album unit); the vault only holds the singles. These are the album's remaining tracks: 28,000 worldwide paid downloads per ChartMasters, converted to US at 41.7% — the album's own US/worldwide pure-sales ratio in our data (vault pure_sales_us 500,000 / data.json pureSales 1,200,000). ChartMasters' sales inputs date from its February 2018 study, so post-2018 downloads are not included; this is a floor for those years.",
+        "source": "https://chartmasters.org/album/justin-timberlake/man-of-the-woods/"
       }
     },
     {

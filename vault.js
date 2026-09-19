@@ -396,6 +396,41 @@ function resolveMeasuredUSShare(item) {
     return ov.value;
 }
 
+// data.json iki 20/20 cildini tek kayıtta tutuyor; YouTube listesi ikisinin
+// videolarını birlikte içeriyor. Kendi video ID'si olmayan bir şarkının video payı
+// bu havuzdan, havuzun AİT OLDUĞU stream toplamına (iki cilt birlikte) göre
+// verilmeli. Eskiden yalnızca part 1'in Spotify'ına bölünüyordu: iki cildin
+// videolarını tek cildin stream'ine oranlamak, kendi YT'si olmayan şarkılara
+// orantısız pay veriyordu.
+const COMBINED_JT_ALBUMS = { 'The 20/20 Experience \u2013 2 of 2': 'The 20/20 Experience' };
+
+function albumVideoPool(albumId) {
+    if (!albumId || !jtData) return null;
+    const key = COMBINED_JT_ALBUMS[albumId] || albumId;
+    const data = jtData.albums[key];
+    if (!data || !data.streams) return null;
+    let spot = liveStreams.albums[key] || 0;
+    for (const [part, parent] of Object.entries(COMBINED_JT_ALBUMS)) {
+        if (parent === key) spot += liveStreams.albums[part] || 0;
+    }
+    return { youtube: data.streams.youtube || 0, spot };
+}
+
+// RIAA albüm TEA'sı albümdeki BÜTÜN şarkıların satışlarını sayar (10 şarkı = 1
+// albüm). Vault yalnızca single'ları tutuyor; albümün geri kalanı TEA'ya hiç
+// girmiyordu. extra_track_sales_us, vault'ta satırı olmayan şarkıların ABD
+// download toplamını kaynağıyla birlikte taşır. us_share ile aynı disiplin:
+// kanıtsız blok yok sayılır.
+function resolveExtraTrackSales(album) {
+    const x = album && album.extra_track_sales_us;
+    if (!x) return 0;
+    if (typeof x.value !== 'number' || !(x.value >= 0) || !x.evidence || !x.source) {
+        console.warn('[extra_track_sales_us] kanıt eksik, yok sayıldı:', album.id);
+        return 0;
+    }
+    return x.value;
+}
+
 function calculateUSALive(item, type = 'song') {
     const pureSalesUS = item.pure_sales_us || 0;
     
@@ -421,13 +456,12 @@ function calculateUSALive(item, type = 'song') {
         if (liveStreams.songs[item.id]) {
             // Per-song YouTube views (used for orphan tracks and any song with direct YT data)
             usVideo = liveStreams.songs[item.id] * effectiveUSShare;
-        } else if (item.album_id && jtData && jtData.albums[item.album_id]) {
-            const albumData = jtData.albums[item.album_id];
-            const albumSpot = liveStreams.albums[item.album_id] || 0;
-            if (albumData.streams && albumData.streams.youtube && albumSpot > 0) {
-                const spotShare = albumSpot > 0 ? globalSpot / albumSpot : 0;
-                const ytGlobalTrack = albumData.streams.youtube * spotShare;
-                usVideo = ytGlobalTrack * effectiveUSShare;
+        } else {
+            // Kendi video ID'si olmayan şarkı: albümün video havuzundan, havuzun
+            // ait olduğu stream toplamına göre pay alır (bkz. albumVideoPool).
+            const pool = albumVideoPool(item.album_id);
+            if (pool && pool.youtube && pool.spot > 0) {
+                usVideo = pool.youtube * (globalSpot / pool.spot) * effectiveUSShare;
             }
         }
         
@@ -444,13 +478,35 @@ function calculateUSALive(item, type = 'song') {
         }
         const usVideo = ytViews * effectiveUSShare;
         
+        // Ölçülmüş ABD payı olan şarkılar albüm SEA'sında da o payla sayılır.
+        // Albüm tek bir dönem payı kullanıyor; Suit & Tie'ın stream'leri Luminate'le
+        // ölçülmüş 0.5895 yerine 0.27 ile giriyordu. Yalnızca FARK eklenir: şarkının
+        // stream'leri albüm toplamında zaten dönem payıyla var. Video yalnızca
+        // şarkının klibi albümün sertifika video listesindeyse düzeltilir.
+        const albumYtIds = new Set(
+            (jtData && jtData.albums[item.id] && jtData.albums[item.id].streams &&
+             jtData.albums[item.id].streams.youtubeVideoIds) || []
+        );
+        let measuredDelta = 0;
+        vaultData.songs.forEach(s => {
+            if (s.album_id !== item.id) return;
+            const measured = resolveMeasuredUSShare(s);
+            if (measured === null) return;
+            const songIds = filterCertVideoIds((s.streams && s.streams.youtubeVideoIds) || s.youtubeVideoIds);
+            const videoInAlbum = songIds.length > 0 && songIds.every(id => albumYtIds.has(id));
+            const yt = videoInAlbum ? (liveStreams.songs[s.id] || 0) : 0;
+            measuredDelta += (getTrackSpotify(s.title) * ARTIST_RATIO + yt) * (measured - effectiveUSShare);
+        });
+
         // RIAA Album Formula: (Total US Streams / 1500) + Pure Sales + (Track Sales / 10)
-        const sea = (usAudio + usVideo) / 1500;
+        const sea = (usAudio + usVideo + measuredDelta) / 1500;
         
         let albumTrackSales = 0;
         vaultData.songs.forEach(s => {
             if (s.album_id === item.id) albumTrackSales += (s.pure_sales_us || 0);
         });
+        // Vault'ta satırı olmayan albüm şarkıları (bkz. resolveExtraTrackSales)
+        albumTrackSales += resolveExtraTrackSales(item);
         const tea = albumTrackSales / 10;
         
         return Math.floor(pureSalesUS + sea + tea);
