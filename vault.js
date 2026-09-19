@@ -86,6 +86,8 @@ const ALBUM_COVERS = {
 let vaultData = { songs: [], albums: [] };
 let jtData = null; // For base data.json including youtubeVideoIds and Orphan
 let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {}, songs: {}, titles: {} };
+// Vault albümü başına sertifika video toplamı (bkz. albumCertVideoIds)
+const VAULT_ALBUM_YT = {};
 let computedData = { songs: [], albums: [], nonSingles: [] };
 
 let sortState = {
@@ -135,7 +137,10 @@ async function fetchLiveStreams() {
                 // Album grouping logic
                 const map = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {};
                 for (let key in map) {
-                    if (lowerTitle.includes(key.toLowerCase())) {
+                    // Anahtar da normalize edilmeli: lowerTitle "&"→"and" çevrildi,
+                    // "Suit & Tie" anahtarı ham kalınca Suit & Tie'ın 380M stream'i
+                    // hiçbir albüme bağlanmıyor, 20/20'nin SEA'sından düşüyordu.
+                    if (lowerTitle.includes(normalizeKworbTitle(key))) {
                         let album = map[key];
                         liveStreams.albums[album] = (liveStreams.albums[album] || 0) + val;
                         break;
@@ -421,6 +426,25 @@ function albumVideoPool(albumId) {
 // girmiyordu. extra_track_sales_us, vault'ta satırı olmayan şarkıların ABD
 // download toplamını kaynağıyla birlikte taşır. us_share ile aynı disiplin:
 // kanıtsız blok yok sayılır.
+// Bir vault albümünün sertifikaya sayılan video ID'leri: data.json'daki albüm
+// listesi + vault albümünün kendi youtubeVideoIds'i, EKSİ başka bir vault
+// albümünün sahiplendiği videolar. data.json 20/20'nin iki cildini tek listede
+// tutuyor; 2 of 2'nin videoları (TKO, Not a Bad Thing, Take Back the Night)
+// 2026-09'a kadar part 1'in SEA'sına sayılıyordu, 2 of 2'ye hiç video
+// düşmüyordu.
+function albumCertVideoIds(albumId) {
+    if (!vaultData) return [];
+    const self = vaultData.albums.find(a => a.id === albumId) || {};
+    const base = (jtData && jtData.albums[albumId] && jtData.albums[albumId].streams &&
+                  jtData.albums[albumId].streams.youtubeVideoIds) || [];
+    const claimed = new Set();
+    vaultData.albums.forEach(a => {
+        if (a.id !== albumId) (a.youtubeVideoIds || []).forEach(id => claimed.add(id));
+    });
+    const ids = [...new Set([...base, ...(self.youtubeVideoIds || [])])].filter(id => !claimed.has(id));
+    return filterCertVideoIds(ids);
+}
+
 function resolveExtraTrackSales(album) {
     const x = album && album.extra_track_sales_us;
     if (!x) return 0;
@@ -473,7 +497,9 @@ function calculateUSALive(item, type = 'song') {
         const usAudio = (globalSpot * ARTIST_RATIO) * effectiveUSShare;
         
         let ytViews = 0;
-        if (jtData && jtData.albums[item.id] && jtData.albums[item.id].streams) {
+        if (VAULT_ALBUM_YT[item.id] !== undefined) {
+            ytViews = VAULT_ALBUM_YT[item.id];
+        } else if (jtData && jtData.albums[item.id] && jtData.albums[item.id].streams) {
             ytViews = jtData.albums[item.id].streams.youtube || 0;
         }
         const usVideo = ytViews * effectiveUSShare;
@@ -483,10 +509,7 @@ function calculateUSALive(item, type = 'song') {
         // ölçülmüş 0.5895 yerine 0.27 ile giriyordu. Yalnızca FARK eklenir: şarkının
         // stream'leri albüm toplamında zaten dönem payıyla var. Video yalnızca
         // şarkının klibi albümün sertifika video listesindeyse düzeltilir.
-        const albumYtIds = new Set(
-            (jtData && jtData.albums[item.id] && jtData.albums[item.id].streams &&
-             jtData.albums[item.id].streams.youtubeVideoIds) || []
-        );
+        const albumYtIds = new Set(albumCertVideoIds(item.id));
         let measuredDelta = 0;
         vaultData.songs.forEach(s => {
             if (s.album_id !== item.id) return;
@@ -867,7 +890,7 @@ function computeNonSingles() {
 
         let albumId = "Orphan";
         for (const key in map) {
-            if (k.includes(key.toLowerCase())) { albumId = map[key]; break; }
+            if (k.includes(normalizeKworbTitle(key))) { albumId = map[key]; break; }
         }
 
         // Kworb feature'ları "* " önekiyle işaretler — görüntüde temizle
@@ -1264,6 +1287,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (ids.length > 0) {
                 const live = await fetchRealYouTubeViews(ids);
                 if (live > 0) jtData.albums[id].streams.youtube = live;
+            }
+        }));
+        // Albüm SEA'sı için albüm bazlı liste: iki 20/20 cildi data.json'da tek kayıt,
+        // her cilt kendi videolarını alsın. API düşerse yazılmaz, eski değer kalır.
+        await Promise.all(vaultData.albums.map(async a => {
+            const ids = albumCertVideoIds(a.id);
+            if (ids.length > 0) {
+                const live = await fetchRealYouTubeViews(ids);
+                if (live > 0) VAULT_ALBUM_YT[a.id] = live;
             }
         }));
         // Fetch per-song YouTube views (e.g. orphan tracks with individual video IDs)

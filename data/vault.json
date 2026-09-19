@@ -1413,7 +1413,17 @@
         "as_of": "2018-02",
         "evidence": "RIAA album TEA counts every track on the album (10 track sales = 1 album unit); the vault only holds the singles. These are the album's remaining tracks: 299,000 worldwide paid downloads per ChartMasters, converted to US at 52.8% — the combined 20/20 US/worldwide pure-sales ratio in our data (vault pure_sales_us 2,757,000 + 1,203,000 = 3,960,000 / data.json pureSales 7,500,000, which covers both volumes). ChartMasters' sales inputs date from its February 2018 study, so post-2018 downloads are not included; this is a floor for those years.",
         "source": "https://chartmasters.org/album/justin-timberlake/the-20-20-experience-5lyzregzcsnf0gx47wm6qu/"
-      }
+      },
+      "youtubeVideoIds": [
+        "DEzREJbln-o",
+        "tFMFnZyWIW4",
+        "FyXtoTLLcDk",
+        "SJW3JRm6BTs",
+        "MFN-iKwMrIQ",
+        "Vjty080jy60",
+        "Y8ygKnBtKAk",
+        "eAeteudJ5g0"
+      ]
     },
     {
       "id": "Man of the Woods",
