@@ -1247,7 +1247,7 @@
         "Japan": "Gold",
         "Russia": "200000 units",
         "Austria": "Gold",
-        "Denmark": "7x Platinum",
+        "Denmark": "8x Platinum",
         "Italy": "Gold",
         "Poland": "2x Platinum",
         "Switzerland": "2x Platinum",
@@ -1275,7 +1275,8 @@
         "Finland": "2007",
         "Hungary": "2007",
         "Japan": "2006-11",
-        "Russia": "2006"
+        "Russia": "2006",
+        "Denmark": "2026-09-29"
       },
       "extra_track_sales_us": {
         "value": 277214,
