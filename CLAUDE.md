@@ -11,6 +11,7 @@ Justin Timberlake hayran sitesi — albüm/single satışları, sertifikasyonlar
   - `data/vault.json` — şarkı/albüm sertifikasyonları (ülke bazlı).
   - **Kworb proxy** (`MY_DYNAMIC_API`, `config.js`) — canlı Spotify stream sayıları (HTML tablo scrape). Yalnızca JT'nin sanatçı sayfasına sabit; parametre almaz.
   - **`api/kworb.js`** — izin listesindeki başka bir sanatçının Kworb sayfasını sunucudan çeker (kworb.net CORS vermiyor). Kullanıcıları: `four-minutes.js` ve `collab-streams.js`.
+  - **`api/dashboard-tracks.js`** — site sahibinin kendi **SpotifyStreams dashboard'unun** (`spotify-streams-dashboard.onrender.com`, repo `~/Desktop/Projects/SpotifyStreams`) JT şarkı tablosunu iletir; parametre almaz, URL sabit. Kullanıcısı: `missing-tracks.js`. Render free plan uyuyor; 12 sn'de cevap gelmezse 502 döner, istemci yedeğe düşer.
   - **YouTube Data API v3** (`YOUTUBE_API_KEY`) — gerçek zamanlı YT görüntüleme sayısı.
   - **Spotify Web API** (`api/spotify.js` proxy üzerinden) — sanatçı bilgisi, top tracks, monthly listeners (LD+JSON scrape).
   - **Firestore** — günlük snapshot geçmişi (`scripts/daily-snapshot.js`).
@@ -90,6 +91,20 @@ Kurallar:
 
 Şu an kanıtlı satırlar: Suit & Tie (`luminate_week`), Love Never Felt So Good / Holy Grail / Selfish / Better Place / Dead And Gone (`riaa_floor`). **CSTF'e bilerek dokunulmadı** — 14× ödülü 1,530,000,000 stream dayatıyor, model zaten 1,64 milyar görüyor (çarpan 0.93), yani düşük hesapladığımız kanıtlanmıyor.
 
+## Kworb'un tutmadığı kredili parçalar — `missing-tracks.js`
+
+2026-11-19'da JT'nin Kworb sayfası Spotify'ın kendisinden ~197M eksikti (4 Minutes / Not a Bad Thing Radio Edit zaten ayrıca ekleniyordu). Kworb şunları JT sayfasına hiç yazmıyor:
+- **The Lonely Island** (Motherlover, Dick In A Box, 3-Way) ve **Jimmy Fallon** (History of Rap) — yalnızca o sanatçıların sayfasında, o sayfalar da aylarca eski (2026-10 / 2026-04).
+- **TROLLS Holiday** özel albümü — Kworb'un **hiçbir** sayfasında yok.
+- Küçük feat'ler, remix'ler, instrumental'lar.
+
+Bu yüzden kaynak Kworb değil, SpotifyStreams dashboard'u. Kurallar:
+- Sayılan parçalar **Spotify ID'siyle açık listede**; dashboard ile Kworb arasındaki fark körlemesine alınmaz. Bilerek alınmayanlar (Mirrors (Live) — cover; The Book of Love — JT kredide yok; Release - Album Version — dashboard değeri şüpheli) dosyanın başında gerekçesiyle yazılı.
+- Dedupe JT'nin canlı listesiyle farktan (`missingKey`, `fourMinKey` ile aynı) — Kworb bir parçayı JT sayfasına geri eklerse kendiliğinden elenir.
+- Her parçanın yedek değeri (dashboard'un 2026-11-17 okuması + 7 günlük ortalama) var; dashboard'a ulaşılamazsa ya da ID kaybolursa o kullanılır.
+- **Kapsam:** streams, ana sayfa (`script.js` — Spotify toplamı ve albüm EAS'ı), album sayfası ve `daily-snapshot.js` (aynı dosyayı `require` ediyor). **Vault'a bağlı DEĞİL** — sertifika ünitelerini oynatır, ayrıca onay ister.
+- Ana sayfa EAS'ına etkisi 2026-11-19'da +306,908 (neredeyse tamamı Orphan).
+
 ## Veri yapısı — `data/vault.json`
 
 ```json
@@ -161,7 +176,7 @@ Kurallar:
 
 `.github/workflows/`:
 - `daily-snapshot.yml` — iki paralel job:
-  - `snapshot` — Kworb'dan veri çekip Firestore'a kaydeder (`scripts/daily-snapshot.js`).
+  - `snapshot` — Kworb'dan veri çekip Firestore'a kaydeder (`scripts/daily-snapshot.js`). Kworb-dışı parçaları SpotifyStreams dashboard'undan ekler (`missing-tracks.js`, 90 sn zaman aşımı — Render'ı uyandırabilsin diye job süresi 8 dk).
   - `sync-seo-figures` — canlı siteyi Puppeteer ile açıp EAS / certified units / Spotify rakamlarını statik SEO metnine yazar, `sitemap.xml` lastmod'unu tazeler, commit eder ve IndexNow'a bildirir. **Commit adımındaki dosya listesi `sync-seo-figures.js`'teki `TARGET_FILES` ile aynı olmalı** — compare.html bir ay boyunca listede olmadığı için bot onu güncelleyip commit etmeden atıyordu.
   - Cron `5 0 * * *` (00:05 UTC) ama GitHub zamanlanmış işleri yoğunlukta geciktiriyor; pratikte **~04:15–04:30 UTC**'de başlıyor. Firestore'da bugünün dokümanı o saatten önce yoksa normal.
 - `indexnow.yml` — main'e her push'ta değişen HTML/`llms.txt`/`data/` sayfalarını IndexNow'a bildirir.

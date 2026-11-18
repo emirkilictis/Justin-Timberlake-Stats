@@ -1067,6 +1067,30 @@ async function initStreamsDashboard() {
             }
         }
 
+        // Kworb'un JT sayfasında olmayan kredili parçalar (Lonely Island, TROLLS
+        // Holiday, …) — bkz. missing-tracks.js. Snapshot merge'ünden SONRA çağrılıyor:
+        // daily-snapshot.js bunları da yazıyor, snapshot'tan gelen satır zaten
+        // listedeyse modül onu atlıyor.
+        if (typeof fetchMissingTracks === 'function') {
+            const missing = await fetchMissingTracks(liveStats.tracks.map(t => t.title));
+            missing.tracks.forEach(t => {
+                liveStats.tracks.push({ title: t.title, total: t.total, daily: t.daily });
+                liveStats.TotalSpotify += t.total;
+                liveStats.TotalDaily   += t.daily;
+                let albName = 'Orphan';
+                for (const key in songToAlbumMap) {
+                    if (t.title.toLowerCase().includes(key.toLowerCase())) { albName = songToAlbumMap[key]; break; }
+                }
+                const bucket = liveStats[albName] || liveStats['Orphan'];
+                bucket.total += t.total;
+                bucket.daily += t.daily;
+            });
+            if (missing.total > 0) {
+                console.log(`[streams.js] Kworb-dışı parçalar: +${missing.total.toLocaleString('en-US')} ` +
+                            `across ${missing.tracks.length} tracks (${missing.live ? 'live dashboard' : 'fallback'})`);
+            }
+        }
+
         // Fallback: Firestore'da "Not A Bad Thing - Radio Edit" varyantlari yoksa
         if (!hasRadioEdit) {
             const baselineDate = '2026-05-24';

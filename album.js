@@ -507,6 +507,13 @@ async function init() {
                 fourMin.tracks.forEach(t => all.push({ title: t.title, total: t.total, daily: t.daily }));
             }
 
+            // Kworb'un JT sayfasında olmayan kredili parçalar (missing-tracks.js) —
+            // albüme düşenler: Tunnel Vision Radio Edit, Pose, UTEOT remix'leri.
+            if (typeof fetchMissingTracks === 'function') {
+                const missing = await fetchMissingTracks(all.map(t => t.title));
+                missing.tracks.forEach(t => all.push({ title: t.title, total: t.total, daily: t.daily }));
+            }
+
             const hasLSM = all.some(t => t.title.toLowerCase().includes('love sex magic'));
             if (!hasLSM) {
                 const baselineDate = '2026-06-30';

@@ -8,6 +8,9 @@
     },
     "api/kworb.js": {
       "maxDuration": 15
+    },
+    "api/dashboard-tracks.js": {
+      "maxDuration": 15
     }
   },
   "headers": [

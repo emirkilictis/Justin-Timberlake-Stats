@@ -89,13 +89,29 @@ async function mergeExtraTracks(liveStats) {
         live4Min = extras.live;
     }
 
-    if (total4Min === 0 && totalRadioEdit === 0) return;
+    // Kworb'un JT sayfasında olmayan kredili parçalar (missing-tracks.js). Ana sayfa
+    // snapshot track'lerini merge etmiyor; dedupe yalnızca canlı listeye karşı.
+    let missing = { tracks: [], total: 0, live: false };
+    if (typeof fetchMissingTracks === 'function') {
+        missing = await fetchMissingTracks(liveStats.trackTitles || []);
+    }
 
-    liveStats.TotalSpotify += (total4Min + totalRadioEdit);
+    if (total4Min === 0 && totalRadioEdit === 0 && missing.total === 0) return;
+
+    liveStats.TotalSpotify += (total4Min + totalRadioEdit + missing.total);
     liveStats['Orphan'] += total4Min;
     // Note: in script.js, Part 2 is merged into "The 20/20 Experience"
     liveStats['The 20/20 Experience'] += totalRadioEdit;
-    console.log(`[mergeExtraTracks] +${total4Min.toLocaleString('en-US')} 4Min (${live4Min ? 'live Kworb' : 'fallback'}), +${totalRadioEdit.toLocaleString('en-US')} RadioEdit (${fromFirestoreRadio ? 'firestore' : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
+    missing.tracks.forEach(t => {
+        let target = 'Orphan';
+        for (const key in songToAlbumMap) {
+            if (t.title.toLowerCase().includes(key.toLowerCase())) { target = songToAlbumMap[key]; break; }
+        }
+        if (target === "The 20/20 Experience – 2 of 2") target = "The 20/20 Experience";
+        if (liveStats[target] === undefined) target = 'Orphan';
+        liveStats[target] += t.total;
+    });
+    console.log(`[mergeExtraTracks] +${total4Min.toLocaleString('en-US')} 4Min (${live4Min ? 'live Kworb' : 'fallback'}), +${totalRadioEdit.toLocaleString('en-US')} RadioEdit (${fromFirestoreRadio ? 'firestore' : 'fallback'}), +${missing.total.toLocaleString('en-US')} non-Kworb (${missing.live ? 'live dashboard' : 'fallback'}) → TotalSpotify: ${liveStats.TotalSpotify.toLocaleString('en-US')}`);
 }
 
 // --- 3. AKILLI PARSER ---

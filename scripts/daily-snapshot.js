@@ -242,6 +242,42 @@ async function fetchExtraTracks() {
     return results;
 }
 
+// ── Kworb'un JT sayfasında OLMAYAN kredili parçalar ─────────────
+// Liste ve dedupe kuralı tek yerde: ../missing-tracks.js (tarayıcı da aynı
+// dosyayı kullanıyor). Kaynak site sahibinin SpotifyStreams dashboard'u.
+// Render free plan uyuyor olabilir; Actions'ta beklemeye vaktimiz var, o
+// yüzden zaman aşımı sitedeki proxy'den (12 sn) uzun. Ulaşılamazsa modülün
+// yedek değerleri (son okuma + günlük ortalama) yazılıyor — aksi halde
+// career_total o gün ~197M düşer ve trend grafiğinde sahte bir çukur çıkar.
+const { resolveMissingTracks } = require('../missing-tracks.js');
+const DASHBOARD_SONGS_URL = 'https://spotify-streams-dashboard.onrender.com/api/songs?artist=31TPClRtHm23RisEBtV3X7';
+
+async function fetchMissingTracksNode(jtTitles) {
+    let rows = null;
+    try {
+        console.log('[Missing] SpotifyStreams dashboard çekiliyor...');
+        const res = await fetch(DASHBOARD_SONGS_URL, { timeout: 90000, headers: { 'Accept': 'application/json' } });
+        if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length) {
+                rows = data.map(r => ({
+                    id: r.id,
+                    title: r.title,
+                    total: Number(r.cumulative) || 0,
+                    daily: Number(r.daily_avg_7d) || Number(r.daily_gain) || 0
+                }));
+            }
+        } else {
+            console.warn(`[Missing] HTTP ${res.status} — yedek değerler kullanılacak`);
+        }
+    } catch (err) {
+        console.warn(`[Missing] Dashboard hatası (yedek kullanılacak): ${err.message}`);
+    }
+    const out = resolveMissingTracks(rows, jtTitles);
+    console.log(`[Missing] ${out.tracks.length} parça, +${out.total.toLocaleString('en-US')} (${out.live ? 'live dashboard' : 'fallback'})`);
+    return out.tracks;
+}
+
 async function fetchRadioEditStreams() {
     const trackTitle = 'Not A Bad Thing - Radio Edit';
     const baselineDate = '2026-05-24';
@@ -315,8 +351,11 @@ async function fetchAndSnapshot() {
         throw new Error("Parse başarısız: Track listesi boş. Üstteki HTML dump'a bak.");
     }
 
+    // Kworb-dışı parçalar: dedupe JT'nin canlı listesine karşı (missing-tracks.js)
+    const missingTracks = await fetchMissingTracksNode(stats.tracks.map(t => t.title));
+
     // Extra track'leri ana listeye ekle (JT sayfasında yoksa)
-    const combinedExtraTracks = [...extraTracks, radioEditTrack];
+    const combinedExtraTracks = [...extraTracks, radioEditTrack, ...missingTracks];
     for (const t of combinedExtraTracks) {
         const tNorm = normalizeKworbTitle(t.title);
         const alreadyPresent = stats.tracks.some(x => normalizeKworbTitle(x.title) === tNorm);

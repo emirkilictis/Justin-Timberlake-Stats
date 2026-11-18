@@ -4,8 +4,23 @@
     {
       "name": "jt-site",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8765"
+      ],
       "port": 8765
+    },
+    {
+      "name": "jt-localdev",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "localdev.js"
+      ],
+      "port": 8787,
+      "env": {
+        "PORT": "8787"
+      }
     }
   ]
 }
