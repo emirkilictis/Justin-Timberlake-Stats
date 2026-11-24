@@ -89,7 +89,9 @@ Kurallar:
 - `riaa_floor` satırları bugünün ekranını değiştirmez (USA kolonu zaten `max(live, cert)`); yaptıkları şey o şarkıyı donmuş olmaktan çıkarıp bundan sonraki stream'lere kredi vermek.
 - Stream verisi eksik olan bir şarkıya `riaa_floor` **yazılmaz** — "kanıt" bug'dan gelir. Önce veri düzeltilir, sonra taban yeniden hesaplanır (bkz. `collab-streams.js`).
 
-Şu an kanıtlı satırlar: Suit & Tie (`luminate_week`), Love Never Felt So Good / Holy Grail / Selfish / Better Place / Dead And Gone (`riaa_floor`). **CSTF'e bilerek dokunulmadı** — 14× ödülü 1,530,000,000 stream dayatıyor, model zaten 1,64 milyar görüyor (çarpan 0.93), yani düşük hesapladığımız kanıtlanmıyor.
+Şu an kanıtlı satırlar: Suit & Tie (`luminate_week`), Holy Grail / Better Place / Dead And Gone (`riaa_floor`). CSTF'te `us_share` yok.
+
+**`riaa_floor` yazmadan önce ödülü RIAA'nın kendi sicilinde doğrula** (riaa.com/gold-platinum, sanatçı araması + satırın timeline'ı). 2026-11-24'te vault'taki ABD ödüllerinin 11'i sicille uyuşmuyordu: CSTF 14× (sicil 4×, 2017), Love Never Felt So Good 6× (sicil 1×, 2014), Selfish ve Cry Me a River (sicilde yok). LNFSG ve Selfish'in `riaa_floor` blokları bu var olmayan ödüllerden türetilmişti, silindi. Sicil mastertone ödüllerini de "SINGLE" formatıyla listeler (aynı başlığın ikinci satırı, genelde 2006–2009, label `JIVE`); ayırt etmek için vault'taki ringtone satırlarıyla karşılaştır.
 
 ## Kworb'un tutmadığı kredili parçalar — `missing-tracks.js`
 

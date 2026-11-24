@@ -25,7 +25,7 @@
         "DksSPZTZES0"
       ],
       "official_certifications": {
-        "USA": "2x Platinum",
+        "USA": "None",
         "UK": "2x Platinum",
         "Brazil": "1x Platinum",
         "Germany": "Gold",
@@ -103,7 +103,7 @@
       "album_id": "FutureSex/LoveSounds",
       "pure_sales_us": 1000000,
       "official_certifications": {
-        "USA": "None",
+        "USA": "Gold",
         "UK": "Silver",
         "Brazil": "None",
         "Germany": "None",
@@ -112,6 +112,9 @@
         "New Zealand": "Gold",
         "World": "None",
         "Denmark": "Gold"
+      },
+      "certification_dates": {
+        "USA": "2008-02-13"
       }
     },
     {
@@ -168,7 +171,7 @@
       "album_id": "FutureSex/LoveSounds",
       "pure_sales_us": 1000000,
       "official_certifications": {
-        "USA": "None",
+        "USA": "Gold",
         "UK": "Silver",
         "Brazil": "None",
         "Germany": "None",
@@ -176,6 +179,9 @@
         "Canada": "None",
         "New Zealand": "1x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "USA": "2008-10-08"
       }
     },
     {
@@ -338,7 +344,7 @@
         "Vjty080jy60"
       ],
       "official_certifications": {
-        "USA": "None",
+        "USA": "1x Platinum",
         "UK": "Silver",
         "Brazil": "Gold",
         "Germany": "None",
@@ -347,6 +353,9 @@
         "New Zealand": "1x Platinum",
         "World": "None",
         "Denmark": "Gold"
+      },
+      "certification_dates": {
+        "USA": "2014-06-19"
       }
     },
     {
@@ -493,7 +502,7 @@
         "8MPbR6Cbwi4"
       ],
       "official_certifications": {
-        "USA": "1x Platinum",
+        "USA": "3x Platinum",
         "UK": "Platinum",
         "Brazil": "1x Diamond",
         "Germany": {
@@ -527,7 +536,8 @@
         "Italy": "Platinum"
       },
       "certification_dates": {
-        "France": "2025-01-16"
+        "France": "2025-01-16",
+        "USA": "2021-09-09"
       }
     },
     {
@@ -569,13 +579,16 @@
         "gA-NDZb29I4"
       ],
       "official_certifications": {
-        "USA": "None",
+        "USA": "1x Platinum",
         "UK": "Silver",
         "Brazil": "Gold",
         "Germany": "None",
         "Australia": "Gold",
         "Canada": "1x Platinum",
         "World": "None"
+      },
+      "certification_dates": {
+        "USA": "2021-09-09"
       }
     },
     {
@@ -599,7 +612,7 @@
       "album_id": "Everything I Thought It Was",
       "pure_sales_us": 100000,
       "official_certifications": {
-        "USA": "1x Platinum",
+        "USA": "None",
         "UK": "Silver",
         "Brazil": "Gold",
         "Germany": "None",
@@ -617,13 +630,6 @@
       },
       "certification_dates": {
         "South Africa": "2024-05-09"
-      },
-      "us_share": {
-        "value": 0.3999,
-        "basis": "riaa_floor",
-        "measured_at": "2026-08-20",
-        "evidence": "RIAA 1x Platinum = 1,000,000 units; pure_sales_us is 100,000, so at least (1,000,000 - 100,000) x 150 = 135,000,000 U.S. streams already existed on the award date. At the era share of 0.35 the model sees only 118,153,078 — a factor of 1.1426. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
-        "source": "RIAA Gold & Platinum register"
       }
     },
     {
@@ -647,7 +653,7 @@
       "album_id": "Orphan",
       "pure_sales_us": 4000000,
       "official_certifications": {
-        "USA": "14x Platinum",
+        "USA": "4x Platinum",
         "UK": "5x Platinum",
         "Brazil": "3x Diamond",
         "Germany": {
@@ -693,7 +699,8 @@
         "France": "2016-10-14",
         "Switzerland": "2017",
         "Austria": "2017",
-        "South Africa": "2016"
+        "South Africa": "2016",
+        "USA": "2017-01-19"
       },
       "youtubeVideoIds": [
         "ru0K8uYEZWw"
@@ -834,7 +841,7 @@
       "album_id": "Orphan",
       "pure_sales_us": 1000000,
       "official_certifications": {
-        "USA": "6x Platinum",
+        "USA": "1x Platinum",
         "UK": "Platinum",
         "Brazil": "3x Platinum",
         "Germany": {
@@ -864,12 +871,8 @@
       "youtubeVideoIds": [
         "oG08ukJPtR8"
       ],
-      "us_share": {
-        "value": 0.5597,
-        "basis": "riaa_floor",
-        "measured_at": "2026-08-20",
-        "evidence": "RIAA 6x Platinum = 6,000,000 units; pure_sales_us is 1,000,000, so at least (6,000,000 - 1,000,000) x 150 = 750,000,000 U.S. streams already existed on the award date. At the era share of 0.27 the model sees only 361,766,821 — a factor of 2.0732. This is a LOWER bound: the award was granted in the past (streams have grown since) and RIAA also counts YouTube UGC, which the model does not count at all. The share is rounded down so the model never claims more than the award proves, which is why this row's displayed USA figure does not move today (the column is max(live, certified)).",
-        "source": "RIAA Gold & Platinum register"
+      "certification_dates": {
+        "USA": "2014-08-22"
       }
     },
     {
@@ -878,7 +881,7 @@
       "album_id": "Orphan",
       "pure_sales_us": 1000000,
       "official_certifications": {
-        "USA": "None",
+        "USA": "2x Platinum",
         "UK": "Platinum",
         "Brazil": "2x Platinum",
         "Germany": {
@@ -896,7 +899,10 @@
       },
       "youtubeVideoIds": [
         "5RDSkR8_AQ0"
-      ]
+      ],
+      "certification_dates": {
+        "USA": "2023-01-19"
+      }
     },
     {
       "id": "holy_grail",
@@ -1011,7 +1017,7 @@
       "album_id": "Orphan",
       "pure_sales_us": 300000,
       "official_certifications": {
-        "USA": "None",
+        "USA": "Gold",
         "UK": "Platinum",
         "Brazil": "None",
         "Germany": {
@@ -1029,7 +1035,10 @@
       },
       "youtubeVideoIds": [
         "F0B7HDiY-10"
-      ]
+      ],
+      "certification_dates": {
+        "USA": "2005-06-06"
+      }
     },
     {
       "id": "stay_with_me",
