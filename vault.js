@@ -297,6 +297,20 @@ const CERT_EXCLUDED_VIDEO_IDS = new Set([
     "F0B7HDiY-10", // IVE - After LIKE (JT ile alakasız, yanlış maplenmiş)
 ]);
 
+// Yalnızca SERTİFİKAYA sayılan ek videolar (vault.json `cert_extra_youtube`).
+// youtubeVideoIds'e yazılmıyorlar çünkü o liste ana sayfa ve streams'te JT'nin
+// kariyer YouTube toplamına da ekleniyor — LNFSG'nin MJ solo klibi JT'nin değil.
+// evidence + source yoksa blok yok sayılır (us_share ile aynı kural).
+function certExtraYoutubeIds(song) {
+    const block = song && song.cert_extra_youtube;
+    if (!block) return [];
+    if (!block.evidence || !block.source || !block.videos) {
+        console.warn(`[vault] ${song.id}: cert_extra_youtube evidence/source eksik, yok sayıldı`);
+        return [];
+    }
+    return filterCertVideoIds(Object.keys(block.videos));
+}
+
 function filterCertVideoIds(ids) {
     return (ids || []).filter(id => !CERT_EXCLUDED_VIDEO_IDS.has(id));
 }
@@ -1351,7 +1365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fetch per-song YouTube views (e.g. orphan tracks with individual video IDs)
         await Promise.all(vaultData.songs.map(async song => {
             const rawIds = (song.streams && song.streams.youtubeVideoIds) || song.youtubeVideoIds;
-            const ids = filterCertVideoIds(rawIds);
+            const ids = [...new Set([...filterCertVideoIds(rawIds), ...certExtraYoutubeIds(song)])];
             if (ids.length > 0) {
                 const live = await fetchRealYouTubeViews(ids);
                 if (live > 0) liveStreams.songs[song.id] = live;

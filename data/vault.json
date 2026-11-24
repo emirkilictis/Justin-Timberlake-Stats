@@ -873,6 +873,17 @@
       ],
       "certification_dates": {
         "USA": "2014-08-22"
+      },
+      "cert_extra_youtube": {
+        "videos": {
+          "GJDdBbgJafU": "Michael Jackson - Love Never Felt So Good (Official Video), michaeljacksonVEVO, 3:57 — MJ solo",
+          "0wnuTGGuAVs": "Michael Jackson, Justin Timberlake - Love Never Felt So Good (Audio), michaeljacksonVEVO, 4:07 — JT duet official audio",
+          "MgoYiY8X7jE": "Love Never Felt So Good, Michael Jackson channel, 3:56 — MJ solo",
+          "DtzzxWhW_IM": "Love Never Felt So Good (Fedde Le Grand Remix Radio Edit), Michael Jackson - Topic, 3:27",
+          "sm7q0Tof7fg": "Love Never Felt So Good (DM CLASSIC RADIO MIX), Michael Jackson - Topic, 4:12"
+        },
+        "evidence": "RIAA credits the award to Michael Jackson's title (1x Platinum, 2014-08-22) and its Digital Single audit rules combine album/radio versions, edited/explicit versions and remixes no more than 90 seconds longer than the original; only official label videos count. These are the official uploads of the versions the Spotify side already counts (collab-streams.js VERSION_ADDITIONS). Not counted: Original Version (1983 demo, uLnMg0GNzNQ) and 'Classic MJ x Love Never Felt So Good' (pRA20xG8C_k, 2:14 montage edit, unclear). Vault-only field: youtubeVideoIds is also summed into JT's career YouTube total on the home and streams pages, and the MJ solo videos are not JT's.",
+        "source": "https://www.riaa.com/gold-platinum/about-awards/"
       }
     },
     {
