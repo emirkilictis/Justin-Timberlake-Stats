@@ -20,7 +20,10 @@ const ALLOWED_ARTISTS = {
     // Where Is The Love? / Give It To Me / Rehab.
     '1yxSLGMDHlW21z4YXirZDS': 'Black Eyed Peas',
     '5Y5TRrQiqgUO4S36tzjIRZ': 'Timbaland',
-    '5pKCCKE2ajJHZ9KAiaK11H': 'Rihanna'
+    '5pKCCKE2ajJHZ9KAiaK11H': 'Rihanna',
+    // Love Never Felt So Good'un JT'siz sürümleri (solo, Fedde Le Grand radio edit) —
+    // RIAA ödülü MJ'in başlığına verilmiş ve sürümleri birleştiriyor (bkz. collab-streams.js).
+    '3fMbdgg4jU18AjLCKBhRSm': 'Michael Jackson'
 };
 
 function parseSongRows(html) {
@@ -29,6 +32,9 @@ function parseSongRows(html) {
     const trRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
     let m;
     while ((m = trRe.exec(html)) !== null) {
+        // Aynı başlıklı farklı kayıtlar olabiliyor (LNFSG: MJ solo ve JT düeti ikisi de
+        // "Love Never Felt So Good"). Ayırt etmenin tek yolu Spotify track ID'si.
+        const idMatch = m[1].match(/open\.spotify\.com\/track\/([A-Za-z0-9]{22})/);
         const cells = [...m[1].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)]
             .map(c => c[1]
                 .replace(/<[^>]+>/g, '')
@@ -39,7 +45,7 @@ function parseSongRows(html) {
         const total = parseInt(cells[1].replace(/,/g, ''), 10);
         const daily = parseInt(cells[2].replace(/,/g, ''), 10);
         if (!cells[0] || !Number.isFinite(total)) continue;
-        rows.push({ title: cells[0], total, daily: Number.isFinite(daily) ? daily : 0 });
+        rows.push({ title: cells[0], id: idMatch ? idMatch[1] : null, total, daily: Number.isFinite(daily) ? daily : 0 });
     }
     return rows;
 }

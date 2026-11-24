@@ -167,3 +167,93 @@ async function fetchCollabStreams(jtTitles = []) {
 
     return out;
 }
+
+// ── JT'nin sayfasında OLAN bir şarkının JT'siz sürümleri ──
+//
+// Yukarıdaki liste "satır JT'de hiç yok" durumu için. Bu ise farklı: şarkı JT'nin
+// sayfasında var (JT düeti), ama RIAA ödülü başka sürümleri de kapsıyor.
+//
+// Love Never Felt So Good: RIAA sicilinde ödül MICHAEL JACKSON adına, tek satır
+// (1x Platinum, 2014-08-22). RIAA Digital Single denetim kuralları (2023) şu
+// sürümlerin birleştirilmesine izin veriyor: radio mix / album version, edited /
+// explicit, ve orijinalden en fazla 90 sn uzun remix'ler. Canlı kayıtlar ayrı.
+// Orijinal single 235 sn (MJ solo) → sınır ~325 sn.
+//
+// Eşleştirme BAŞLIKLA DEĞİL, Spotify track ID'siyle: MJ solo ve JT düeti Kworb'da
+// aynı başlığı taşıyor ("Love Never Felt So Good"), başlıkla ayırt edilemez.
+// Süreler 2026-11-24'te open.spotify.com'dan okundu.
+const VERSION_ADDITIONS = [
+    {
+        vaultTitle: 'Love Never Felt So Good',
+        artist: 'Michael Jackson',
+        artistId: '3fMbdgg4jU18AjLCKBhRSm',
+        q: 'love never felt',
+        counted: {
+            '0S5EEpFAHcT7cm5XOASc29': 'MJ solo (album version, 235 sn)',
+            '1CavzSzBIn4S6FTEu0sRZF': 'Fedde Le Grand Remix Radio Edit (206 sn)'
+        },
+        skipped: {
+            '48td6xvpokdYwvbl3JIiXP': 'JT düeti — JT sayfasında zaten sayılıyor',
+            '5IqInwwsuETolsprfOFwzR': 'DM Classic Radio Mix — JT sayfasında zaten sayılıyor',
+            '1RHZ8N3GgdHve35MjjaKiB': 'DM-FK Classic Tribute Mix — 504 sn, 90 sn sınırını aşıyor',
+            '5SwxDD2Koe5WFilKD75fdP': 'DM Epic Dub Mix — 474 sn, 90 sn sınırını aşıyor',
+            '3LMtRWpLXe7TPoiHRiFEIU': 'DM Red Zone Mix — 412 sn, 90 sn sınırını aşıyor',
+            '7DciyLZWipMv860LBeupmK': 'Original Version — 1983 demosu, ayrı kayıt; RIAA listesinde bu sınıf yok',
+            '1fCeK0LyjUIOKw9unnF7sI': 'LA Reid yorumu — şarkı değil'
+        },
+        // 2026-11-23 Kworb okuması: solo 199,758,389 (+44,155/gün) + Fedde 16,089,126 (+409/gün)
+        fallback: { asOf: '2026-11-23', total: 215_847_515, daily: 44_564 }
+    }
+];
+
+// jtIds: JT'nin canlı Kworb listesindeki Spotify track ID'leri.
+// Döner: [{ vaultTitle, total, live, counted:[{id,title,total}] }] — total, JT
+// sayfasındaki satırın ÜSTÜNE eklenecek miktar.
+async function fetchVersionAdditions(jtIds = []) {
+    const seen = new Set(jtIds);
+    const out = [];
+
+    for (const entry of VERSION_ADDITIONS) {
+        let rows = null;
+        try {
+            const res = await fetch(
+                `/api/kworb?artist=${entry.artistId}&q=${encodeURIComponent(entry.q)}`
+            );
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data.tracks) && data.tracks.length) rows = data.tracks;
+            }
+        } catch (e) {
+            // Sessiz: yedeğe düşeceğiz.
+        }
+
+        // ID'siz satır gelirse (eski proxy sürümü) yedeğe düş — başlıkla saymak
+        // düeti ikinci kez eklerdi.
+        if (!rows || rows.some(r => !r.id)) {
+            out.push({ vaultTitle: entry.vaultTitle, total: collabFallback(entry), live: false, counted: [] });
+            continue;
+        }
+
+        const taken = [];
+        let total = 0;
+        for (const r of rows) {
+            if (!(r.id in entry.counted) && !(r.id in entry.skipped)) {
+                console.warn(`[versions] tanınmayan sürüm, sayılmadı: "${r.title}" (${r.id}, ${entry.artist})`);
+                continue;
+            }
+            if (!(r.id in entry.counted)) continue;
+            // Kworb bu kaydı JT'nin sayfasına eklerse orada zaten sayılıyor.
+            if (seen.has(r.id)) continue;
+            total += r.total;
+            taken.push({ id: r.id, title: r.title, total: r.total });
+        }
+        const missing = Object.keys(entry.counted).filter(id => !rows.some(r => r.id === id));
+        if (missing.length) {
+            console.warn(`[versions] "${entry.vaultTitle}" beklenen sürüm(ler) bulunamadı: ${missing.join(', ')}`);
+        }
+
+        out.push({ vaultTitle: entry.vaultTitle, total, live: true, counted: taken });
+    }
+
+    return out;
+}

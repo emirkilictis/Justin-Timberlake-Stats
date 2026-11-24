@@ -85,7 +85,7 @@ const ALBUM_COVERS = {
 // Data States
 let vaultData = { songs: [], albums: [] };
 let jtData = null; // For base data.json including youtubeVideoIds and Orphan
-let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {}, songs: {}, titles: {} };
+let liveStreams = { TotalSpotify: 0, tracks: {}, albums: {}, songs: {}, titles: {}, ids: [] };
 // Vault albümü başına sertifika video toplamı (bkz. albumCertVideoIds)
 const VAULT_ALBUM_YT = {};
 let computedData = { songs: [], albums: [], nonSingles: [] };
@@ -133,6 +133,9 @@ async function fetchLiveStreams() {
                 // Track mapping
                 liveStreams.tracks[lowerTitle] = val;
                 liveStreams.titles[lowerTitle] = title;
+                const idMatch = (cols[0].querySelector('a')?.getAttribute('href') || '')
+                    .match(/track\/([A-Za-z0-9]{22})/);
+                if (idMatch) liveStreams.ids.push(idMatch[1]);
 
                 // Album grouping logic
                 const map = typeof SONG_TO_ALBUM_MAP !== 'undefined' ? SONG_TO_ALBUM_MAP : {};
@@ -201,6 +204,20 @@ async function fetchLiveStreams() {
             });
         }
 
+        // JT sayfasında OLAN şarkının RIAA ödülüne giren JT'siz sürümleri
+        // (Love Never Felt So Good: MJ solo + Fedde Le Grand radio edit) —
+        // bkz. collab-streams.js VERSION_ADDITIONS. Mevcut satırın üstüne eklenir.
+        // liveStreams.albums'a eklenmiyor (gerekçe collab-streams.js başında).
+        if (typeof fetchVersionAdditions === 'function') {
+            const additions = await fetchVersionAdditions(liveStreams.ids);
+            additions.forEach(c => {
+                if (c.total <= 0) return;
+                const key = normalizeKworbTitle(c.vaultTitle);
+                liveStreams.tracks[key] = (liveStreams.tracks[key] || 0) + c.total;
+                if (!liveStreams.titles[key]) liveStreams.titles[key] = c.vaultTitle;
+            });
+        }
+
         const loveSexMagicTitle = 'Love Sex Magic (feat. Justin Timberlake)';
         const loveSexMagicLower = normalizeKworbTitle(loveSexMagicTitle);
         if (!liveStreams.tracks[loveSexMagicLower]) {
@@ -221,6 +238,15 @@ async function fetchLiveStreams() {
     }
 }
 
+// RIAA Digital Single kuralı: remix'ler ancak orijinalden en fazla 90 sn uzunsa
+// single'ın sertifikasına birleştirilebiliyor. JT sayfasında olup bu sınırı aşan
+// sürümler şarkının ünitesine sayılmaz (Kworb/streams toplamlarında kalırlar).
+// Süreler 2026-11-24'te open.spotify.com'dan okundu; orijinal 235 sn.
+const RIAA_NONCOMBINABLE_VERSIONS = new Set([
+    'love never felt so good - dm-fk classic tribute mix',   // 504 sn
+    'love never felt so good - dm epic dub mix'              // 474 sn
+]);
+
 function getTrackSpotify(title) {
     // liveStreams.tracks anahtarları normalizeKworbTitle'dan geçiyor ("&" → "and").
     // vault.json başlığını ("Suit & Tie") ham bırakırsak substring eşleşmesi kaçar.
@@ -228,6 +254,7 @@ function getTrackSpotify(title) {
     let sum = 0;
     let found = false;
     for (let k in liveStreams.tracks) {
+        if (RIAA_NONCOMBINABLE_VERSIONS.has(k)) continue;
         if (k.includes(tLower) || tLower.includes(k)) {
             sum += liveStreams.tracks[k];
             found = true;
@@ -1176,15 +1203,31 @@ function renderTables() {
         };
         let grandAlbums = 0, grandSingles = 0;
         
+        // RIAA'nın gerçekten verdiği ödüller — yalnızca bilgi satırı. Grand Total
+        // USA için eligible'ı (max(live, cert)) kullanıyor; bu satır ona eklenmez.
+        const usCertAlbums = computedData.albums.reduce((n, a) => n + (a.usCert || 0), 0);
+        const usCertSingles = computedData.songs.reduce((n, s) => n + (s.usCert || 0), 0);
+        const usCertTotal = usCertAlbums + usCertSingles;
+
         summaryTbody.innerHTML = COUNTRIES.map(c => {
             let a = albumCountry[c], s = songCountry[c], t = a + s;
             grandAlbums += a; grandSingles += s;
-            return `<tr>
-                <td class="font-bold">${COUNTRY_LABELS[c] || c}</td>
+            const label = c === 'USA' ? '🇺🇸 United States (Eligible)' : (COUNTRY_LABELS[c] || c);
+            let row = `<tr>
+                <td class="font-bold">${label}</td>
                 <td class="text-center">${a ? a.toLocaleString() : '—'}</td>
                 <td class="text-center">${s ? s.toLocaleString() : '—'}</td>
                 <td class="text-right font-bold" style="color:var(--accent-color)">${t ? t.toLocaleString() : '—'}</td>
             </tr>`;
+            if (c === 'USA') {
+                row += `<tr title="Awards RIAA has actually granted — shown for reference, not added to the Grand Total (which uses the eligible figure).">
+                <td class="font-bold">🇺🇸 United States (Certified)</td>
+                <td class="text-center">${usCertAlbums ? usCertAlbums.toLocaleString() : '—'}</td>
+                <td class="text-center">${usCertSingles ? usCertSingles.toLocaleString() : '—'}</td>
+                <td class="text-right font-bold" style="color:rgba(255,255,255,0.6)">${usCertTotal ? usCertTotal.toLocaleString() : '—'}</td>
+            </tr>`;
+            }
+            return row;
         }).join('');
         
         // Grand total row
